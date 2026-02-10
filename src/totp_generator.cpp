@@ -39,6 +39,15 @@ int TOTPGenerator::getTimeRemaining() {
     return CONFIG_TOTP_STEP_SIZE - (now % CONFIG_TOTP_STEP_SIZE);
 }
 
+// Проверка синхронизации времени
+bool TOTPGenerator::isTimeSynced() {
+    time_t now;
+    time(&now);
+    // Проверяем что время >= 1 января 2020 года (1577836800 Unix timestamp)
+    // Если время меньше - значит NTP ещё не синхронизирован
+    return now >= 1577836800;
+}
+
 void TOTPGenerator::hmacSha1(const uint8_t* key, size_t keyLen, const uint8_t* data, size_t dataLen, uint8_t* output) {
     mbedtls_md_context_t ctx;
     const mbedtls_md_info_t* md_info = mbedtls_md_info_from_type(MBEDTLS_MD_SHA1);

@@ -5,27 +5,54 @@
 #include "animation_manager.h"
 #include "ui_themes.h" // Include new theme definitions
 
+// Режимы запуска устройства (AP/Offline/WiFi)
+enum class StartupMode {
+    AP_MODE,        // Access Point режим
+    OFFLINE_MODE,   // Полностью offline (WiFi отключен)
+    WIFI_MODE       // Подключение к WiFi (default)
+};
+
 class DisplayManager {
 public:
     enum class HeaderState { INTRO, STATIC, CHARGING };
 
     DisplayManager();
+    void initForSplash(); // Early init for splash screen (PWM + TFT only, no fill)
     void init();
     void update(); 
     void updateHeader();
     
-    void drawLayout(const String& serviceName, int batteryPercentage, bool isCharging); 
+    void drawLayout(const String& serviceName, int batteryPercentage, bool isCharging, bool isWebServerOn); 
+    void drawPasswordLayout(const String& name, const String& password, int batteryPercentage, bool isCharging, bool isWebServerOn);
     void updateBatteryStatus(int percentage, bool isCharging);
     void updateTOTPCode(const String& code, int timeRemaining);
     void turnOff();
     void turnOn();
+    void setBrightness(uint8_t brightness); // Set backlight brightness (0-255) for fade effects
+    bool promptWebServerSelection(); // New function for user prompt
+    StartupMode promptModeSelection(); // Промптинг выбора режима (AP/Offline/WiFi)
+
+    void drawNoItemsPage(const String& text);
+    void drawBleInitLoader(int progress);
+    void drawGenericLoader(int progress, const String& text); // Новый универсальный лоадер
+    void hideLoader(); // Скрыть лоадер и сбросить состояние
+    bool isLoaderActive() const { return _loaderActive; } // Проверить активность лоадера
+    void drawBleAdvertisingPage(const String& deviceName, const String& status, int timeLeft);
+    void drawBleConfirmPage(const String& passwordName, const String& password, const String& deviceName);
+    void drawBleSendingPage();
+    void drawBleResultPage(bool success);
+
+    void setKeySwitched(bool switched) { _isKeySwitched = switched; } // <-- ADDED
     bool isCharging() const { return _isCharging; }
 
     void setTheme(Theme theme); // New method to set the theme
+    const ThemeColors* getCurrentThemeColors() const { return _currentThemeColors; } // Get current theme colors
 
     // Deprecated, but kept for compatibility with other code
     void showMessage(const String& text, int x, int y, bool isError = false, int size = 1);
     void showMessage(const String& text, int x, int y, bool isError, int size, bool inverted);
+    void updateMessage(const String& text, int x, int y, int size = 2); // Update text without full redraw
+    void clearMessageArea(int x, int y, int width, int height); // Clear specific area
     void fillRect(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t color);
     TFT_eSPI* getTft();
 
@@ -49,6 +76,7 @@ private:
     String _currentServiceName;
     int _currentBatteryPercentage = 0;
     bool _isCharging = false;
+    bool _isWebServerOn = false;
 
     // Animation-specific variables
     unsigned long _introAnimStartTime = 0;
@@ -67,6 +95,14 @@ private:
     unsigned long _lastScrambleFrameTime = 0;
     bool _totpContainerNeedsRedraw = true;
     bool _isKeySwitched = false;
+    
+    // Лоадер состояние
+    bool _loaderActive = false;
+    String _lastLoaderText = "";
+    int _lastLoaderProgress = -1;
+
+    // Состояние для страницы "No Items"
+    bool _isNoItemsPageActive = false;
 };
 
 #endif // DISPLAY_MANAGER_H

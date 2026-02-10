@@ -1,118 +1,460 @@
-# ESP32 T-Display TOTP Authenticator
+# ESP32 T-Display Multifunctional Security Device
 
-Это Open-Source проект многофункционального TOTP-аутентификатора (аналог Google Authenticator) на базе платы LilyGo T-Display (ESP32). Устройство генерирует и отображает одноразовые пароли, управляется через удобный веб-интерфейс и обладает высоким уровнем безопасности за счет шифрования и хэширования.
+<div align="center">
 
-##  галерея
+**Open-source hardware security device featuring TOTP Authenticator and Password Manager with BLE Keyboard**
 
-| Темная тема | Светлая тема | Веб-��нтерфейс |
-| :---: | :---: | :---: |
-| ![Темная тема](assets/screenshots/photos/dark-theme.jpg?raw=true) | ![Светлая тема](assets/screenshots/photos/light-theme.jpg?raw=true) | ![Веб-интерфейс](assets/screenshots/screenshots/web-cabinet-keys.png?raw=true) |
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PlatformIO](https://img.shields.io/badge/PlatformIO-Compatible-orange.svg)](https://platformio.org/)
+[![ESP32](https://img.shields.io/badge/ESP32-Powered-blue.svg)](https://www.espressif.com/)
 
-## 📸 Дополнительные фотографии
+[Features](#-key-features) • [Installation](#-quick-start) • [Documentation](#-documentation) • [Security](#-security) • [Support](#-support)
 
-| Фото 1 | Фото 2 |
-| :---: | :---: |
-| ![Фото 1](assets/screenshots/photos/image.jpg?raw=true) | ![Фото 2](assets/screenshots/photos/pin-code.jpg?raw=true) |
+</div>
 
-## 🖥️ Дополнительные скриншоты
+---
 
-| Скриншот 1 | Скриншот 2 |
-| :---: | :---: |
-| ![Скриншот 1](assets/screenshots/screenshots/pin-settings-web-cab.png?raw=true) | ![Скриншот 2](assets/screenshots/screenshots/settings-web-cab.png?raw=true) |
+## 📸 Device Gallery
 
-| Скриншот 3 | Скриншот 4 |
-| :---: | :---: |
-| ![Скриншот 3](assets/screenshots/screenshots/web-login-form.png?raw=true) | ![Скриншот 4](assets/screenshots/screenshots/web-themes-cab.png?raw=true) |
+### Physical Device Interface
+<table>
+  <tr>
+    <td align="center" width="33%">
+      <img src="assets/screenshots/photos/totp-dark-mode.jpg" alt="TOTP Dark Theme" width="100%"/>
+      <br/><b>TOTP Mode (Dark Theme)</b>
+      <br/>Real-time authentication codes
+    </td>
+    <td align="center" width="33%">
+      <img src="assets/screenshots/photos/password-manager-mode.jpg" alt="Password Manager" width="100%"/>
+      <br/><b>Password Manager Mode</b>
+      <br/>Secure offline password vault
+    </td>
+    <td align="center" width="33%">
+      <img src="assets/screenshots/photos/ble-security-pin.jpg" alt="BLE Security" width="100%"/>
+      <br/><b>BLE Security Mode</b>
+      <br/>Encrypted wireless transmission
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="33%">
+      <img src="assets/screenshots/photos/totp-light-mode.jpg" alt="Light Theme" width="100%"/>
+      <br/><b>Light Theme UI</b>
+      <br/>Customizable display themes
+    </td>
+    <td align="center" width="33%">
+      <img src="assets/screenshots/photos/battery-status.jpg" alt="Battery Status" width="100%"/>
+      <br/><b>Battery & Status</b>
+      <br/>Real-time monitoring
+    </td>
+    <td align="center" width="33%">
+      <img src="assets/screenshots/photos/factory-reset.jpg" alt="Factory Reset" width="100%"/>
+      <br/><b>Factory Reset</b>
+      <br/>Secure data wiping
+    </td>
+  </tr>
+</table>
 
-## ✨ Ключевые особенности
+### Web Management Interface
+<table>
+  <tr>
+    <td align="center" width="33%">
+      <img src="assets/screenshots/screenshots/web-dashboard.png" alt="Web Dashboard" width="100%"/>
+      <br/><b>Dashboard & Login</b>
+      <br/>Secure web access
+    </td>
+    <td align="center" width="33%">
+      <img src="assets/screenshots/screenshots/web-totp-management.png" alt="TOTP Management" width="100%"/>
+      <br/><b>TOTP Management</b>
+      <br/>QR code scanning & bulk import
+    </td>
+    <td align="center" width="33%">
+      <img src="assets/screenshots/screenshots/web-password-vault.png" alt="Password Vault" width="100%"/>
+      <br/><b>Password Vault</b>
+      <br/>Encrypted storage & search
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="33%">
+      <img src="assets/screenshots/screenshots/web-security-settings.png" alt="Security Settings" width="100%"/>
+      <br/><b>Security Settings</b>
+      <br/>PIN & authentication config
+    </td>
+    <td align="center" width="33%">
+      <img src="assets/screenshots/screenshots/web-device-config.png" alt="Device Config" width="100%"/>
+      <br/><b>Device Configuration</b>
+      <br/>Network & display settings
+    </td>
+    <td align="center" width="33%">
+      <img src="assets/screenshots/screenshots/pass-generation.png" alt="Password Generator" width="100%"/>
+      <br/><b>Password Generator</b>
+      <br/>Advanced generation & statistics
+    </td>
+  </tr>
+</table>
 
-### 🛡️ Безопасность
+---
 
-*   **Шифрование ключей (AES):** Секретные ключи TOTP хранятся в файловой системе LittleFS в зашифрованном виде с использованием AES. Ключ шифрования генерируется на основе уникального MAC-адреса устройства, что делает базу ключей непереносимой на другое устройство.
-*   **Защита PIN-кодом:** Доступ к устройству можно защитить PIN-кодом (от 4 до 10 цифр), который запрашивается при каждом включении. (Пинкод захэширован SHA-256)
-*   **Защищенный веб-интерфейс:** Доступ к панели администратора защищен логином и паролем. Пароль хранится в виде надежного SHA-256 хеша.
+## ✨ Key Features
 
-### 🌐 Удобный веб-интерфейс
+### 🔐 Security First
+- **Military-Grade Encryption** - AES-256 for all sensitive data
+- **Multi-Layer Protection** - 7+ security layers for web communications
+- **Hardware Security** - Unique device keys from hardware entropy
+- **PIN Protection** - Secure device startup and BLE transmission
+- **Encrypted BLE** - Authenticated Bluetooth with bonding and MITM protection
 
-Устройство поднимает веб-сервер в локальной сети, через который можно:
-*   **Управлять ключами:** Добавлять, удалять и просматривать TOTP-коды в реальном времени.
-*   **Импорт и Экспорт:** Легко создавать резервные копии и восстанавливать все ключи через импорт/экспорт одного JSON-файла.
-*   **Настраивать безопасность:** Менять пароль администратора, включать/выключать и устанавливать PIN-код.
-*   **Кастомизировать внешний вид:** Загружать собственный сплэш-скрин (240x135, RAW) и переключаться между **светлой и темной** темами оформления.
-*   **Управлять устройством:** Перезагружать устройство удаленно.
+### 🎯 Dual Functionality
+- **TOTP Authenticator** - Compatible with Google Authenticator, Authy, and all standard 2FA services
+- **Password Manager** - Secure offline vault with BLE keyboard transmission
+- **Air-Gapped Operation** - Works completely offline for maximum security
+- **Wireless Transmission** - Send passwords via encrypted Bluetooth to any device
 
-### 🎨 Продуманный интерфейс дисплея
+### 🌐 Advanced Web Interface
+- **Full Management** - Add, edit, delete TOTP codes and passwords remotely
+- **QR Code Scanning** - Easy TOTP setup via camera or file upload
+- **Password Generator** - Advanced generation with customizable complexity
+- **Import/Export** - Encrypted backup with password protection
+- **Custom Themes** - Light and Dark modes with custom splash screens
+- **Session Security** - Automatic timeouts and secure authentication
 
-*   **Информативный экран:** Отображает название сервиса, TOTP-код, анимированный таймер до обновления, статус Wi-Fi и уровень заряда батареи.
-*   **Плавные анимации:** При смене кода используется красивая анимация "скрамбл", делающая интерфейс более живым и премиальным.
-*   **Темы:** Поддержка светлой и темной тем, которые можно менять через веб-интерфейс.
+### ⚡ Power Efficient
+- **Smart WiFi** - Only active for time sync and web server
+- **Light Sleep Mode** - Automatic power saving after 30 seconds
+- **Battery Monitoring** - Real-time voltage and percentage display
+- **Optimized Display** - Intelligent brightness control for battery life
 
-### ⚙️ Дополнительные функции
+---
 
-*   **Сброс к заводским настройкам:** Полный сброс всех настроек и ключей путем удержания двух кнопок при включении.
-*   **Энергосбережение:** Экран автоматически отключается через 30 секунд бездействия для экономии заряда батареи.
-*   **Настройка Wi-Fi при первом запуске:** Если устройство не может подключиться к известной сети, оно создает точку доступа для первоначальной настройки Wi-Fi.
-*   **Управление кнопками:**
-    *   Удержание нижней кнопки в течение 5 секунд: вык��ючение устройства.
-    *   Удержание верхней кнопки в течение 5 секунд: выключение веб-сервера.
-    *   Удержание обеих кнопок в течение 5 секунд при перезагрузке: полный сброс к заводским настройкам.
+## 🚀 Quick Start
 
-## 🚀 Установка и первый запуск
+### Prerequisites
+- [PlatformIO IDE](https://platformio.org/platformio-ide) (VS Code extension recommended)
+- LILYGO® TTGO T-Display ESP32 board
+- USB-C cable for programming
 
-Проект разработан для среды **PlatformIO** и требует **Visual Studio Code** с установленным плагином [PlatformIO IDE](https://platformio.org/platformio-ide).
+### Installation
 
-1.  **Подготовьте среду:**
-    *   Установите [Visual Studio Code](https://code.visualstudio.com/).
-    *   Установите плагин [PlatformIO IDE](https://marketplace.visualstudio.com/items?itemName=platformio.platformio-ide) из маркетплейса расширений VS Code.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Unix-like-SoN/SecureGen.git
+   cd SecureGen
+   ```
 
-2.  **Клонируйте репозиторий:**
-    Загрузите проект с GitHub в удобное для вас место.
-    ```bash
-    git clone https://github.com/Unix-like-SoN/ESP32-T-Display-TOTP.git
-    ```
+2. **Open in PlatformIO**
+   - Launch VS Code with PlatformIO extension
+   - Click "Open Project" and select the cloned folder
 
-3.  **Откройте проект в PlatformIO:**
-    *   Запустите VS Code.
-    *   На главной странице PlatformIO (иконка муравья на панели слева) выберите **"Open Project"**.
-    *   Найдите и выберите папку `ESP32-T-Display-TOTP`, которую вы клонировали на предыдущем шаге.
+3. **Build and Upload**
+   - Connect your T-Display board via USB
+   - Click "Upload" in PlatformIO toolbar (or press `Ctrl+Alt+U`)
 
-4.  **Настройте Wi-Fi (опционально):**
-    Если вы хотите, чтобы устройство сразу подключилось к вашей сети, укажите данные в файле `include/config.h`.
-    ```cpp
-    #define WIFI_SSID "Your_SSID"
-    #define WIFI_PASSWORD "Your_Password"
-    ```
-    Если пропустить этот шаг, устройство создаст свою точку доступа для настройки при первом запуске. По ней вы подключаетесь к вашему стройству и заходите по ip который высветится на экране (192.168.4.1). Там вас встретить настройка WiFi 
+### First Boot Setup
 
-5.  **Скомпилируйте и загрузите прошивку:**
-    *   Подключите вашу плату LILYGO T-Display к компьютеру.
-    *   В нижней панели VS Code найдите иконку галочки (**Build**) для компиляции проекта и иконку стрелки (**Upload**) для загрузки прошивки на устройство.
-    *   Нажмите сначала **Build**, а после успешной компиляции — **Upload**.
+1. **WiFi Configuration**
+   - Device creates AP: `ESP32-TOTP-Setup`
+   - Connect and navigate to `192.168.4.1`
+   - Enter your WiFi credentials
 
-После завершения загрузки устройство перезагрузится и будет готово к работе.
+2. **Security Setup**
+   - Create administrator password for web interface
+   - Set optional PIN code for device startup
+   - Configure BLE security settings
 
-## 📦 Зависимости
+3. **Time Synchronization**
+   - Device automatically syncs time via NTP
+   - Required for accurate TOTP generation
 
-Все необходимые библиотеки будут установлены автоматически средой PlatformIO:
-*   `TFT_eSPI`
-*   `ESPAsyncWebServer`
-*   `AsyncTCP`
-*   `ArduinoJson`
+4. **Ready to Use!**
+   - Device switches to normal operation
+   - Access web interface at device IP address
 
-## ❤️ Спонсорский уголок
+---
 
-Если вам нравится этот проект и вы хотите поддержать его развитие, вы можете сделать это следующими способами:
+## 🎮 Device Controls
 
-*   **GitHub Sponsors:** [Ваша ссылка на GitHub Sponsors](https://github.com/sponsors/Unix-like-SoN)
+### Button Operations
 
-Ваша поддержка очень важна и помогает мне продолжать работу над проектами с открытым исходным кодом!
+| Button | Action | Function |
+|--------|--------|----------|
+| **Button 1** (Top) | Short Press | Navigate to previous item |
+| | Long Press (5s) | Switch TOTP ↔ Password Manager mode |
+| **Button 2** (Bottom) | Short Press | Navigate to next item |
+| | Long Press (5s) | Power off (deep sleep) |
+| **Both Buttons** | 2 seconds (Password Mode) | Activate BLE keyboard transmission |
+| | 5 seconds (on boot) | Factory reset (wipe all data) |
 
-## 🔧 Аппаратное обеспечение
+### Wake from Sleep
+- After 30 seconds of inactivity, device enters light sleep
+- **Press Button 2** to wake the device
+- Note: Button 1 cannot wake device due to hardware limitation
 
-*   **Плата:** [LILYGO® TTGO T-Display ESP32](https://www.lilygo.cc/products/t-display)
-*   **Кнопки:** Две встроенные кнопки используются для навигации и управления.
-*   **Батарея:** Поддерживается мониторинг заряда Li-Po батареи.
+---
 
-## 💡 Будущие улучшения
+## 🔧 Operating Modes
 
-*   **Поддержка HTTPS:** В настоящее время веб-интерфейс работает по HTTP. В будущем планируется добавить поддержку HTTPS для повышения безопасности.
+### Device Modes
+
+#### 1. TOTP Authenticator Mode
+- Displays service name, 6-digit code, and countdown timer
+- Compatible with all standard 2FA services
+- Encrypted storage with unique device key
+- Real-time code generation with visual progress indicator
+
+#### 2. Password Manager Mode
+- Secure offline password vault
+- Optional password masking for privacy
+- BLE keyboard transmission to any device
+- Advanced password generation tools
+- Batch operations and secure backup
+
+### Network Modes
+
+#### 3. Offline Mode (Air-Gapped)
+- Complete offline operation
+- Maximum security through network isolation
+- Password Manager works independently
+- Optimized battery life with WiFi disabled
+
+#### 4. Access Point (AP) Mode
+- Device creates own WiFi hotspot
+- Web interface for configuration
+- Isolated network environment
+- Secure password access
+
+#### 5. WiFi Client Mode (Self-Hosted)
+- Connects to existing network
+- Always-on server application
+- Accessible to trusted devices
+- Perfect for home/team deployment
+- Functions like Bitwarden or KeeWeb with dedicated hardware
+
+#### 6. BLE Security Mode
+- PIN authentication on connecting device
+- Encrypted transmission with MITM protection
+- Device bonding for trusted connections
+- Automatic timeout after transmission
+
+---
+
+## 🛡️ Security
+
+### Multi-Layer Protection System
+
+This device implements **7+ layers of security** for protecting your sensitive data:
+
+**Layer 1: Key Exchange**
+- Elliptic Curve Diffie-Hellman (ECDH) with P-256 curve
+- Establishes secure session keys
+- Forward secrecy protection
+
+**Layer 2: Data Encryption**
+- Session-based encryption for all communications
+- Unique encryption per message
+- Replay protection with message counters
+
+**Layer 3: URL Obfuscation**
+- Dynamic API endpoint paths
+- SHA-256 based generation
+- Rotates on device reboot
+
+**Layer 4: Header Obfuscation**
+- Dynamic HTTP header mapping
+- Hides sensitive metadata
+- Regenerated on each boot
+
+**Layer 5: Fake Header Injection**
+- Adds decoy headers to confuse traffic analysis
+- Mimics browser behavior
+- Random values per request
+
+**Layer 6: Method Tunneling**
+- HTTP method obfuscation
+- All requests appear as POST
+- Additional protocol-level protection
+
+**Layer 7: Anti-Timing Analysis**
+- Random delays in cryptographic operations
+- Prevents timing-based attacks
+- Masks operation patterns
+
+**Plus:** CSRF protection, session management, rate limiting, and more.
+
+### Data Protection
+
+**Encryption at Rest:**
+- AES-256 encryption for all sensitive data
+- Unique device keys from hardware parameters
+- Hardware-accelerated cryptography
+- Secure key derivation (PBKDF2-HMAC-SHA256)
+
+**Physical Security:**
+- PIN protection for device startup (4-10 digits)
+- Secure boot support
+- Factory reset with secure data wiping
+- Memory protection against leakage
+
+**Bluetooth Security:**
+- LE Secure Connections with MITM protection
+- AES-128 encryption (BLE standard)
+- PIN-based pairing
+- Device bonding for trusted connections
+
+**For detailed security information:**
+- [Security Overview](docs/security/SECURITY_OVERVIEW.md) - Public security documentation
+- [Security Best Practices](#-security-best-practices) - User recommendations
+
+---
+
+## 📦 Hardware Requirements
+
+### Primary Components
+- **Board:** [LILYGO® TTGO T-Display ESP32](https://www.lilygo.cc/products/t-display)
+- **Display:** 1.14" ST7789 TFT (135x240 pixels)
+- **Battery:** Li-Po battery with JST connector (recommended ≥500mAh)
+- **Connectivity:** WiFi 802.11 b/g/n + Bluetooth 5.0 LE
+
+### Technical Specifications
+- **Processor:** ESP32 dual-core Xtensa LX6 @ 240MHz
+- **RAM:** 520KB SRAM with intelligent memory management
+- **Storage:** 4MB Flash with wear-leveling filesystem
+- **Security:** Hardware-accelerated AES encryption
+- **Power:** Optimized for battery operation with multiple sleep modes
+- **Temperature:** -40°C to +85°C industrial grade
+
+---
+
+## 📚 Documentation
+
+### User Guides
+- [Complete User Manual](docs/README.md) - Comprehensive usage guide
+- [Security Overview](docs/security/SECURITY_OVERVIEW.md) - Security features and best practices
+- [Feature Documentation](docs/features/) - Detailed feature descriptions
+- [Troubleshooting Guide](docs/fixes/) - Common issues and solutions
+
+### Developer Resources
+- [Development Guide](docs/development/) - Build and development instructions
+- [Security Architecture](docs/security/) - Security implementation details
+
+### Recent Updates
+- [Battery Power Stability Fix](docs/fixes/battery-reboot-fix-ru.md) - PIN entry optimization
+- [Display Initialization Fix](docs/fixes/) - Screen initialization improvements
+
+---
+
+## 🔐 Security Best Practices
+
+### Recommended Security Measures
+
+**Network Security**
+- Use strong WiFi passwords (WPA3 if available)
+- Consider network isolation for the device
+- Regularly update firmware through web interface
+- Monitor access logs for suspicious activity
+
+**Physical Security**
+- Keep device physically secure when not in use
+- Enable PIN protection for startup
+- Use factory reset if device is compromised
+- Store backup files in encrypted storage
+
+**Data Management**
+- Regularly export encrypted backups
+- Use strong administrator passwords
+- Change PIN codes periodically
+- Log out from web sessions when finished
+
+**BLE Security**
+- Only pair with trusted devices
+- Remove old bonded devices periodically
+- Use PIN protection for BLE transmission
+- Monitor BLE connection status
+
+---
+
+## 🤝 Support
+
+### Get Help
+- **Issues:** [GitHub Issues](https://github.com/Unix-like-SoN/SecureGen/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/Unix-like-SoN/SecureGen/discussions)
+- **Documentation:** [Project Wiki](docs/)
+
+### Contributing
+Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting pull requests.
+
+### Sponsorship & Donations
+
+If you like this project and want to support its development, you can do so in the following ways:
+
+**GitHub Sponsors:**
+
+[![Sponsor](https://img.shields.io/badge/Sponsor-❤-red.svg)](https://github.com/sponsors/Unix-like-SoN)
+
+**Cryptocurrency Donations:**
+
+- **TetherUSD (USDT) BEP-20** (Binance Smart Chain):
+  ```
+  0x4f85f29892b261fa8029f3cfd64211e166744733
+  ```
+
+- **TetherUSD (USDT) TRC-20** (Tron):
+  ```
+  TDnjDg9HxySo1J2FPSrvWQejyZ4gHKiXSJ
+  ```
+
+Your support is very important and helps continue working on open-source projects!
+
+**⭐ Star this repository if you find it useful!**
+
+For more ways to support, see [SUPPORT.md](SUPPORT.md).
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License**.
+
+### What This Means
+
+✅ **You can:**
+- Use this software for personal or commercial purposes
+- Modify the source code
+- Distribute copies
+- Sublicense the software
+- Use it privately
+
+⚠️ **You must:**
+- Include the original copyright notice
+- Include the MIT License text
+
+❌ **You cannot:**
+- Hold the author liable for any damages
+- Use the author's name for endorsement without permission
+
+For full license text, see the [LICENSE](LICENSE) file.
+
+### Third-Party Licenses
+
+This project uses the following open-source libraries:
+- **TFT_eSPI** - FreeBSD License
+- **ESPAsyncWebServer** - LGPL-3.0 License
+- **AsyncTCP** - LGPL-3.0 License
+- **ArduinoJson** - MIT License
+- **mbedTLS** - Apache 2.0 License (included in ESP-IDF)
+
+---
+
+## 🙏 Acknowledgments
+
+- ESP32 community for excellent libraries and support
+- LILYGO for the T-Display hardware platform
+- All contributors and users of this project
+
+---
+
+<div align="center">
+
+**Made with ❤️ for the open-source community**
+
+[⬆ Back to Top](#esp32-t-display-multifunctional-security-device)
+
+</div>

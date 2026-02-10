@@ -1,14 +1,9 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-// WiFi настройки
-#define WIFI_SSID "Triolan"
-#define WIFI_PASSWORD "f1ash970"
-
 // Веб-сервер
 #define WEB_SERVER_PORT 80
-#define ADMIN_USERNAME "admin"
-#define ADMIN_PASSWORD "your_secure_password"
+#define SESSION_TIMEOUT 900000 // 15 минут в миллисекундах
 
 // Дисплей - правильные пины для T-Display
 #define TFT_WIDTH 135 
@@ -30,10 +25,57 @@
 #define CONFIG_TOTP_DIGITS 6
 
 // Файловая система
-#define KEYS_FILE "/keys.json"
-#define CONFIG_FILE "/config.json"
+#define KEYS_FILE "/keys.json.enc"
+#define PASSWORD_FILE "/passwords.json.enc"
+#define WIFI_CONFIG_FILE "/wifi_config.json.enc"  // Зашифрованный файл WiFi credentials
+#define WIFI_CONFIG_FILE_LEGACY "/wifi_config.json"  // Старый plain text файл для миграции
 #define SPLASH_IMAGE_PATH "/splash.raw"
-#define THEME_CONFIG_KEY "theme" // New: Key for theme setting in config.json
+#define AUTH_FILE "/auth.json"
+#define WIFI_PASSWORD "Your_Password"
+
+// BLE Settings
+#define BLE_DEVICE_NAME "T-Disp-Password"
+#define BLE_MANUFACTURER_NAME "T-Disp"
+
+// --- PIN Settings ---
+#define PIN_FILE "/pin_config.json"
+#define DEFAULT_PIN_LENGTH 6
+
+// --- General Config ---
+#define CONFIG_FILE "/config.json"
+#define THEME_CONFIG_KEY "theme"
+
+// --- BLE Config ---
+#define BLE_CONFIG_FILE "/ble_config.json"
+#define DEFAULT_BLE_DEVICE_NAME "T-Disp-TOTP"
+
+// --- BLE PIN Generation ---
+#define BLE_PIN_MIN_VALUE 100000      // 6-значный PIN минимум
+#define BLE_PIN_MAX_VALUE 999999      // 6-значный PIN максимум 
+#define BLE_PIN_LENGTH 6              // Длина PIN кода
+#define BLE_PIN_AUTO_GENERATE true    // Автоматическая генерация при первом запуске
+
+// --- mDNS Config ---
+#define MDNS_CONFIG_FILE "/mdns_config.json"
+#define DEFAULT_MDNS_HOSTNAME "t-disp-totp"
+
+// --- PBKDF2 Security Settings ---
+// Балансировка безопасности и производительности для ESP32 @ 240MHz
+// OWASP рекомендует 600,000+ для серверов, но это слишком медленно для ESP32
+// 
+// ⚠️ ВАЖНО: Реальная производительность mbedTLS на ESP32 (software SHA256):
+// 10,000 iterations  ≈ 2 секунды (тестировано)
+// 50,000 iterations  ≈ 10 секунд → WATCHDOG TIMEOUT!
+// 
+// Выбраны максимальные значения, которые НЕ блокируют async tasks:
+
+#define PBKDF2_ITERATIONS_LOGIN 10000        // Для hashPassword/verifyPassword (~2s, безопасно)
+#define PBKDF2_ITERATIONS_EXPORT 15000       // Для encryptWithPassword/decryptWithPassword (~3s, редко)
+
+// Производительность на ESP32 @ 240MHz (реальные измерения):
+// 10,000 iterations  ≈ 2 секунды (приемлемо для login, не блокирует watchdog)
+// 15,000 iterations  ≈ 3 секунды (приемлемо для редких операций)
+
 
 #endif
 

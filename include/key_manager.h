@@ -8,6 +8,7 @@
 struct TOTPKey {
     String name;
     String secret;
+    int order = 0;  // Порядок сортировки
 };
 
 class KeyManager {
@@ -18,17 +19,14 @@ public:
     // Функции для управления ключами
     bool addKey(const String& name, const String& secret);
     bool removeKey(int index);
+    bool updateKey(int index, const String& name, const String& secret); // <-- ADDED
+    bool reorderKeys(const std::vector<std::pair<String, int>>& newOrder); // Изменение порядка
     std::vector<TOTPKey> getAllKeys();
     bool replaceAllKeys(const String& jsonContent); // Новая функция
 
 private:
     bool loadKeys();
     bool saveKeys();
-
-    // Шифрование/дешифрование с помощью внутреннего ключа
-    void generateDeviceKey(unsigned char* key);
-    bool encryptData(const uint8_t* plain, size_t plain_len, std::vector<uint8_t>& output);
-    bool decryptData(const uint8_t* encrypted, size_t encrypted_len, std::vector<uint8_t>& output);
 
     std::vector<TOTPKey> keys; // Ключи хранятся в памяти в расшифрованном виде
 };

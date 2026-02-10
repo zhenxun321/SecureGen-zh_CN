@@ -6,3 +6,26 @@
 
 # Ignore environment file with credentials
 .env
+
+# ⚠️ SECURITY: Internal documentation - DO NOT PUBLISH
+SECURITY_INTERNAL.md
+docs/security/SECURITY_AUDIT_INTERNAL.md
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.bin
+*.elf
+*.map
+
+# IDE specific
+.idea/
+*.iml

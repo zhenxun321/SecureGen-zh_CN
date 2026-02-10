@@ -3,7 +3,6 @@
 
 #include "display_manager.h"
 
-#define PIN_FILE "/pincode.json"
 #define DEFAULT_PIN_LENGTH 6
 #define MAX_PIN_LENGTH 10
 
@@ -11,22 +10,31 @@ class PinManager {
 public:
     PinManager(DisplayManager& display);
     void begin();
-    bool isPinEnabled();
+    
+    // Separate methods for device and BLE PIN control
+    bool isPinEnabledForDevice();
+    bool isPinEnabledForBle();
     bool isPinSet();
-    void requestPin();
+    bool requestPin();
     
     // Methods for web server interaction
     void setPin(const String& newPin);
-    void setEnabled(bool enabled);
+    void setPinEnabledForDevice(bool enabled);
+    void setPinEnabledForBle(bool enabled);
     int getPinLength();
     void setPinLength(int newLength);
     void saveConfig();
     void loadPinConfig();
+    
+    // Legacy method for backward compatibility
+    bool isPinEnabled(); // Returns true if either device or BLE PIN is enabled
+    void setEnabled(bool enabled); // Sets both device and BLE to the same value
 
 private:
     DisplayManager& displayManager;
     int currentPinLength = DEFAULT_PIN_LENGTH;
-    bool enabled = false;
+    bool enabledForDevice = false;
+    bool enabledForBle = false;
     String pinHash = "";
 
     void savePinConfig();

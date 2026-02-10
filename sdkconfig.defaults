@@ -1,0 +1,202 @@
+# =============================================================================
+# ESP32 T-Display TOTP - Secure Boot & Flash Encryption Configuration
+# =============================================================================
+# ВНИМАНИЕ: Включение этих настроек НЕОБРАТИМО изменит устройство!
+# Сначала протестируйте на отдельном устройстве!
+#
+# Для активации: переименуйте в sdkconfig.defaults
+# =============================================================================
+
+# ===== Stack Size Configuration =====
+CONFIG_ARDUINO_LOOP_STACK_SIZE=16384
+CONFIG_ESP_MAIN_TASK_STACK_SIZE=8192
+CONFIG_ASYNC_TCP_STACK_SIZE=8192
+
+# ===== 🔐 SECURE BOOT V2 Configuration =====
+# Включает Secure Boot версии 2 (RSA-PSS 3072-bit)
+CONFIG_SECURE_BOOT=y
+CONFIG_SECURE_BOOT_V2_ENABLED=y
+
+# Development mode: позволяет reflashing через UART с подписанными образами
+# Production mode: отключает reflashing полностью
+CONFIG_SECURE_BOOT_INSECURE=n
+CONFIG_SECURE_BOOT_ENABLE_AGGRESSIVE_KEY_REVOKE=n
+
+# Для production использовать:
+# CONFIG_SECURE_BOOT_ENABLE_AGGRESSIVE_KEY_REVOKE=y
+
+# Проверка signature при каждой загрузке
+CONFIG_SECURE_BOOT_VERIFICATION_ENABLED=y
+
+# ===== 🔒 FLASH ENCRYPTION Configuration =====
+# Включает шифрование всей Flash памяти
+CONFIG_SECURE_FLASH_ENC_ENABLED=y
+
+# Development mode: позволяет reflashing
+# Release mode: блокирует reflashing (только OTA)
+CONFIG_SECURE_FLASH_ENCRYPTION_MODE_DEVELOPMENT=y
+# Для production:
+# CONFIG_SECURE_FLASH_ENCRYPTION_MODE_RELEASE=y
+
+# Шифровать все разделы Flash (NVS, SPIFFS, apps)
+CONFIG_SECURE_FLASH_ENCRYPT_ALL_FLASH_CONTENTS=y
+
+# Размер блока шифрования (32 bytes - оптимально для ESP32)
+CONFIG_SECURE_FLASH_ENCRYPTION_AES256=y
+
+# ===== 🛡️ Hardware Security Features =====
+# Аппаратное ускорение криптографии (mbedTLS)
+CONFIG_MBEDTLS_HARDWARE_AES=y
+CONFIG_MBEDTLS_HARDWARE_SHA=y
+CONFIG_MBEDTLS_HARDWARE_MPI=y
+CONFIG_MBEDTLS_HARDWARE_ECC=y
+
+# Использовать hardware RNG для entropy
+CONFIG_ESP_SYSTEM_HWCRYPTO_ENABLED=y
+
+# ===== 🚫 Debug Interface Disable =====
+# КРИТИЧНО: Отключить JTAG в production!
+CONFIG_ESP_SYSTEM_DISABLE_JTAG=y
+
+# Отключить возможность загрузки в download mode через USB
+# (осторожно - может затруднить recovery!)
+# CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=n
+
+# ===== ⏱️ Watchdog Configuration =====
+# Task watchdog для защиты от зависаний
+CONFIG_ESP_TASK_WDT=y
+CONFIG_ESP_TASK_WDT_TIMEOUT_S=5
+CONFIG_ESP_TASK_WDT_PANIC=y
+CONFIG_ESP_TASK_WDT_CHECK_IDLE_TASK_CPU0=y
+CONFIG_ESP_TASK_WDT_CHECK_IDLE_TASK_CPU1=y
+
+# Interrupt watchdog
+CONFIG_ESP_INT_WDT=y
+CONFIG_ESP_INT_WDT_TIMEOUT_MS=300
+
+# ===== 🔧 Bootloader Configuration =====
+# Уровень логирования bootloader
+CONFIG_BOOTLOADER_LOG_LEVEL_INFO=y
+CONFIG_BOOTLOADER_LOG_LEVEL=3
+
+# Проверка signature app при каждой загрузке
+CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE=y
+
+# Anti-rollback protection (опционально)
+# CONFIG_BOOTLOADER_APP_ANTI_ROLLBACK=y
+
+# ===== 🌐 Network Security =====
+# WPA3 support (если роутер поддерживает)
+CONFIG_ESP_WIFI_ENABLE_WPA3_SAE=y
+
+# Secure WiFi connect
+CONFIG_ESP_WIFI_SOFTAP_SAE_SUPPORT=y
+
+# ===== 📝 Logging Configuration =====
+# Уровень логирования (production - WARNING, development - INFO)
+CONFIG_LOG_DEFAULT_LEVEL_INFO=y
+CONFIG_LOG_DEFAULT_LEVEL=3
+
+# Для production:
+# CONFIG_LOG_DEFAULT_LEVEL_WARN=y
+# CONFIG_LOG_DEFAULT_LEVEL=2
+
+# ===== 💾 NVS Configuration =====
+# NVS encryption (для конфиденциальных данных)
+CONFIG_NVS_ENCRYPTION=y
+
+# ===== 🔋 Power Management =====
+# Включить power management для экономии энергии
+CONFIG_PM_ENABLE=y
+
+# Light sleep support
+CONFIG_PM_DFS_INIT_AUTO=y
+
+# ===== ⚡ Brownout Detector Configuration =====
+# Понижаем порог brownout для работы с батареями
+# Стандартный порог 2.43V может быть слишком высоким для некоторых батарей
+# Опции: 2.43V (default), 2.33V, 2.26V, 2.17V
+# ВАЖНО: Слишком низкий порог может привести к нестабильности!
+CONFIG_ESP32_BROWNOUT_DET=y
+CONFIG_ESP32_BROWNOUT_DET_LVL_SEL_0=y
+# CONFIG_ESP32_BROWNOUT_DET_LVL_SEL_1=y  # 2.33V - попробуйте если 2.43V не помогает
+# CONFIG_ESP32_BROWNOUT_DET_LVL_SEL_2=y  # 2.26V
+# CONFIG_ESP32_BROWNOUT_DET_LVL_SEL_3=y  # 2.17V - минимальный порог
+
+# ===== 🐛 Debug & Development =====
+# Panic handler behavior (для development - print, для production - reset)
+CONFIG_ESP_SYSTEM_PANIC_PRINT_REBOOT=y
+# Для production:
+# CONFIG_ESP_SYSTEM_PANIC_SILENT_REBOOT=y
+
+# Core dump (для отладки)
+CONFIG_ESP_COREDUMP_ENABLE_TO_NONE=y
+# Для production с SD card:
+# CONFIG_ESP_COREDUMP_ENABLE_TO_FLASH=y
+
+# ===== 📊 Performance Optimization =====
+# Compiler optimization
+CONFIG_COMPILER_OPTIMIZATION_PERF=y
+
+# FreeRTOS optimization
+CONFIG_FREERTOS_HZ=1000
+CONFIG_FREERTOS_ASSERT_ON_UNTESTED_FUNCTION=n
+
+# ===== 🔌 Component Configuration =====
+# ESP32-specific
+CONFIG_ESP32_DEFAULT_CPU_FREQ_240=y
+CONFIG_ESP32_REV_MIN=3
+
+# BLE/Bluetooth (если используется)
+CONFIG_BT_ENABLED=y
+CONFIG_BTDM_CTRL_MODE_BLE_ONLY=y
+CONFIG_BT_NIMBLE_ENABLED=y
+
+# ===== 📡 OTA Configuration =====
+# Поддержка OTA updates с signature verification
+CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE=y
+
+# Skip version check (для development)
+CONFIG_BOOTLOADER_SKIP_VALIDATE_IN_DEEP_SLEEP=n
+
+# ===== 🛠️ Build Configuration =====
+# Использовать новый CMake build system
+CONFIG_IDF_CMAKE=y
+
+# Включить все warnings
+CONFIG_COMPILER_WARN_WRITE_STRINGS=y
+
+# Stack overflow detection
+CONFIG_FREERTOS_CHECK_STACKOVERFLOW_CANARY=y
+
+# ===== 🎯 Memory Configuration =====
+# PSRAM configuration (если используется)
+# CONFIG_ESP32_SPIRAM_SUPPORT=y
+
+# Memory debugging (отключить в production)
+CONFIG_HEAP_POISONING_DISABLED=y
+# Для development:
+# CONFIG_HEAP_POISONING_LIGHT=y
+
+# ===== ⚙️ Advanced Security Settings =====
+# Secure boot digest SHA256
+CONFIG_SECURE_BOOT_DIGEST_SHA256=y
+
+# Signature verification каждый раз
+CONFIG_SECURE_BOOT_VERIFICATION_EVERY_BOOT=y
+
+# Hardware secure boot check
+CONFIG_SECURE_BOOT_HARDWARE_CHECK=y
+
+# =============================================================================
+# ВАЖНЫЕ ЗАМЕЧАНИЯ:
+# =============================================================================
+# 1. Secure Boot и Flash Encryption НЕОБРАТИМЫ после первой прошивки!
+# 2. Сохраните backup ключей в безопасном месте
+# 3. Протестируйте на отдельном устройстве перед mass production
+# 4. Для production переключите mode с DEVELOPMENT на RELEASE
+# 5. Отключите JTAG в production (CONFIG_ESP_SYSTEM_DISABLE_JTAG=y)
+# 6. Используйте aggressive key revoke в production
+#
+# Полное руководство: docs/security/secure-boot-implementation-guide.md
+# =============================================================================

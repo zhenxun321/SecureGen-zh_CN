@@ -1,5 +1,6 @@
 #include "display_manager.h"
 #include "config.h"
+#include "log_manager.h"
 
 // Helper for the animation loop
 void schedule_next_update(DisplayManager* dm, AnimationManager* am);
@@ -27,7 +28,7 @@ DisplayManager::DisplayManager() : tft(TFT_eSPI()), animationManager(), headerSp
 }
 
 void DisplayManager::setTheme(Theme theme) {
-    Serial.println("DisplayManager::setTheme() called with theme: " + String((theme == Theme::LIGHT) ? "LIGHT" : "DARK"));
+    LOG_INFO("DisplayManager", "setTheme() called with theme: " + String((theme == Theme::LIGHT) ? "LIGHT" : "DARK"));
     switch (theme) {
         case Theme::DARK:
             _currentThemeColors = &DARK_THEME_COLORS;
@@ -36,7 +37,7 @@ void DisplayManager::setTheme(Theme theme) {
             _currentThemeColors = &LIGHT_THEME_COLORS;
             break;
     }
-    Serial.println("Applying new theme colors to display...");
+    LOG_DEBUG("DisplayManager", "Applying new theme colors to display...");
     tft.fillScreen(_currentThemeColors->background_dark);
     updateHeader(); 
     lastDisplayedCode = ""; 
@@ -44,7 +45,7 @@ void DisplayManager::setTheme(Theme theme) {
     _lastDrawnTotpString = ""; 
     _totpState = TotpState::IDLE;
     _totpContainerNeedsRedraw = true; // Force redraw of container with new theme
-    Serial.println("Theme applied. Screen should update on next loop.");
+    LOG_INFO("DisplayManager", "Theme applied successfully");
 }
 
 void DisplayManager::update() {
@@ -97,14 +98,30 @@ void DisplayManager::update() {
 }
 
 
-void DisplayManager::init() {
-    pinMode(TFT_BL, OUTPUT);
-    digitalWrite(TFT_BL, HIGH);
+// Ранняя инициализация для splash screen (минимальная подготовка)
+void DisplayManager::initForSplash() {
+    tft.init();
+    tft.setRotation(1);
+    tft.fillScreen(TFT_BLACK); // Очищаем экран чёрным для splash
+    tft.setTextDatum(MC_DATUM);
+    
+    // ⚠️ ВАЖНО: Настройка PWM ПОСЛЕ tft.init() т.к. init() сбрасывает пин на digitalWrite!
+    ledcSetup(0, 5000, 8);
+    ledcAttachPin(TFT_BL, 0);
+    ledcWrite(0, 0); // Начинаем с погашенного экрана для fade эффекта
+}
 
+// Полная инициализация (для обычного UI)
+void DisplayManager::init() {
     tft.init();
     tft.setRotation(1);
     tft.fillScreen(_currentThemeColors->background_dark); 
     tft.setTextDatum(MC_DATUM);
+    
+    // ⚠️ ВАЖНО: Настройка PWM ПОСЛЕ tft.init() т.к. init() сбрасывает пин!
+    ledcSetup(0, 5000, 8);
+    ledcAttachPin(TFT_BL, 0);
+    ledcWrite(0, 255); // Полная яркость по умолчанию
 
     headerSprite.createSprite(tft.width(), 35);
     headerSprite.setTextDatum(MC_DATUM);
@@ -131,12 +148,20 @@ void DisplayManager::init() {
     schedule_next_update(this, &animationManager);
 }
 
-void DisplayManager::drawLayout(const String& serviceName, int batteryPercentage, bool isCharging) {
-    tft.fillScreen(_currentThemeColors->background_dark); 
+void DisplayManager::drawLayout(const String& serviceName, int batteryPercentage, bool isCharging, bool isWebServerOn) {
+    // Если до этого была страница "нет ключей", очищаем экран полностью
+    if (_isNoItemsPageActive) {
+        tft.fillScreen(_currentThemeColors->background_dark);
+        _isNoItemsPageActive = false;
+    } else if (_isKeySwitched) {
+        // Иначе, если ключ был переключен, очищаем только область под заголовком
+        tft.fillRect(0, headerSprite.height(), tft.width(), tft.height() - headerSprite.height(), _currentThemeColors->background_dark);
+    }
     
     _currentServiceName = serviceName;
     _currentBatteryPercentage = batteryPercentage;
     _isCharging = isCharging;
+    _isWebServerOn = isWebServerOn;
     _headerState = HeaderState::INTRO;
     _introAnimStartTime = millis();
 
@@ -145,7 +170,7 @@ void DisplayManager::drawLayout(const String& serviceName, int batteryPercentage
     _lastDrawnTotpString = "";
     _totpState = TotpState::IDLE;
     _totpContainerNeedsRedraw = true;
-    _isKeySwitched = true; // Флаг, что мы только что переключили ключ
+    // _isKeySwitched флаг устанавливается в main.cpp
 }
 
 void DisplayManager::updateBatteryStatus(int percentage, bool isCharging) {
@@ -162,9 +187,47 @@ void DisplayManager::updateBatteryStatus(int percentage, bool isCharging) {
             _headerState = HeaderState::STATIC;
         }
     }
+    
+    // 🔋 Обновляем индикатор батареи на странице "No keys found" без полной перерисовки
+    if (_isNoItemsPageActive) {
+        int batteryX = tft.width() - 28;
+        int batteryY = 5;
+        int batteryWidth = 22;
+        int batteryHeight = 12;
+        int batteryCornerRadius = 3;
+        int shadowOffset = 1;
+        
+        // Очищаем область батареи
+        tft.fillRect(batteryX - 2, batteryY - 2, batteryWidth + 6, batteryHeight + 4, _currentThemeColors->background_dark);
+        
+        // Тень батареи
+        tft.drawRoundRect(batteryX + shadowOffset, batteryY + shadowOffset, batteryWidth, batteryHeight, batteryCornerRadius, _currentThemeColors->shadow_color);
+        tft.fillRect(batteryX + batteryWidth + shadowOffset, batteryY + 3 + shadowOffset, 2, 5, _currentThemeColors->shadow_color);
+        
+        // Обводка батареи
+        tft.drawRoundRect(batteryX, batteryY, batteryWidth, batteryHeight, batteryCornerRadius, _currentThemeColors->text_secondary);
+        tft.fillRect(batteryX + batteryWidth, batteryY + 3, 2, 5, _currentThemeColors->text_secondary);
+        
+        // Заполнение батареи
+        uint16_t barColor = (percentage >= 20) ? _currentThemeColors->accent_primary : _currentThemeColors->error_color;
+        int barWidth = map(percentage, 0, 100, 0, batteryWidth - 4);
+        if (barWidth > 0) {
+            tft.fillRect(batteryX + 2, batteryY + 2, barWidth, batteryHeight - 4, barColor);
+        }
+    }
 }
 
 void DisplayManager::updateHeader() {
+    // Не отрисовываем заголовок если активен лоадер, чтобы предотвратить наслоение
+    if (_loaderActive) {
+        return;
+    }
+    
+    // 🚫 Не отрисовываем заголовок на странице "No keys found" - шторка загораживает обводку!
+    if (_isNoItemsPageActive) {
+        return;
+    }
+    
     headerSprite.fillSprite(_currentThemeColors->background_dark);
 
     float titleY = 20;
@@ -184,6 +247,15 @@ void DisplayManager::updateHeader() {
     headerSprite.setTextColor(_currentThemeColors->text_primary, _currentThemeColors->background_dark);
     headerSprite.setTextSize(2);
     headerSprite.drawString(_currentServiceName, headerSprite.width() / 2, (int)titleY);
+
+    // Draw WiFi Icon
+    if (_isWebServerOn) {
+        int wifiX = headerSprite.width() - 55;
+        int wifiY = 10;
+        headerSprite.drawLine(wifiX, wifiY + 8, wifiX + 8, wifiY, _currentThemeColors->text_secondary);
+        headerSprite.drawLine(wifiX + 1, wifiY + 8, wifiX + 8, wifiY + 1, _currentThemeColors->text_secondary);
+        headerSprite.drawCircle(wifiX + 4, wifiY + 10, 2, _currentThemeColors->text_secondary);
+    }
 
     if (_headerState == HeaderState::CHARGING) {
         unsigned long chargeElapsedTime = millis() - _chargingAnimStartTime;
@@ -252,7 +324,10 @@ void DisplayManager::drawTotpText(const String& textToDraw) {
     // 1. Рисуем анимированный текст в свой спрайт
     totpSprite.fillSprite(_currentThemeColors->background_light);
     totpSprite.setTextColor(_currentThemeColors->text_primary, _currentThemeColors->background_light);
-    totpSprite.setTextSize(4);
+    
+    // Уменьшаем размер шрифта для длинного текста (например "NOT SYNCED")
+    int textSize = (textToDraw.length() > 6) ? 2 : 4;
+    totpSprite.setTextSize(textSize);
     totpSprite.drawString(textToDraw, totpSprite.width() / 2, totpSprite.height() / 2);
 
     // 2. Накладываем спрайт с текстом внутрь рамки контейнера со смещением в 1px
@@ -352,7 +427,476 @@ void DisplayManager::showMessage(const String& text, int x, int y, bool isError,
     tft.setTextColor(_currentThemeColors->text_primary, _currentThemeColors->background_dark);
 }
 
-void DisplayManager::turnOff() { digitalWrite(TFT_BL, LOW); }
-void DisplayManager::turnOn() { digitalWrite(TFT_BL, HIGH); }
+void DisplayManager::turnOff() { ledcWrite(0, 0); }
+void DisplayManager::turnOn() { ledcWrite(0, 255); }
+void DisplayManager::setBrightness(uint8_t brightness) { ledcWrite(0, brightness); }
+
+// 🔄 Обновление текста без полной перерисовки экрана
+void DisplayManager::updateMessage(const String& text, int x, int y, int size) {
+    tft.setTextSize(size);
+    tft.setTextDatum(TL_DATUM);
+    
+    // Рассчитываем размер области текста
+    int textWidth = tft.textWidth(text);
+    int textHeight = tft.fontHeight() * size;
+    
+    // Очищаем только область текста (с небольшим запасом)
+    tft.fillRect(x, y, textWidth + 10, textHeight + 5, _currentThemeColors->background_dark);
+    
+    // Рисуем новый текст
+    tft.setTextColor(_currentThemeColors->text_primary, _currentThemeColors->background_dark);
+    tft.drawString(text, x, y);
+    
+    tft.setTextDatum(MC_DATUM);
+}
+
+// 🧽 Очистка конкретной области
+void DisplayManager::clearMessageArea(int x, int y, int width, int height) {
+    tft.fillRect(x, y, width, height, _currentThemeColors->background_dark);
+}
+
 TFT_eSPI* DisplayManager::getTft() { return &tft; }
 void DisplayManager::fillRect(int32_t x, int32_t t, int32_t w, int32_t h, uint32_t color) { tft.fillRect(x, t, w, h, color); }
+
+bool DisplayManager::promptWebServerSelection() {
+    tft.fillScreen(_currentThemeColors->background_dark);
+    tft.setTextColor(_currentThemeColors->text_primary);
+    tft.setTextDatum(MC_DATUM);
+    tft.setTextSize(2);
+    tft.drawString("Start Web Server?", tft.width() / 2, 30);
+
+    bool selection = true; // true for "Yes", false for "No"
+    
+    auto drawButtons = [&](bool currentSelection) {
+        int btnWidth = 80;
+        int btnHeight = 40;
+        int btnY = tft.height() / 2 + 10;
+        int yesX = tft.width() / 2 - btnWidth - 10;
+        int noX = tft.width() / 2 + 10;
+
+        // Очищаем область кнопок перед перерисовкой
+        tft.fillRect(yesX - 2, btnY - 2, btnWidth + 4, btnHeight + 4, _currentThemeColors->background_dark);
+        tft.fillRect(noX - 2, btnY - 2, btnWidth + 4, btnHeight + 4, _currentThemeColors->background_dark);
+
+        // Draw "Yes" button
+        if (currentSelection) {
+            tft.fillRoundRect(yesX, btnY, btnWidth, btnHeight, 8, _currentThemeColors->accent_primary);
+            tft.setTextColor(_currentThemeColors->background_dark);
+        } else {
+            tft.fillRoundRect(yesX, btnY, btnWidth, btnHeight, 8, _currentThemeColors->background_dark);
+            tft.drawRoundRect(yesX, btnY, btnWidth, btnHeight, 8, _currentThemeColors->text_secondary);
+            tft.setTextColor(_currentThemeColors->text_primary);
+        }
+        tft.drawString("Yes", yesX + btnWidth / 2, btnY + btnHeight / 2);
+
+        // Draw "No" button
+        if (!currentSelection) {
+            tft.fillRoundRect(noX, btnY, btnWidth, btnHeight, 8, _currentThemeColors->accent_primary);
+            tft.setTextColor(_currentThemeColors->background_dark);
+        } else {
+            tft.fillRoundRect(noX, btnY, btnWidth, btnHeight, 8, _currentThemeColors->background_dark);
+            tft.drawRoundRect(noX, btnY, btnWidth, btnHeight, 8, _currentThemeColors->text_secondary);
+            tft.setTextColor(_currentThemeColors->text_primary);
+        }
+        tft.drawString("No", noX + btnWidth / 2, btnY + btnHeight / 2);
+        
+        // Reset text color to default for other text elements
+        tft.setTextColor(_currentThemeColors->text_primary);
+    };
+
+    drawButtons(selection);
+
+    unsigned long startTime = millis();
+    const unsigned long timeout = 2000; // 2 секунды таймаут
+
+    while (millis() - startTime < timeout) {
+        // Button 1 (top, GPIO 35) to toggle
+        if (digitalRead(BUTTON_1) == LOW) {
+            selection = !selection;
+            drawButtons(selection);
+            delay(300); // Debounce
+            startTime = millis(); // Reset timeout on activity
+        }
+
+        // Button 2 (bottom, GPIO 0) to confirm
+        if (digitalRead(BUTTON_2) == LOW) {
+            delay(300); // Debounce
+            
+            // 🧹 Очистка экрана перед возвратом
+            tft.fillScreen(_currentThemeColors->background_dark);
+            delay(50); // Даем дисплею время на обновление
+            
+            return selection;
+        }
+        delay(50);
+    }
+
+    // 🧹 КРИТИЧНО: Очистка экрана после таймаута
+    // Без этого кнопки промптинга остаются на экране!
+    tft.fillScreen(_currentThemeColors->background_dark);
+    
+    return false; // Default to "No" after timeout
+}
+
+// 🌌 Промптинг выбора режима запуска (AP/Offline/WiFi)
+StartupMode DisplayManager::promptModeSelection() {
+    tft.fillScreen(_currentThemeColors->background_dark);
+    tft.setTextColor(_currentThemeColors->text_primary);
+    tft.setTextDatum(MC_DATUM);
+    tft.setTextSize(2);
+    tft.drawString("Select Mode", tft.width() / 2, 20);
+    
+    // Подзаголовок с подсказкой
+    tft.setTextSize(1);
+    tft.setTextColor(_currentThemeColors->text_secondary);
+    tft.drawString("Auto: WiFi Mode (default)", tft.width() / 2, 45);
+
+    bool selection = true; // true для AP, false для Offline
+    
+    auto drawButtons = [&](bool currentSelection) {
+        int btnWidth = 80;
+        int btnHeight = 40;
+        int btnY = tft.height() / 2 + 10;
+        int apX = tft.width() / 2 - btnWidth - 10;
+        int offlineX = tft.width() / 2 + 10;
+
+        // Очистка области кнопок
+        tft.fillRect(apX - 2, btnY - 2, btnWidth + 4, btnHeight + 4, _currentThemeColors->background_dark);
+        tft.fillRect(offlineX - 2, btnY - 2, btnWidth + 4, btnHeight + 4, _currentThemeColors->background_dark);
+
+        // 🔘 Кнопка "AP"
+        if (currentSelection) {
+            tft.fillRoundRect(apX, btnY, btnWidth, btnHeight, 8, _currentThemeColors->accent_primary);
+            tft.setTextColor(_currentThemeColors->background_dark);
+        } else {
+            tft.fillRoundRect(apX, btnY, btnWidth, btnHeight, 8, _currentThemeColors->background_dark);
+            tft.drawRoundRect(apX, btnY, btnWidth, btnHeight, 8, _currentThemeColors->text_secondary);
+            tft.setTextColor(_currentThemeColors->text_secondary);
+        }
+        tft.setTextDatum(MC_DATUM);
+        tft.setTextSize(2);
+        tft.drawString("AP", apX + btnWidth/2, btnY + btnHeight/2);
+
+        // 🔘 Кнопка "Offline"
+        if (!currentSelection) {
+            tft.fillRoundRect(offlineX, btnY, btnWidth, btnHeight, 8, _currentThemeColors->accent_primary);
+            tft.setTextColor(_currentThemeColors->background_dark);
+        } else {
+            tft.fillRoundRect(offlineX, btnY, btnWidth, btnHeight, 8, _currentThemeColors->background_dark);
+            tft.drawRoundRect(offlineX, btnY, btnWidth, btnHeight, 8, _currentThemeColors->text_secondary);
+            tft.setTextColor(_currentThemeColors->text_secondary);
+        }
+        tft.setTextDatum(MC_DATUM);
+        tft.setTextSize(1);
+        tft.drawString("Offline", offlineX + btnWidth/2, btnY + btnHeight/2);
+        
+        // Сброс цвета текста
+        tft.setTextColor(_currentThemeColors->text_primary);
+    };
+
+    drawButtons(selection);
+
+    unsigned long startTime = millis();
+    const unsigned long timeout = 2000; // 2 секунды таймаут
+
+    while (millis() - startTime < timeout) {
+        // Button 1 (GPIO 35) - переключение между AP/Offline
+        if (digitalRead(BUTTON_1) == LOW) {
+            selection = !selection;
+            drawButtons(selection);
+            delay(300); // Debounce
+            startTime = millis(); // Сброс таймаута при активности
+        }
+
+        // Button 2 (GPIO 0) - подтверждение выбора
+        if (digitalRead(BUTTON_2) == LOW) {
+            delay(300); // Debounce
+            
+            // 🧹 Очистка экрана перед переходом к выбранному режиму
+            tft.fillScreen(_currentThemeColors->background_dark);
+            delay(50); // Даем дисплею время на обновление
+            
+            return selection ? StartupMode::AP_MODE : StartupMode::OFFLINE_MODE;
+        }
+        delay(50);
+    }
+
+    // 🧹 КРИТИЧНО: Очистка экрана после таймаута перед WiFi Mode
+    // Без этого текст "Connecting WiFi..." рисуется ПОВЕРХ промптинга!
+    tft.fillScreen(_currentThemeColors->background_dark);
+    
+    return StartupMode::WIFI_MODE; // По умолчанию WiFi Mode после таймаута
+}
+
+void DisplayManager::drawPasswordLayout(const String& name, const String& password, int batteryPercentage, bool isCharging, bool isWebServerOn) {
+    if (_isNoItemsPageActive) {
+        _isNoItemsPageActive = false;
+        tft.fillScreen(_currentThemeColors->background_dark); 
+    } else {
+        // Очищаем только область контента под заголовком, чтобы избежать мерцания
+        tft.fillRect(0, headerSprite.height(), tft.width(), tft.height() - headerSprite.height(), _currentThemeColors->background_dark);
+    }
+    
+    _currentServiceName = name; // Используем ту же переменную для имени
+    _currentBatteryPercentage = batteryPercentage;
+    _isCharging = isCharging;
+    _isWebServerOn = isWebServerOn;
+    _headerState = HeaderState::INTRO;
+    _introAnimStartTime = millis();
+
+    // Отрисовка частично замаскированного пароля
+    tft.setTextDatum(MC_DATUM);
+    tft.setTextColor(_currentThemeColors->text_primary, _currentThemeColors->background_dark);
+    tft.setTextSize(2); // Меньший размер шрифта
+    
+    // Создаем частично замаскированную версию пароля
+    String maskedPassword = "";
+    if (password.length() == 0) {
+        maskedPassword = "[Empty]";
+    } else if (password.length() == 1) {
+        maskedPassword = password.substring(0, 1) + "*";
+    } else if (password.length() == 2) {
+        maskedPassword = password;
+    } else {
+        // Показываем первые 2 символа + звездочки для остальных
+        maskedPassword = password.substring(0, 2);
+        int remainingChars = password.length() - 2;
+        for (int i = 0; i < remainingChars && i < 10; i++) { // Ограничиваем количество звездочек
+            maskedPassword += "*";
+        }
+        if (remainingChars > 10) {
+            maskedPassword += "...";
+        }
+    }
+    
+    tft.drawString(maskedPassword, tft.width() / 2, tft.height() / 2);
+
+    lastDisplayedCode = ""; 
+    lastTimeRemaining = -1;
+    _lastDrawnTotpString = "";
+    _totpState = TotpState::IDLE;
+    _totpContainerNeedsRedraw = true;
+}
+
+void DisplayManager::drawBleInitLoader(int progress) {
+    drawGenericLoader(progress, "Activating BLE...");
+}
+
+void DisplayManager::drawGenericLoader(int progress, const String& text) {
+    // Оптимизированная перерисовка - перерисовываем только при изменениях
+    bool needsFullRedraw = !_loaderActive || _lastLoaderText != text;
+    bool needsProgressUpdate = _lastLoaderProgress != progress;
+    
+    if (needsFullRedraw) {
+        // Полная перерисовка с фоном согласно теме для предотвращения миганий
+        tft.fillScreen(_currentThemeColors->background_dark);
+        
+        // Рисуем основные элементы с цветами темы
+        tft.setTextDatum(MC_DATUM);
+        tft.setTextColor(_currentThemeColors->text_primary);
+        tft.setTextSize(2);
+        
+        // Заголовок
+        int textY = tft.height() / 2 - 30;
+        tft.drawString(text, tft.width() / 2, textY);
+        
+        // Рамка прогресс-бара (один раз)
+        int barWidth = 100;
+        int barHeight = 12;
+        int barX = (tft.width() - barWidth) / 2;
+        int barY = tft.height() / 2 + 5;
+        
+        // Фон под прогресс-баром согласно теме для предотвращения артефактов
+        tft.fillRect(barX - 2, barY - 2, barWidth + 4, barHeight + 4, _currentThemeColors->background_dark);
+        
+        // Рамка прогресс-бара с цветом темы
+        tft.drawRect(barX, barY, barWidth, barHeight, _currentThemeColors->text_secondary);
+        
+        _lastLoaderText = text;
+        _loaderActive = true;
+    }
+    
+    if (needsProgressUpdate) {
+        // Обновляем только заливку прогресс-бара
+        int barWidth = 100;
+        int barHeight = 12;
+        int barX = (tft.width() - barWidth) / 2;
+        int barY = tft.height() / 2 + 5;
+        
+        // Очищаем внутренность бара фоном темы
+        tft.fillRect(barX + 1, barY + 1, barWidth - 2, barHeight - 2, _currentThemeColors->background_dark);
+        
+        // Рисуем новую заливку с акцентным цветом темы
+        int fillWidth = (barWidth - 2) * progress / 100;
+        if (fillWidth > 0) {
+            tft.fillRect(barX + 1, barY + 1, fillWidth, barHeight - 2, _currentThemeColors->accent_primary);
+        }
+        
+        _lastLoaderProgress = progress;
+    }
+}
+
+void DisplayManager::hideLoader() {
+    if (!_loaderActive) return; // Не делаем ничего, если лоадер не был активен
+    _loaderActive = false;
+    _lastLoaderText = "";
+    _lastLoaderProgress = -1;
+    _isNoItemsPageActive = false; // Сбрасываем флаг, чтобы вызвать полную перерисовку
+    tft.fillScreen(_currentThemeColors->background_dark); // Очищаем экран
+}
+
+void DisplayManager::drawBleAdvertisingPage(const String& deviceName, const String& status, int timeLeft) {
+    tft.fillScreen(_currentThemeColors->background_dark);
+    tft.setTextDatum(MC_DATUM);
+    tft.setTextColor(_currentThemeColors->text_primary);
+    tft.setTextSize(2);
+    tft.drawString("BLE Broadcasting", tft.width() / 2, 20);
+    
+    tft.setTextSize(1);
+    tft.drawString("Device Name:", tft.width() / 2, 50);
+    tft.setTextSize(2);
+    tft.drawString(deviceName, tft.width() / 2, 70);
+    
+    tft.setTextSize(1);
+    tft.drawString(status, tft.width() / 2, 100);
+
+    // Button labels
+    tft.setTextSize(1);
+    tft.drawString("Back", 30, tft.height() - 20);
+}
+
+void DisplayManager::drawBleConfirmPage(const String& passwordName, const String& password, const String& deviceName) {
+    tft.fillScreen(_currentThemeColors->background_dark);
+    tft.setTextDatum(MC_DATUM);
+    tft.setTextColor(_currentThemeColors->text_primary);
+    
+    // Имя пароля сверху
+    tft.setTextSize(1);
+    tft.setTextColor(_currentThemeColors->text_secondary);
+    String displayName = passwordName;
+    if (displayName.length() > 20) {
+        displayName = displayName.substring(0, 20) + "...";
+    }
+    tft.drawString(displayName, tft.width() / 2, 15);
+    
+    // Замаскированный пароль в центре
+    tft.setTextSize(2);
+    tft.setTextColor(_currentThemeColors->text_primary);
+    String maskedPassword = "";
+    for (int i = 0; i < password.length() && i < 12; i++) {
+        maskedPassword += "*";
+    }
+    if (password.length() > 12) {
+        maskedPassword += "...";
+    }
+    tft.drawString(maskedPassword, tft.width() / 2, tft.height() / 2 - 5);
+    
+    // Информация об устройстве
+    tft.setTextSize(1);
+    tft.setTextColor(_currentThemeColors->accent_primary);
+    tft.drawString("BLE Connected", tft.width() / 2, tft.height() / 2 + 20);
+
+    // Кнопки внизу
+    tft.setTextSize(1);
+    tft.setTextColor(_currentThemeColors->text_secondary);
+    tft.setTextDatum(TL_DATUM);
+    tft.drawString("Back", 5, tft.height() - 10);
+    
+    tft.setTextDatum(TR_DATUM);
+    tft.drawString("Send", tft.width() - 5, tft.height() - 10);
+    
+    // Восстанавливаем центральное выравнивание
+    tft.setTextDatum(MC_DATUM);
+}
+
+void DisplayManager::drawBleSendingPage() {
+    tft.fillScreen(_currentThemeColors->background_dark);
+    tft.setTextDatum(MC_DATUM);
+    tft.setTextColor(_currentThemeColors->text_primary);
+    tft.setTextSize(2);
+    tft.drawString("Sending...", tft.width() / 2, tft.height() / 2);
+}
+
+void DisplayManager::drawBleResultPage(bool success) {
+    tft.fillScreen(_currentThemeColors->background_dark);
+    tft.setTextDatum(MC_DATUM);
+    if (success) {
+        tft.setTextColor(_currentThemeColors->accent_primary);
+        tft.setTextSize(2);
+        tft.drawString("Sent Successfully!", tft.width() / 2, tft.height() / 2);
+    } else {
+        tft.setTextColor(_currentThemeColors->error_color);
+        tft.setTextSize(2);
+        tft.drawString("Failed to Send", tft.width() / 2, tft.height() / 2);
+    }
+}
+
+void DisplayManager::drawNoItemsPage(const String& text) {
+    if (_isNoItemsPageActive) {
+        // Если страница уже отображается, ничего не делаем, чтобы избежать мерцания.
+        // Обновление батареи будет происходить отдельно в main loop.
+        return;
+    }
+
+    _isNoItemsPageActive = true;
+    tft.fillScreen(_currentThemeColors->background_dark);
+    
+    // 🔋 Рисуем индикатор батареи в правом верхнем углу
+    int batteryX = tft.width() - 28;
+    int batteryY = 5;
+    int batteryWidth = 22;
+    int batteryHeight = 12;
+    int batteryCornerRadius = 3;
+    int shadowOffset = 1;
+    
+    // Тень батареи
+    tft.drawRoundRect(batteryX + shadowOffset, batteryY + shadowOffset, batteryWidth, batteryHeight, batteryCornerRadius, _currentThemeColors->shadow_color);
+    tft.fillRect(batteryX + batteryWidth + shadowOffset, batteryY + 3 + shadowOffset, 2, 5, _currentThemeColors->shadow_color);
+    
+    // Обводка батареи
+    tft.drawRoundRect(batteryX, batteryY, batteryWidth, batteryHeight, batteryCornerRadius, _currentThemeColors->text_secondary);
+    tft.fillRect(batteryX + batteryWidth, batteryY + 3, 2, 5, _currentThemeColors->text_secondary);
+    
+    // Заполнение батареи
+    uint16_t barColor;
+    int barWidth;
+    if (_currentBatteryPercentage >= 20) {
+        barColor = _currentThemeColors->accent_primary;
+    } else {
+        barColor = _currentThemeColors->error_color;
+    }
+    barWidth = map(_currentBatteryPercentage, 0, 100, 0, batteryWidth - 4);
+    if (barWidth > 0) {
+        tft.fillRect(batteryX + 2, batteryY + 2, barWidth, batteryHeight - 4, barColor);
+    }
+    
+    // 📡 Рисуем WiFi иконку если веб-сервер включен
+    if (_isWebServerOn) {
+        int wifiX = tft.width() - 55;
+        int wifiY = 10;
+        tft.drawLine(wifiX, wifiY + 8, wifiX + 8, wifiY, _currentThemeColors->text_secondary);
+        tft.drawLine(wifiX + 1, wifiY + 8, wifiX + 8, wifiY + 1, _currentThemeColors->text_secondary);
+        tft.fillCircle(wifiX + 4, wifiY + 10, 2, _currentThemeColors->text_secondary);
+    }
+    
+    // 📏 Размеры округленной рамки (в области TOTP кода)
+    int boxWidth = 180;
+    int boxHeight = 70;
+    int boxX = (tft.width() - boxWidth) / 2;
+    int boxY = tft.height() / 2 - boxHeight / 2;
+    int cornerRadius = 12;
+    
+    // 🔲 Рисуем округленную рамку
+    tft.drawRoundRect(boxX, boxY, boxWidth, boxHeight, cornerRadius, _currentThemeColors->text_secondary);
+    
+    // 📝 Текст внутри рамки (меньше размер, отцентрован)
+    tft.setTextDatum(MC_DATUM);
+    tft.setTextColor(_currentThemeColors->text_primary);
+    tft.setTextSize(1); // Уменьшенный размер
+    
+    String line1 = "No " + text + " found";
+    tft.drawString(line1, tft.width() / 2, tft.height() / 2 - 12);
+    
+    tft.setTextColor(_currentThemeColors->text_secondary);
+    tft.drawString("Add via Web UI", tft.width() / 2, tft.height() / 2 + 8);
+}

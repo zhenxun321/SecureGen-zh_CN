@@ -11,6 +11,9 @@ public:
     // Получение оставшегося времени до следующего кода
     int getTimeRemaining();
 
+    // Проверка синхронизации времени (время >= 2020 год)
+    bool isTimeSynced();
+
 private:
     // Вспомогательные функции
     void hmacSha1(const uint8_t* key, size_t keyLen, const uint8_t* data, size_t dataLen, uint8_t* output);
