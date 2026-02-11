@@ -187,7 +187,7 @@ We thank all the authors and contributors of the above projects for their excell
 ## Questions?
 
 If you have questions about licensing or compliance, please:
-- Open a [Discussion](https://github.com/Unix-like-SoN/SecureGen/discussions)
+- Open a [Discussion](https://github.com/makepkg/SecureGen/discussions)
 - Contact the maintainer via GitHub
 
 ---

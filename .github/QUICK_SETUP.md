@@ -60,8 +60,8 @@ gh repo edit Unix-like-SoN/SecureGen \
   --description "🔐 Hardware TOTP Authenticator & Password Manager | 7-layer security | AES-256 | BLE Keyboard | Offline | ESP32 T-Display"
 
 # Set homepage
-gh repo edit Unix-like-SoN/SecureGen \
-  --homepage "https://github.com/Unix-like-SoN/SecureGen"
+gh repo edit makepkg/SecureGen \
+  --homepage "https://github.com/makepkg/SecureGen"
 
 # Enable features
 gh repo edit Unix-like-SoN/SecureGen \
@@ -107,13 +107,13 @@ gh repo edit Unix-like-SoN/SecureGen \
 
 ### Step 1: Update About Section
 
-1. Go to: https://github.com/Unix-like-SoN/SecureGen
+1. Go to: https://github.com/makepkg/SecureGen
 2. Click ⚙️ (gear icon) in "About" section (right sidebar)
 3. Paste this description:
    ```
    🔐 Hardware TOTP Authenticator & Password Manager | 7-layer security | AES-256 | BLE Keyboard | Offline | ESP32 T-Display
    ```
-4. Add website: `https://github.com/Unix-like-SoN/SecureGen`
+4. Add website: `https://github.com/makepkg/SecureGen`
 5. Click "Topics" and add these (comma-separated):
    ```
    esp32, totp, password-manager, security, authentication, 2fa, two-factor-authentication, arduino, platformio, embedded, iot, hardware, lilygo, t-display, encryption, aes-256, bluetooth-le, ble, offline, air-gapped, open-source, authenticator, otp, password-vault, security-device, hardware-security
@@ -123,7 +123,7 @@ gh repo edit Unix-like-SoN/SecureGen \
 
 ### Step 2: Enable Features
 
-1. Go to: https://github.com/Unix-like-SoN/SecureGen/settings
+1. Go to: https://github.com/makepkg/SecureGen/settings
 2. Under "Features":
    - ✅ Issues
    - ✅ Discussions
@@ -154,7 +154,7 @@ gh repo view Unix-like-SoN/SecureGen
 gh api repos/Unix-like-SoN/SecureGen --jq '.topics'
 ```
 
-Or visit: https://github.com/Unix-like-SoN/SecureGen
+Or visit: https://github.com/makepkg/SecureGen
 
 ---
 

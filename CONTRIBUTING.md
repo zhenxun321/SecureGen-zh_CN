@@ -22,7 +22,7 @@ Thank you for your interest in contributing! This document provides guidelines f
 
 ### Reporting Bugs
 
-1. Check if the bug is already reported in [Issues](https://github.com/Unix-like-SoN/SecureGen/issues)
+1. Check if the bug is already reported in [Issues](https://github.com/makepkg/SecureGen/issues)
 2. Create a new issue with:
    - Clear title and description
    - Steps to reproduce
@@ -32,7 +32,7 @@ Thank you for your interest in contributing! This document provides guidelines f
 
 ### Suggesting Features
 
-1. Check [Discussions](https://github.com/Unix-like-SoN/SecureGen/discussions) for similar ideas
+1. Check [Discussions](https://github.com/makepkg/SecureGen/discussions) for similar ideas
 2. Create a new discussion with:
    - Clear description of the feature
    - Use cases and benefits
@@ -65,7 +65,7 @@ git clone https://github.com/YOUR_USERNAME/SecureGen.git
 cd SecureGen
 
 # Add upstream remote
-git remote add upstream https://github.com/Unix-like-SoN/SecureGen.git
+git remote add upstream https://github.com/makepkg/SecureGen.git
 
 # Install dependencies (PlatformIO handles this)
 pio lib install
@@ -231,8 +231,8 @@ How was this tested?
 
 ## Questions?
 
-- Open a [Discussion](https://github.com/Unix-like-SoN/SecureGen/discussions)
-- Check existing [Issues](https://github.com/Unix-like-SoN/SecureGen/issues)
+- Open a [Discussion](https://github.com/makepkg/SecureGen/discussions)
+- Check existing [Issues](https://github.com/makepkg/SecureGen/issues)
 - Read the [Documentation](docs/)
 
 ## Recognition

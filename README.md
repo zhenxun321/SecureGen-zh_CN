@@ -136,7 +136,7 @@
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/Unix-like-SoN/SecureGen.git
+   git clone https://github.com/makepkg/SecureGen.git
    cd SecureGen
    ```
 
@@ -374,8 +374,8 @@ This device implements **7+ layers of security** for protecting your sensitive d
 ## 🤝 Support
 
 ### Get Help
-- **Issues:** [GitHub Issues](https://github.com/Unix-like-SoN/SecureGen/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/Unix-like-SoN/SecureGen/discussions)
+- **Issues:** [GitHub Issues](https://github.com/makepkg/SecureGen/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/makepkg/SecureGen/discussions)
 - **Documentation:** [Project Wiki](docs/)
 
 ### Contributing

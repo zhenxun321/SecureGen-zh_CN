@@ -10,7 +10,7 @@ Thank you for considering supporting the ESP32 T-Display TOTP project! Your supp
 
 The simplest way to show your support is to star this repository on GitHub. It helps increase visibility and encourages continued development.
 
-[![Star on GitHub](https://img.shields.io/github/stars/Unix-like-SoN/SecureGen?style=social)](https://github.com/Unix-like-SoN/SecureGen)
+[![Star on GitHub](https://img.shields.io/github/stars/makepkg/SecureGen?style=social)](https://github.com/makepkg/SecureGen)
 
 ### 2. Contribute Code 💻
 
@@ -172,7 +172,7 @@ Every form of support - whether it's code, feedback, or financial - is greatly a
 ## 📞 Contact
 
 For questions about donations or sponsorship:
-- Open a [Discussion](https://github.com/Unix-like-SoN/SecureGen/discussions)
+- Open a [Discussion](https://github.com/makepkg/SecureGen/discussions)
 - Contact via GitHub profile
 
 ---

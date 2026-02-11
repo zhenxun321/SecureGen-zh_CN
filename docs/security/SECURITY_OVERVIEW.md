@@ -413,8 +413,8 @@ This device implements **enterprise-grade security** adapted for embedded hardwa
 
 - [Full Documentation](../README.md)
 - [Security Best Practices Guide](../README.md#security-best-practices)
-- [GitHub Repository](https://github.com/Unix-like-SoN/SecureGen)
-- [Community Discussions](https://github.com/Unix-like-SoN/SecureGen/discussions)
+- [GitHub Repository](https://github.com/makepkg/SecureGen)
+- [Community Discussions](https://github.com/makepkg/SecureGen/discussions)
 
 ---
 

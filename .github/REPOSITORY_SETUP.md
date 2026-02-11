@@ -17,7 +17,7 @@ This guide helps you configure the GitHub repository metadata, topics, and setti
 
 **Website:** (Optional)
 ```
-https://github.com/Unix-like-SoN/SecureGen
+https://github.com/makepkg/SecureGen
 ```
 
 ---
@@ -176,8 +176,8 @@ gh repo edit Unix-like-SoN/SecureGen \
   --enable-discussions
 
 # Set homepage
-gh repo edit Unix-like-SoN/SecureGen \
-  --homepage "https://github.com/Unix-like-SoN/SecureGen"
+gh repo edit makepkg/SecureGen \
+  --homepage "https://github.com/makepkg/SecureGen"
 ```
 
 ### Method 3: GitHub API (curl)
@@ -194,7 +194,7 @@ curl -X PATCH \
   https://api.github.com/repos/$REPO \
   -d '{
     "description": "🔐 Hardware TOTP Authenticator & Password Manager | 7-layer security | AES-256 | BLE Keyboard | Offline | ESP32 T-Display",
-    "homepage": "https://github.com/Unix-like-SoN/SecureGen",
+    "homepage": "https://github.com/makepkg/SecureGen",
     "topics": [
       "esp32", "totp", "password-manager", "security", "authentication",
       "2fa", "two-factor-authentication", "arduino", "platformio", "embedded",
