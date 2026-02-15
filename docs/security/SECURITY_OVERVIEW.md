@@ -6,6 +6,14 @@
 
 ---
 
+<div align="center">
+  <img src="../../assets/security/security-layers.png" alt="8 Security Layers Architecture" width="700">
+  <br/>
+  <em>Defense-in-depth: 8 layers of security protection</em>
+</div>
+
+---
+
 ## 📋 Table of Contents
 
 1. [Security Philosophy](#security-philosophy)
