@@ -8,7 +8,12 @@
 [![PlatformIO](https://img.shields.io/badge/PlatformIO-Compatible-orange.svg)](https://platformio.org/)
 [![ESP32](https://img.shields.io/badge/ESP32-Powered-blue.svg)](https://www.espressif.com/)
 
-[Features](#-key-features) • [Installation](#-quick-start) • [Documentation](#-documentation) • [Security](#-security) • [Support](#-support)
+[![YouTube](https://img.shields.io/badge/YouTube-Demo-red?logo=youtube)](https://www.youtube.com/watch?v=YTVQBwgok_E)
+[![Hackster](https://img.shields.io/badge/Hackster.io-Featured-00979D?logo=hackster)](https://www.hackster.io/makepkg/securegen-open-source-totp-authenticator-password-manager-c350d6)
+[![Dev.to](https://img.shields.io/badge/Dev.to-Blog-0A0A0A?logo=dev.to)](https://dev.to/makepkg)
+[![Product Hunt](https://img.shields.io/badge/Product_Hunt-Launched-DA552F?logo=producthunt&logoColor=white)]([https://www.producthunt.com/posts/](https://www.producthunt.com/products/securegen-2)[)
+
+[Video Demo](#-video-demo) • [Features](#-key-features) • [Installation](#-quick-start) • [Documentation](#-documentation) • [Security](#-security) • [Support](#-support)
 
 </div>
 
@@ -94,6 +99,83 @@
 
 ---
 
+## 🎥 Video Demo
+
+<div align="center">
+
+[![SecureGen Demo Video](https://img.youtube.com/vi/YTVQBwgok_E/maxresdefault.jpg)](https://www.youtube.com/watch?v=YTVQBwgok_E)
+
+**Watch the full demonstration** showing TOTP generation, password management, BLE keyboard typing, and web interface in action.
+
+[▶️ Watch on YouTube](https://www.youtube.com/watch?v=YTVQBwgok_E) | Duration: 2 minutes
+
+</div>
+
+---
+
+## 🔒 Security in Action
+
+### Network Traffic Protection Visualization
+
+SecureGen implements multiple security layers to protect web communications. Here's what that looks like in practice:
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="assets/security/before-protection.png" alt="Before Security Layers" width="100%"/>
+      <br/><b>Before: Readable HTTP Traffic</b>
+      <br/>All request details visible in plaintext
+    </td>
+    <td align="center" width="50%">
+      <img src="assets/security/after-protection.png" alt="After Security Layers" width="100%"/>
+      <br/><b>After: Protected Traffic</b>
+      <br/>Encrypted and obfuscated communications
+    </td>
+  </tr>
+</table>
+
+**What Changes:**
+- **Before:** API endpoints, session cookies, and request structure are fully visible to network monitoring tools
+- **After:** Multi-layer protection encrypts payload, obfuscates URLs, masks metadata, and prevents traffic analysis
+
+This demonstrates the **7-layer security architecture** protecting your sensitive data from passive monitoring, MITM attacks, and traffic pattern analysis.
+
+<details>
+<summary><b>🔍 Technical Details (Click to Expand)</b></summary>
+
+**Protection Layers:**
+
+1. **Key Exchange (ECDH)** - Establishes secure session keys using elliptic curve cryptography
+2. **Session Encryption** - Unique encryption for each communication session
+3. **URL Obfuscation** - Dynamic API endpoints generated using cryptographic hashing
+4. **Header Obfuscation** - HTTP headers dynamically mapped to hide metadata
+5. **Decoy Injection** - Fake headers added to confuse traffic analysis
+6. **Method Tunneling** - HTTP methods hidden to prevent fingerprinting
+7. **Timing Protection** - Random delays prevent timing-based side-channel attacks
+
+**Security Benefits:**
+- Protects against passive network monitoring (Wireshark, packet sniffing)
+- Prevents traffic pattern analysis and metadata leakage
+- Resists MITM attacks through session-based encryption
+- Anti-fingerprinting measures prevent device identification
+
+**Performance Impact:**
+- ~50ms overhead per request
+- Minimal impact on user experience
+- Worth the trade-off for security-critical applications
+
+**Implementation:**
+- Built with mbedTLS for cryptographic primitives
+- Custom session management layer
+- Hardware-accelerated encryption on ESP32
+- All code available in the repository for audit
+
+</details>
+
+**Read more:** [Security Architecture Documentation](docs/security/SECURITY_OVERVIEW.md)
+
+---
+
 ## ✨ Key Features
 
 ### 🔐 Security First
@@ -136,7 +218,7 @@
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/makepkg/SecureGen.git
+   git clone https://github.com/Unix-like-SoN/SecureGen.git
    cd SecureGen
    ```
 
@@ -371,6 +453,29 @@ This device implements **7+ layers of security** for protecting your sensitive d
 
 ---
 
+## 🌐 Community & Resources
+
+### Stay Connected
+
+- **📺 YouTube**: [Demo Videos & Tutorials](https://www.youtube.com/watch?v=YTVQBwgok_E)
+- **📝 Dev.to**: [Technical Articles](https://dev.to/makepkg)
+- **🐦 Twitter/X**: [@makepkg](https://x.com/makepkg_)
+
+### Featured On
+
+- 🏆 Product Hunt - [Launch Page](https://www.producthunt.com/products/securegen-2)
+- 📰 Hackster.io - [Featured Project](https://www.hackster.io/makepkg/securegen-open-source-totp-authenticator-password-manager-c350d6)
+- ✍️ Dev.to - [Technical Series](https://dev.to/makepkg)
+
+### Share Your Build
+
+Built your own SecureGen? We'd love to see it!
+- Tag us on social media
+- Submit to [Discussions](https://github.com/makepkg/SecureGen/discussions)
+- Share photos in the community
+
+---
+
 ## 🤝 Support
 
 ### Get Help
@@ -387,7 +492,7 @@ If you like this project and want to support its development, you can do so in t
 
 **GitHub Sponsors:**
 
-[![Sponsor](https://img.shields.io/badge/Sponsor-❤-red.svg)](https://github.com/sponsors/Unix-like-SoN)
+[![Sponsor](https://img.shields.io/badge/Sponsor-❤-red.svg)](https://github.com/sponsors/makepkg)
 
 **Cryptocurrency Donations:**
 

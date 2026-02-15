@@ -11,6 +11,9 @@
 SECURITY_INTERNAL.md
 docs/security/SECURITY_AUDIT_INTERNAL.md
 
+# Private assets
+assets/archive(private)/
+
 # Temporary files
 *.tmp
 *.bak
