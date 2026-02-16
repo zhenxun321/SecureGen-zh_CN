@@ -144,7 +144,7 @@ SecureGen implements multiple security layers to protect web communications. Her
 - **Before:** API endpoints, session cookies, and request structure are fully visible to network monitoring tools
 - **After:** Multi-layer protection encrypts payload, obfuscates URLs, masks metadata, and prevents traffic analysis
 
-This demonstrates the **7-layer security architecture** protecting your sensitive data from passive monitoring, MITM attacks, and traffic pattern analysis.
+This demonstrates the **8-layer security architecture** protecting your sensitive data from passive monitoring, MITM attacks, and traffic pattern analysis.
 
 <details>
 <summary><b>🔍 Technical Details (Click to Expand)</b></summary>
@@ -158,6 +158,7 @@ This demonstrates the **7-layer security architecture** protecting your sensitiv
 5. **Decoy Injection** - Fake headers added to confuse traffic analysis
 6. **Method Tunneling** - HTTP methods hidden to prevent fingerprinting
 7. **Timing Protection** - Random delays prevent timing-based side-channel attacks
+8. **Homey Pot** - Honey pot session cookie and securekeys shown except original
 
 **Security Benefits:**
 - Protects against passive network monitoring (Wireshark, packet sniffing)
@@ -186,7 +187,7 @@ This demonstrates the **7-layer security architecture** protecting your sensitiv
 
 ### 🔐 Security First
 - **Military-Grade Encryption** - AES-256 for all sensitive data
-- **Multi-Layer Protection** - 7+ security layers for web communications
+- **Multi-Layer Protection** - 8+ security layers for web communications
 - **Hardware Security** - Unique device keys from hardware entropy
 - **PIN Protection** - Secure device startup and BLE transmission
 - **Encrypted BLE** - Authenticated Bluetooth with bonding and MITM protection
@@ -364,6 +365,11 @@ This device implements **7+ layers of security** for protecting your sensitive d
 - Random delays in cryptographic operations
 - Prevents timing-based attacks
 - Masks operation patterns
+
+**Layer 8: Honey Pot**
+- Fake vulnerable endpoints trap attackers
+- Logs intrusion attempts for early warning
+- Returns decoy data to waste attacker time
 
 **Plus:** CSRF protection, session management, rate limiting, and more.
 
