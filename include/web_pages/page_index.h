@@ -318,12 +318,12 @@ progress::-webkit-progress-value {
     text-align: left;
 }
 
-.password-match { 
-    color: #81c784; 
+.password-match {
+    color: #81c784;
 }
 
-.password-no-match { 
-    color: #e57373; 
+.password-no-match {
+    color: #e57373;
 }
 
 .login-display-container {
@@ -629,7 +629,7 @@ progress::-webkit-progress-value {
     .draggable-row {
         cursor: default;
     }
-    
+
     .drag-handle {
         cursor: default;
         padding: 10px 5px;
@@ -643,7 +643,7 @@ progress::-webkit-progress-value {
         margin: 10px;
         padding: 20px;
     }
-    
+
     .tabs button {
         padding: 12px 16px;
         font-size: 0.9rem;
@@ -961,6 +961,7 @@ progress::-webkit-progress-value {
     </div>
     <div class="form-container">
         <h4>启动画面</h4>
+
         
         <div style="margin-bottom: 20px;">
             <label for="splash-mode-select" style="font-weight: bold; display: block; margin-bottom: 10px;">内置启动画面模式：</label>
@@ -1019,7 +1020,7 @@ progress::-webkit-progress-value {
     <div class="form-container" style="margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 25px;">
         <h4 style="color: #4a90e2; margin-bottom: 15px;">BLE 客户端认证 PIN</h4>
         <p style="color: #888; font-size: 0.9em; margin-bottom: 20px;"><strong>安全提示：</strong>出于安全原因，当前 BLE PIN 不会显示。仅会在配对时显示在设备屏幕上。</p>
-        
+
         <form id="ble-pin-form">
             <label for="ble-pin">新的 BLE 客户端 PIN（6 位）：</label>
             <div class="password-input-container">
@@ -1032,7 +1033,7 @@ progress::-webkit-progress-value {
                 <input type="password" id="ble-pin-confirm" name="ble_pin_confirm" pattern="\d{6}" maxlength="6" placeholder="确认 6 位 PIN" class="user-activity">
                 <span class="password-toggle" onclick="togglePasswordVisibility('ble-pin-confirm', this)">O</span>
             </div>
-            
+
             <div style="margin: 15px 0; padding: 12px; background: rgba(255,193,7,0.1); border: 1px solid rgba(255,193,7,0.3); border-radius: 6px;">
                 <small style="color: #ffc107; font-size: 0.85rem;">
                     <strong>重要：</strong>在 BLE 配对期间，此 PIN 会显示在 ESP32 屏幕上供客户端输入。
@@ -1062,22 +1063,18 @@ progress::-webkit-progress-value {
                 </div>
             </div>
         </div>
-        
+
         <!-- Dynamic Form Title -->
         <div class="password-form-title" id="password-form-title">
             <span class="title-icon">🔒</span>
-<<<<<<< codex/add-chinese-localization-for-project
             <span id="password-form-title-text">修改网页密码库密码</span>
-=======
-            <span id="password-form-title-text">Change 网页密码库 Password</span>
->>>>>>> master
         </div>
-        
+
         <!-- Dynamic Description -->
         <div class="password-type-description" id="password-type-description">
             修改用于访问此 Web 界面的密码。
         </div>
-        
+
         <div class="login-display-container">
             <p>当前登录名：<strong id="current-admin-login">加载中...</strong></p>
         </div>
@@ -1123,112 +1120,112 @@ progress::-webkit-progress-value {
     <div class="form-container">
         <h4>启动模式</h4>
         <form id="startup-mode-form">
-            <label for="startup-mode">Default mode on startup:</label>
+            <label for="startup-mode">启动后默认模式：</label>
             <select id="startup-mode" name="startup_mode" required class="user-activity">
-                <option value="totp">TOTP Authenticator</option>
-                <option value="password">Password Manager</option>
+                <option value="totp">TOTP 身份验证器</option>
+                <option value="password">密码管理器</option>
             </select>
             <button type="submit" class="button user-activity">保存启动模式</button>
         </form>
     </div>
     <div class="form-container">
-        <h4>Web Server</h4>
+        <h4>Web 服务器</h4>
         <form id="web-server-settings-form">
-            <label for="web-server-timeout">Auto-shutdown on inactivity:</label>
+            <label for="web-server-timeout">无操作自动关闭：</label>
             <select id="web-server-timeout" name="web_server_timeout" required class="user-activity">
-                <option value="5">5 minutes</option>
-                <option value="10">10 minutes</option>
-                <option value="60">1 hour</option>
+                <option value="5">5 分钟</option>
+                <option value="10">10 分钟</option>
+                <option value="60">1 小时</option>
                 <option value="0">从不</option>
             </select>
-            <button type="submit" class="button user-activity">Save Setting</button>
+            <button type="submit" class="button user-activity">保存设置</button>
         </form>
     </div>
     <div class="form-container">
-        <h4>Auto-Logout Timer</h4>
+        <h4>自动登出计时器</h4>
         <form id="session-duration-form">
-            <label for="session-duration">How long to stay logged in:</label>
+            <label for="session-duration">保持登录时长：</label>
             <select id="session-duration" name="session_duration" required class="user-activity">
-                <option value="0">Until device reboot</option>
-                <option value="1">1 hour</option>
-                <option value="6">6 hours (default)</option>
-                <option value="24">24 hours</option>
-                <option value="72">3 days</option>
+                <option value="0">直到设备重启</option>
+                <option value="1">1 小时</option>
+                <option value="6">6 小时（默认）</option>
+                <option value="24">24 小时</option>
+                <option value="72">3 天</option>
             </select>
             <div style="margin: 15px 0; padding: 12px; background: rgba(76,175,80,0.1); border: 1px solid rgba(76,175,80,0.3); border-radius: 6px;">
                 <small style="color: #81c784; font-size: 0.85rem;">
-                    <strong>Security Feature:</strong> Controls automatic logout timing for enhanced device security. Sessions survive device restarts except "Until reboot" mode which requires fresh login after power cycle. Longer durations reduce login frequency but may compromise security if device is lost or stolen.
+                    <strong>安全特性：</strong>用于控制自动登出时间以增强设备安全性。除“直到设备重启”模式外，会话在设备重启后仍可保持；该模式下每次上电都需要重新登录。时长越长登录越少，但设备丢失或被盗时风险更高。
                 </small>
             </div>
-            <button type="submit" class="button user-activity">Save Auto-Logout Timer</button>
+            <button type="submit" class="button user-activity">保存自动登出计时</button>
         </form>
     </div>
     <div class="form-container">
-        <h4>System</h4>
-        <button id="reboot-btn" class="button-action user-activity">Reboot Device</button>
-        <button id="reboot-with-web-btn" class="button user-activity">Reboot with Web Server</button>
-        <button id="clear-ble-clients-btn" class="button-action user-activity">Clear BLE Clients</button>
-        <button onclick="logout()" class="button-delete user-activity">Logout</button>
+        <h4>系统</h4>
+        <button id="reboot-btn" class="button-action user-activity">重启设备</button>
+        <button id="reboot-with-web-btn" class="button user-activity">重启并启用 Web 服务</button>
+        <button id="clear-ble-clients-btn" class="button-action user-activity">清除 BLE 客户端</button>
+        <button onclick="logout()" class="button-delete user-activity">退出登录</button>
     </div>
 </div>
 
 <div id="Instructions" class="tab-content">
-    <h3>Device Manual</h3>
+    <h3>设备使用说明</h3>
     <div class="content-box instructions-content">
-        <h4>1. Basic Operation</h4>
+        <h4>1. 基础操作</h4>
         <ul>
-            <li><strong>Power On:</strong> Press the bellow button once to wake the device. Or RST button</li>
-            <li><strong>Power Off / Deep Sleep:</strong> The device automatically enters a power-saving deep sleep mode after a period of inactivity to conserve battery, also you can power off the device with long press of bellow button in any modes.</li>
-            <li><strong>Operating Modes:</strong> The device supports two main modes - TOTP Authenticator (generate 2FA codes) and Password Manager (store encrypted passwords). Press the top button to cycle between modes.</li>
-            <li><strong>Network Modes:</strong> 
+            <li><strong>开机/唤醒：</strong>短按下方按键唤醒设备，或按 RST 键重启。</li>
+            <li><strong>关机 / 深度休眠：</strong>设备在一段时间无操作后会自动进入低功耗休眠；也可在任意模式下长按下方按键关机。</li>
+            <li><strong>运行模式：</strong>设备支持两种主要模式：TOTP 身份验证器（生成 2FA 验证码）和密码管理器（存储加密密码）。按顶部按键可循环切换模式。</li>
+            <li><strong>网络模式：</strong>
                 <ul>
-                    <li><strong>Offline Mode:</strong> Password Manager works offline, no network required</li>
-                    <li><strong>AP Mode:</strong> Device creates WiFi hotspot for web configuration and password access</li>
-                    <li><strong>WiFi Mode:</strong> Connects to existing network, functions as self-hosted application for local network use</li>
+                    <li><strong>离线模式：</strong>密码管理器可离线使用，无需网络。</li>
+                    <li><strong>AP 模式：</strong>设备创建 WiFi 热点，用于 Web 配置和密码访问。</li>
+                    <li><strong>WiFi 模式：</strong>连接到现有网络，在局域网内以自托管应用方式运行。</li>
                 </ul>
             </li>
         </ul>
 
-        <h4>2. Button Functions</h4>
+        <h4>2. 按键功能</h4>
         <ul>
-            <li><strong>Top Button (Mode/Navigation):</strong>
+            <li><strong>顶部按键（模式/导航）：</strong>
                 <ul>
-                    <li>Short Press: Cycle through modes (TOTP/Password).</li>
-                    <li>In TOTP Mode: Navigate through your saved keys.</li>
-                    <li>In Password Mode: Navigate through your saved passwords.</li>
+                    <li>短按：循环切换模式（TOTP/密码）。</li>
+                    <li>TOTP 模式：浏览已保存密钥。</li>
+                    <li>密码模式：浏览已保存密码。</li>
                 </ul>
             </li>
-            <li><strong>Bellow Button (Select/Action):</strong>
+            <li><strong>下方按键（选择/操作）：</strong>
                 <ul>
-                    <li>Short Press: Wake device from sleep.</li>
-                    <li>Long Press: Power off the device </li>
+                    <li>短按：从休眠中唤醒设备。</li>
+                    <li>长按：关闭设备。</li>
                 </ul>
             </li>
-             <li><strong>Both Buttons (Hold):</strong>
+             <li><strong>双键组合（长按）：</strong>
                 <ul>
-                    <li>Hold both buttons for 5 seconds after RST button ad youll get factory reset.</li>
-                    <li>In Passwords Mode: Press both buttons the same time for 5 second for transmit password via secure BLE (requires PIN authentication and encrypted connection)</li>
+                    <li>按下 RST 后同时按住两个按键 5 秒，可执行恢复出厂设置。</li>
+                    <li>密码模式下：同时按住两个按键 5 秒，可通过安全 BLE 发送密码（需要 PIN 认证和加密连接）。</li>
                 </ul>
             </li>
         </ul>
 
-        <h4>3. Power Saving</h4>
-        <p>The device is designed for low power consumption. It will automatically turn off the display and enter deep sleep after 30 seconds of inactivity. Simply press the bellow button to wake it up.</p>
+        <h4>3. 省电模式</h4>
+        <p>设备以低功耗为目标设计。无操作 30 秒后会自动关闭屏幕并进入深度休眠，按下方按键即可唤醒。</p>
 
-        <h4>4. Security Features</h4>
+        <h4>4. 安全特性</h4>
         <ul>
-            <li><strong>PIN Protection:</strong> You can enable a PIN code for device startup and for transmitting passwords via BLE. This can be configured in the 'PIN' tab.</li>
-            <li><strong>BLE LE Secure Connections:</strong> Bluetooth transmission uses LE Secure Connections with MITM (Man-in-the-Middle) protection and mandatory PIN authentication. The device displays a 6-digit PIN code on screen during pairing for secure bonding.</li>
-            <li><strong>BLE Encryption:</strong> All BLE characteristics require encrypted communication (ESP_GATT_PERM_READ_ENC_MITM). Password transmission is blocked until secure connection is established and authenticated.</li>
-            <li><strong>Device Bonding:</strong> Trusted devices are remembered through secure bonding. You can clear all bonded devices via the 'Clear BLE Clients' button in Settings or by changing the BLE PIN.</li>
-            <li><strong>Encrypted Storage:</strong> All your sensitive data (TOTP secrets, passwords, and configuration) is stored encrypted on the device's internal flash memory with AES-256-CDC, passwords hashed with PBKDF2.</li>
-            <li><strong>Web Interface Security:</strong> The web control panel requires a secure login and has built-in protection against brute-force attacks. The session will automatically time out.</li>
-            <li><strong>HTTPS-like Encryption:</strong> Web interface uses advanced encryption over HTTP including ECDH key exchange, AES-GCM encryption, URL obfuscation, and method tunneling for secure communication even on unencrypted connections.</li>
-            <li><strong>Import/Export:</strong> When you export your keys or passwords, the backup file is encrypted with your web admin password. Keep this password safe, as it's required to restore the backup.</li>
+            <li><strong>PIN 保护：</strong>可为设备启动和 BLE 密码传输启用 PIN 码，可在“PIN”选项卡中配置。</li>
+            <li><strong>BLE LE 安全连接：</strong>蓝牙传输使用 LE Secure Connections，具备 MITM（中间人攻击）防护并强制 PIN 认证。配对时设备屏幕会显示 6 位 PIN 码以完成安全绑定。</li>
+            <li><strong>BLE 加密：</strong>所有 BLE 特征都要求加密通信（ESP_GATT_PERM_READ_ENC_MITM）。在建立并通过认证的安全连接前，密码传输会被阻止。</li>
+            <li><strong>设备绑定：</strong>受信设备会通过安全绑定被记住。你可以在设置中点击“清除 BLE 客户端”，或通过修改 BLE PIN 清除绑定设备。</li>
+            <li><strong>加密存储：</strong>所有敏感数据（TOTP 密钥、密码和配置）都会以加密方式存储在设备内部 Flash 中，采用 AES-256-CDC，密码使用 PBKDF2 哈希。</li>
+            <li><strong>Web 界面安全：</strong>Web 控制面板要求安全登录，并内置防暴力破解机制；会话会自动超时。</li>
+            <li><strong>类 HTTPS 加密：</strong>Web 界面在 HTTP 之上使用增强加密，包括 ECDH 密钥交换、AES-GCM 加密、URL 混淆与方法隧道，即使在未加密连接上也能提升通信安全性。</li>
+            <li><strong>导入/导出：</strong>导出密钥或密码时，备份文件会用 Web 管理员密码加密。请妥善保管该密码，恢复备份时需要使用。</li>
         </ul>
 
-        <h4>5. Factory Reset</h4>
-        <p>A factory reset option is available through the hardware interface for security reasons. To perform a full reset, you must long press both of buttons (top and bellow) same time after pressed RST button(be carefull, this will format all of your data)</p>
+        <h4>5. 恢复出厂设置</h4>
+        <p>出于安全考虑，恢复出厂通过硬件按键触发。执行完整重置时，请在按下 RST 后同时长按上下两个按键（注意：此操作会清空所有数据）。</p>
     </div>
 </div>
 
@@ -1236,13 +1233,13 @@ progress::-webkit-progress-value {
 <div id="password-modal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closePasswordModal()">&times;</span>
-        <h3 id="modal-title">Enter Admin Password</h3>
+        <h3 id="modal-title">输入管理员密码</h3>
         <p id="modal-description"></p>
         <div class="form-group">
-            <label for="modal-password">Password:</label>
+            <label for="modal-password">密码：</label>
             <input type="password" id="modal-password" style="width: calc(100% - 24px);" class="user-activity">
         </div>
-        <button id="modal-submit-btn" class="button user-activity">Confirm</button>
+        <button id="modal-submit-btn" class="button user-activity">确认</button>
     </div>
 </div>
 
@@ -1250,17 +1247,17 @@ progress::-webkit-progress-value {
 <div id="password-generator-modal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closePasswordGeneratorModal()">&times;</span>
-        <h3>Password Generator</h3>
-        <p>Choose password length and generate a secure password</p>
+        <h3>密码生成器</h3>
+        <p>选择密码长度并生成安全密码</p>
         <div class="form-group">
-            <label for="password-length-slider">Password Length: <span id="length-display">14</span></label>
+            <label for="password-length-slider">密码长度：<span id="length-display">14</span></label>
             <input type="range" id="password-length-slider" min="4" max="64" value="14" style="width: 100%; margin: 15px 0;">
             <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #b0b0b0; margin-bottom: 20px;">
                 <span>4</span><span>64</span>
             </div>
         </div>
         <div class="form-group">
-            <label for="generated-password">Generated Password:</label>
+            <label for="generated-password">生成的密码：</label>
             <div class="password-input-container">
                 <input type="text" id="generated-password" readonly style="width: calc(100% - 24px); font-family: monospace; background: rgba(90, 158, 238, 0.1);" class="user-activity">
                 <span class="password-toggle" onclick="togglePasswordVisibility('generated-password', this)">O</span>
@@ -1269,12 +1266,12 @@ progress::-webkit-progress-value {
                 <div class="password-strength-bar">
                     <div class="password-strength-fill" id="strength-fill"></div>
                 </div>
-                <div class="password-strength-text" id="strength-text">Encryption Key</div>
+                <div class="password-strength-text" id="strength-text">加密强度</div>
             </div>
         </div>
         <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button id="generate-new-btn" class="button user-activity" onclick="generatePassword()">Generate New</button>
-            <button id="use-password-btn" class="button user-activity" onclick="useGeneratedPassword()">Use This Password</button>
+            <button id="generate-new-btn" class="button user-activity" onclick="generatePassword()">重新生成</button>
+            <button id="use-password-btn" class="button user-activity" onclick="useGeneratedPassword()">使用此密码</button>
         </div>
     </div>
 </div>
@@ -1283,14 +1280,14 @@ progress::-webkit-progress-value {
 <div id="password-edit-modal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closePasswordEditModal()">&times;</span>
-        <h3>Edit Password</h3>
-        <p>Change the name and password for this entry</p>
+        <h3>编辑密码</h3>
+        <p>修改此条目的名称和密码</p>
         <div class="form-group">
             <label for="edit-password-name">名称：</label>
             <input type="text" id="edit-password-name" style="width: calc(100% - 24px);" class="user-activity" required>
         </div>
         <div class="form-group">
-            <label for="edit-password-value">Password:</label>
+            <label for="edit-password-value">密码：</label>
             <div class="password-input-container">
                 <input type="text" id="edit-password-value" style="width: calc(100% - 52px); font-family: monospace;" class="user-activity" required>
                 <span class="password-generate" onclick="generatePasswordForEdit()" title="生成密码">#</span>
@@ -1300,12 +1297,12 @@ progress::-webkit-progress-value {
                 <div class="password-strength-bar">
                     <div class="password-strength-fill" id="edit-strength-fill"></div>
                 </div>
-                <div class="password-strength-text" id="edit-strength-text">Weak Password</div>
+                <div class="password-strength-text" id="edit-strength-text">弱密码</div>
             </div>
         </div>
         <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end;">
-            <button class="button-action user-activity" onclick="closePasswordEditModal()">Cancel</button>
-            <button id="save-password-btn" class="button user-activity" onclick="savePasswordEdit()">Save</button>
+            <button class="button-action user-activity" onclick="closePasswordEditModal()">取消</button>
+            <button id="save-password-btn" class="button user-activity" onclick="savePasswordEdit()">保存</button>
         </div>
     </div>
 </div>
@@ -1315,7 +1312,7 @@ progress::-webkit-progress-value {
 const CacheManager = {
     PREFIX: 'totp_cache_',
     TTL: 5 * 60 * 1000, // 5 минут в миллисекундах
-    
+
     set(key, data) {
         try {
             const cacheEntry = {
@@ -1329,21 +1326,21 @@ const CacheManager = {
             console.warn('⚠️ Cache storage failed:', e.message);
         }
     },
-    
+
     get(key) {
         try {
             const cached = localStorage.getItem(this.PREFIX + key);
             if (!cached) return null;
-            
+
             const cacheEntry = JSON.parse(cached);
             const age = Date.now() - cacheEntry.timestamp;
-            
+
             if (age > cacheEntry.ttl) {
                 console.log('🕒 Cache EXPIRED:', key, '(age:', Math.round(age/1000), 's)');
                 this.remove(key);
                 return null;
             }
-            
+
             console.log('✅ Cache HIT:', key, '(age:', Math.round(age/1000), 's)');
             return cacheEntry.data;
         } catch (e) {
@@ -1351,7 +1348,7 @@ const CacheManager = {
             return null;
         }
     },
-    
+
     remove(key) {
         try {
             localStorage.removeItem(this.PREFIX + key);
@@ -1360,7 +1357,7 @@ const CacheManager = {
             console.warn('⚠️ Cache remove failed:', e.message);
         }
     },
-    
+
     clear() {
         try {
             const keys = Object.keys(localStorage);
@@ -1374,12 +1371,12 @@ const CacheManager = {
             console.warn('⚠️ Cache clear failed:', e.message);
         }
     },
-    
+
     invalidate(key) {
         this.remove(key);
         console.log('♻️ Cache INVALIDATED:', key);
     },
-    
+
     getStats() {
         try {
             const keys = Object.keys(localStorage).filter(k => k.startsWith(this.PREFIX));
@@ -1387,7 +1384,7 @@ const CacheManager = {
                 totalEntries: keys.length,
                 entries: {}
             };
-            
+
             keys.forEach(key => {
                 const cached = localStorage.getItem(key);
                 if (cached) {
@@ -1401,7 +1398,7 @@ const CacheManager = {
                     };
                 }
             });
-            
+
             return stats;
         } catch (e) {
             return { error: e.message };
@@ -1426,28 +1423,28 @@ function getCookie(name){const value='; '+document.cookie;const parts=value.spli
 // 🔗 Helper: redirect на login с обфускацией
 function redirectToLogin() {
     let loginURL = '/login'; // Fallback
-    
+
     if (window.urlObfuscationMap && window.urlObfuscationMap['/login']) {
         loginURL = window.urlObfuscationMap['/login'];
         console.log('🔗 Redirecting to obfuscated login:', loginURL);
     } else {
         console.log('🔗 Redirecting to standard login (no mapping)');
     }
-    
+
     window.location.href = loginURL;
 }
 
-function logout(){CacheManager.clear();const formData=new FormData();makeEncryptedRequest('/logout',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){console.log('Logout successful, clearing cookies and redirecting...');document.cookie='session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';setTimeout(()=>{window.location.replace(window.urlObfuscationMap&&window.urlObfuscationMap['/login']?window.urlObfuscationMap['/login']:'/login')},500)}else{showStatus('Logout failed',true)}}).catch(err=>{console.error('Logout error:',err);document.cookie='session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';setTimeout(()=>{window.location.replace(window.urlObfuscationMap&&window.urlObfuscationMap['/login']?window.urlObfuscationMap['/login']:'/login')},500)})}
+function logout(){CacheManager.clear();const formData=new FormData();makeEncryptedRequest('/logout',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){console.log('Logout successful, clearing cookies and redirecting...');document.cookie='session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';setTimeout(()=>{window.location.replace(window.urlObfuscationMap&&window.urlObfuscationMap['/login']?window.urlObfuscationMap['/login']:'/login')},500)}else{showStatus('退出登录失败',true)}}).catch(err=>{console.error('Logout error:',err);document.cookie='session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';setTimeout(()=>{window.location.replace(window.urlObfuscationMap&&window.urlObfuscationMap['/login']?window.urlObfuscationMap['/login']:'/login')},500)})}
 function showStatus(message,isError=false){const statusDiv=document.getElementById('status');statusDiv.textContent=message;statusDiv.className='status-message '+(isError?'status-err':'status-ok');statusDiv.style.display='block';setTimeout(()=>statusDiv.style.display='none',5000)}
 
 function openTab(evt,tabName){
     var i,tabcontent,tablinks;
-    
+
     if (typeof keysUpdateInterval !== 'undefined' && keysUpdateInterval) {
         clearInterval(keysUpdateInterval);
         keysUpdateInterval = null;
     }
-    
+
     tabcontent=document.getElementsByClassName("tab-content");
     for(i=0;i<tabcontent.length;i++){tabcontent[i].style.display="none"}
     tablinks=document.getElementsByClassName("tab-link");
@@ -1500,7 +1497,7 @@ function fetchKeys(){
         keysUpdateInterval = setInterval(updateTOTPCodes, 1000);
         // Продолжаем запрос в фоне для обновления TOTP кодов
     }
-    
+
     makeAuthenticatedRequest('/api/keys', {
         headers: {
             'X-User-Activity': 'true'  // Пользовательское действие
@@ -1510,16 +1507,16 @@ function fetchKeys(){
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}`);
         }
-        
+
         const responseText = await response.text();
-        
+
         // 🔐 Обработка зашифрованных TOTP данных
         let data;
         let originalData = JSON.parse(responseText);
-        
+
         if (window.secureClient && window.secureClient.isReady) {
             data = await window.secureClient.decryptTOTPResponse(responseText);
-            
+
             // Проверяем если расшифровка НЕ удалась
             if (originalData.type === "secure" && data && data[0] && data[0].name === "🔐 Encrypted Key 1") {
                 showStatus('🔐 TOTP keys are encrypted - showing placeholders', false);
@@ -1529,25 +1526,25 @@ function fetchKeys(){
         } else {
             data = originalData;
         }
-        
+
         return data;
     })
     .then(data => {
         keysData = data;
-        
+
         // ⚡ CACHE: Сохраняем только имена ключей (без TOTP кодов!)
         const keysForCache = data.map(key => ({
             name: key.name
             // НЕ кешируем code и timeLeft - они динамические!
         }));
         CacheManager.set('keys_list', keysForCache);
-        
+
         updateKeysTable(data);
         if (keysUpdateInterval) clearInterval(keysUpdateInterval);
         keysUpdateInterval = setInterval(updateTOTPCodes, 1000);
     })
     .catch(err => {
-        showStatus('Error fetching keys: ' + err.message, true);
+        showStatus('获取密钥失败：' + err.message, true);
     });
 }
 
@@ -1555,13 +1552,13 @@ function updateKeysTable(data) {
     keysData = data;
     const tbody = document.querySelector('#keys-table tbody');
     tbody.innerHTML = '';
-    
+
     if (!keysData || keysData.length === 0) {
         const row = tbody.insertRow();
         row.innerHTML = '<td colspan="6" style="text-align:center;color:#666;">No keys added yet</td>';
         return;
     }
-    
+
     keysData.forEach((key, index) => {
         const row = tbody.insertRow();
         row.className = 'draggable-row';
@@ -1576,7 +1573,7 @@ function updateKeysTable(data) {
             <td><button class="button-delete user-activity" onclick="removeKey(${index})">Remove</button></td>
         `;
     });
-    
+
     // Initialize drag and drop for keys table
     initializeDragAndDrop('keys-table', 'keys');
 }
@@ -1586,11 +1583,11 @@ function updateTOTPCodes() {
     if (keysData && keysData.length === 0) {
         return; // Нет ключей - не обновляем
     }
-    
+
     // Проверяем нужно ли обновлять коды с сервера
     const currentTime = Math.floor(Date.now() / 1000);
     const timeInPeriod = currentTime % 30;
-    
+
     // Обновляем с сервера только если коды изменились (каждые 30 сек) или первый раз
     if (timeInPeriod <= 1 || !keysData) {
         // 🔐 ИСПРАВЛЕНИЕ: Используем ту же логику расшифровки что и в fetchKeys()
@@ -1599,22 +1596,22 @@ function updateTOTPCodes() {
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`);
             }
-            
+
             const responseText = await response.text();
-            
+
             // 🔐 Обработка зашифрованных TOTP данных (как в fetchKeys)
             let data;
             let originalData = JSON.parse(responseText);
-            
+
             if (window.secureClient && window.secureClient.isReady) {
                 data = await window.secureClient.decryptTOTPResponse(responseText);
-                
+
                 // Проверяем если расшифровка НЕ удалась
                 // Тихое обновление, логи не нужны
             } else {
                 data = originalData;
             }
-            
+
             return data;
         })
         .then(data => {
@@ -1639,7 +1636,7 @@ function updateTOTPDisplay(data) {
         const codeElement = document.getElementById(`code-${index}`);
         const progressElement = document.getElementById(`progress-${index}`);
         const timerElement = document.getElementById(`timer-${index}`);
-        
+
         if (codeElement && progressElement && timerElement) {
             // Animate code changes with fade effect
             if (codeElement.textContent !== key.code) {
@@ -1650,12 +1647,12 @@ function updateTOTPDisplay(data) {
                     codeElement.style.opacity = '1';
                 }, 150);
             }
-            
+
             // Update progress bar and timer
             progressElement.value = key.timeLeft;
             progressElement.max = 30;
             timerElement.textContent = key.timeLeft + 's';
-            
+
             // Color coding based on time remaining
             if (key.timeLeft <= 5) {
                 progressElement.style.filter = 'hue-rotate(0deg)';
@@ -1670,7 +1667,7 @@ function updateTOTPDisplay(data) {
                 timerElement.style.color = '#44ff44';
                 timerElement.style.fontWeight = 'bold';
             }
-            
+
             // Add pulse animation when time is low
             if (key.timeLeft <= 5) {
                 timerElement.style.animation = 'pulse 1s infinite';
@@ -1680,8 +1677,8 @@ function updateTOTPDisplay(data) {
         }
     });
 }
-document.getElementById('add-key-form').addEventListener('submit',function(e){e.preventDefault();const name=document.getElementById('key-name').value;const secret=document.getElementById('key-secret').value;const formData=new FormData();formData.append('name',name);formData.append('secret',secret);makeAuthenticatedRequest('/api/add',{method:'POST',body:formData}).then(data=>{CacheManager.invalidate('keys_list');showStatus('Key added successfully!');fetchKeys();this.reset()}).catch(err=>showStatus('Error: '+err,true))});
-function removeKey(index){if(!confirm('Are you sure?'))return;const formData=new FormData();formData.append('index',index);makeAuthenticatedRequest('/api/remove',{method:'POST',body:formData}).then(data=>{CacheManager.invalidate('keys_list');showStatus('Key removed successfully!');fetchKeys()}).catch(err=>showStatus('Error: '+err,true))};
+document.getElementById('add-key-form').addEventListener('submit',function(e){e.preventDefault();const name=document.getElementById('key-name').value;const secret=document.getElementById('key-secret').value;const formData=new FormData();formData.append('name',name);formData.append('secret',secret);makeAuthenticatedRequest('/api/add',{method:'POST',body:formData}).then(data=>{CacheManager.invalidate('keys_list');showStatus('密钥添加成功！');fetchKeys();this.reset()}).catch(err=>showStatus('错误：'+err,true))});
+function removeKey(index){if(!confirm('确定执行此操作吗？'))return;const formData=new FormData();formData.append('index',index);makeAuthenticatedRequest('/api/remove',{method:'POST',body:formData}).then(data=>{CacheManager.invalidate('keys_list');showStatus('密钥删除成功！');fetchKeys()}).catch(err=>showStatus('错误：'+err,true))};
 
 // --- MODIFIED Import/Export Logic ---
 let currentAction = null;
@@ -1693,15 +1690,15 @@ function showPasswordModal(action, file = null) {
     const modal = document.getElementById('password-modal');
     const title = document.getElementById('modal-title');
     const description = document.getElementById('modal-description');
-    
+
     if (action.startsWith('export')) {
-        title.textContent = 'Confirm Export';
-        description.textContent = 'Please enter your web admin password to encrypt and export your data.';
+        title.textContent = '确认导出';
+        description.textContent = '请输入 Web 管理员密码，以加密并导出数据。';
     } else {
-        title.textContent = 'Confirm Import';
-        description.textContent = 'Enter your web admin password to decrypt and import the selected file. This will overwrite existing data.';
+        title.textContent = '确认导入';
+        description.textContent = '输入 Web 管理员密码以解密并导入所选文件。此操作将覆盖现有数据。';
     }
-    
+
     document.getElementById('modal-password').value = '';
     modal.style.display = 'block';
 }
@@ -1728,29 +1725,29 @@ function closePasswordGeneratorModal() {
 
 function generatePassword() {
     const length = document.getElementById('password-length-slider').value;
-    
+
     // Character sets for different types
     const lowercase = 'abcdefghijklmnopqrstuvwxyz';
     const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const numbers = '0123456789';
     const specialChars = '!@#$%^&*()_+-=[]{}|;:,.<>?~`\'"/';
-    
+
     // Ensure at least one character from each type for strong passwords
     let password = '';
     const allChars = lowercase + uppercase + numbers + specialChars;
-    
+
     if (length >= 4) {
         // Add at least one character from each type for lengths >= 4
         password += getSecureRandomChar(lowercase);
         password += getSecureRandomChar(uppercase);
         password += getSecureRandomChar(numbers);
         password += getSecureRandomChar(specialChars);
-        
+
         // Fill remaining length with random chars from all sets
         for (let i = 4; i < length; i++) {
             password += getSecureRandomChar(allChars);
         }
-        
+
         // Shuffle the password to randomize positions
         password = shuffleString(password);
     } else {
@@ -1759,7 +1756,7 @@ function generatePassword() {
             password += getSecureRandomChar(allChars);
         }
     }
-    
+
     document.getElementById('generated-password').value = password;
     updatePasswordStrength(password);
 }
@@ -1767,12 +1764,12 @@ function generatePassword() {
 function getSecureRandomChar(charset) {
     const array = new Uint32Array(1);
     let randomValue;
-    
+
     do {
         crypto.getRandomValues(array);
         randomValue = array[0];
     } while (randomValue >= (0x100000000 - (0x100000000 % charset.length)));
-    
+
     return charset[randomValue % charset.length];
 }
 
@@ -1799,27 +1796,27 @@ let currentEditIndex = -1;
 
 function editPassword(index) {
     if (!passwordsData || !passwordsData[index]) {
-        showStatus('Password not found!', true);
+        showStatus('未找到密码！', true);
         return;
     }
-    
+
     currentEditIndex = index;
     const formData = new FormData();
     formData.append('index', index);
-    
+
     makeAuthenticatedRequest('/api/passwords/get', { method: 'POST', body: new URLSearchParams(formData) })
         .then(async response => {
             if (!response.ok) throw new Error('Failed to fetch password');
-            
+
             const responseText = await response.text();
-            
+
             // 🔐 Обработка зашифрованных паролей (аналогично fetchKeys)
             let data;
             let originalData = JSON.parse(responseText);
-            
+
             if (window.secureClient && window.secureClient.isReady) {
                 data = await window.secureClient.decryptTOTPResponse(responseText);
-                
+
                 // Проверяем если расшифровка НЕ удалась
                 if (originalData.type === "secure" && (!data || !data.name)) {
                     console.warn('🔐 Password data is encrypted but decryption failed');
@@ -1829,14 +1826,14 @@ function editPassword(index) {
             } else {
                 data = originalData;
             }
-            
+
             document.getElementById('edit-password-name').value = data.name || '';
             document.getElementById('edit-password-value').value = data.password || '';
             updatePasswordStrengthForEdit(data.password || '');
             openPasswordEditModal();
         })
         .catch(err => {
-            showStatus('Error loading password: ' + err.message, true);
+            showStatus('加载密码失败：' + err.message, true);
         });
 }
 
@@ -1858,29 +1855,29 @@ function closePasswordEditModal() {
 function generatePasswordForEdit() {
     // Используем существующую логику генерации пароля
     const length = 14; // Стандартная длина
-    
+
     const lowercase = 'abcdefghijklmnopqrstuvwxyz';
     const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const numbers = '0123456789';
     const specialChars = '!@#$%^&*()_+-=[]{}|;:,.<>?~`\'"/';
-    
+
     let password = '';
     const allChars = lowercase + uppercase + numbers + specialChars;
-    
+
     // Добавляем по одному символу из каждого типа
     password += getSecureRandomChar(lowercase);
     password += getSecureRandomChar(uppercase);
     password += getSecureRandomChar(numbers);
     password += getSecureRandomChar(specialChars);
-    
+
     // Заполняем оставшиеся символы
     for (let i = 4; i < length; i++) {
         password += getSecureRandomChar(allChars);
     }
-    
+
     // Перемешиваем пароль
     password = shuffleString(password);
-    
+
     document.getElementById('edit-password-value').value = password;
     updatePasswordStrengthForEdit(password);
 }
@@ -1889,55 +1886,55 @@ function updatePasswordStrengthForEdit(password) {
     const container = document.querySelector('#password-edit-modal .password-strength-container');
     const text = document.getElementById('edit-strength-text');
     const fill = document.getElementById('edit-strength-fill');
-    
+
     if (!container || !text || !fill) return;
-    
+
     const { level, score } = calculatePasswordStrength(password);
-    
+
     // Убираем все классы strength-*
     container.classList.remove('strength-weak', 'strength-medium', 'strength-strong', 'strength-encryption');
-    
+
     // Добавляем новый класс
     container.classList.add(`strength-${level}`);
-    
+
     // Устанавливаем ширину заливки
     fill.style.width = `${score}%`;
-    
+
     // Update text in English
     const levelNames = {
-        'weak': 'Weak Password',
-        'medium': 'Medium Password', 
-        'strong': 'Strong Password',
+        'weak': '弱密码',
+        'medium': '中等强度',
+        'strong': '强密码',
         'encryption': 'Encryption Grade'
     };
-    
+
     text.textContent = `${levelNames[level]} (${Math.round(score)}%)`;
 }
 
 function savePasswordEdit() {
     const name = document.getElementById('edit-password-name').value.trim();
     const password = document.getElementById('edit-password-value').value;
-    
+
     if (!name || !password) {
-        showStatus('Name and password cannot be empty!', true);
+        showStatus('名称和密码不能为空！', true);
         return;
     }
-    
+
     if (currentEditIndex < 0) {
-        showStatus('Error: Invalid entry index!', true);
+        showStatus('错误：无效的条目索引！', true);
         return;
     }
-    
+
     const formData = new FormData();
     formData.append('index', currentEditIndex);
     formData.append('name', name);
     formData.append('password', password);
-    
+
     makeAuthenticatedRequest('/api/passwords/update', { method: 'POST', body: new URLSearchParams(formData) })
         .then(response => {
             if (response.ok) {
                 CacheManager.invalidate('passwords_list'); // ♻️ Инвалидация кеша
-                showStatus('Password updated successfully!');
+                showStatus('密码更新成功！');
                 closePasswordEditModal();
                 fetchPasswords(); // Refresh table
             } else {
@@ -1947,7 +1944,7 @@ function savePasswordEdit() {
             }
         })
         .catch(err => {
-            showStatus('Error saving password: ' + err.message, true);
+            showStatus('保存密码失败：' + err.message, true);
         });
 }
 
@@ -1955,28 +1952,28 @@ function updatePasswordStrength(password) {
     const container = document.querySelector('.password-strength-container');
     const text = document.getElementById('strength-text');
     const fill = document.querySelector('.password-strength-fill');
-    
+
     if (!container || !text || !fill) return;
-    
+
     const { level, score } = calculatePasswordStrength(password);
-    
+
     // Remove all existing strength classes
     container.classList.remove('strength-weak', 'strength-medium', 'strength-strong', 'strength-encryption');
-    
+
     // Add new strength class for colors
     container.classList.add(`strength-${level}`);
-    
+
     // Set the actual fill percentage dynamically
     fill.style.width = `${score}%`;
-    
+
     // Update text with consistent names
     const levelNames = {
-        'weak': 'Weak Password',
-        'medium': 'Medium Password', 
-        'strong': 'Strong Password',
+        'weak': '弱密码',
+        'medium': '中等强度',
+        'strong': '强密码',
         'encryption': 'Encryption Key'
     };
-    
+
     text.textContent = `${levelNames[level]} (${Math.round(score)}%)`;
 }
 
@@ -1984,20 +1981,20 @@ function calculatePasswordStrength(password) {
     if (!password || password.length === 0) {
         return { level: 'weak', score: 0 };
     }
-    
+
     const len = password.length;
-    
+
     // Count character types present
     const hasLower = /[a-z]/.test(password);
     const hasUpper = /[A-Z]/.test(password);
     const hasNumber = /[0-9]/.test(password);
     const hasSpecial = /[!@#$%^&*()_+\-=\[\]{}|;:,.<>?~`'"/]/.test(password);
-    
+
     const typeCount = (hasLower ? 1 : 0) + (hasUpper ? 1 : 0) + (hasNumber ? 1 : 0) + (hasSpecial ? 1 : 0);
-    
+
     // Calculate score with gentle progression starting from 1%
     let score = 0;
-    
+
     // Base length score (starts very low, grows gradually)
     if (len === 1) {
         score = 1;
@@ -2014,7 +2011,7 @@ function calculatePasswordStrength(password) {
     } else {
         score = 63 + Math.min(len - 32, 32) * 0.5; // 63-79 for 33+
     }
-    
+
     // Character type bonus (smaller bonuses)
     if (typeCount === 1) {
         score += 0;
@@ -2025,15 +2022,15 @@ function calculatePasswordStrength(password) {
     } else if (typeCount === 4) {
         score += 15;
     }
-    
+
     // Small bonus for good passwords only
     if (len >= 20 && typeCount === 4) {
         score += 5;
     }
-    
+
     // Ensure score is in range 0-100
     score = Math.min(100, Math.max(0, score));
-    
+
     // Determine level based on actual score ranges
     let level;
     if (score >= 75) {
@@ -2045,7 +2042,7 @@ function calculatePasswordStrength(password) {
     } else {
         level = 'weak';        // 0-24%: Poor
     }
-    
+
     return { level, score };
 }
 
@@ -2053,14 +2050,14 @@ function calculatePasswordStrength(password) {
 document.addEventListener('DOMContentLoaded', function() {
     const lengthSlider = document.getElementById('password-length-slider');
     const lengthDisplay = document.getElementById('length-display');
-    
+
     if (lengthSlider && lengthDisplay) {
         lengthSlider.addEventListener('input', function() {
             lengthDisplay.textContent = this.value;
             generatePassword();
         });
     }
-    
+
     // Event listener for edit password field to update strength indicator
     const editPasswordField = document.getElementById('edit-password-value');
     if (editPasswordField) {
@@ -2073,7 +2070,7 @@ document.addEventListener('DOMContentLoaded', function() {
 document.getElementById('modal-submit-btn').addEventListener('click', () => {
     const password = document.getElementById('modal-password').value;
     if (!password) {
-        showStatus('Password cannot be empty.', true);
+        showStatus('密码不能为空。', true);
         return;
     }
 
@@ -2081,7 +2078,7 @@ document.getElementById('modal-submit-btn').addEventListener('click', () => {
     else if (currentAction === 'export-passwords') handleExport('/api/passwords/export', password, 'encrypted_passwords_backup.json');
     else if (currentAction === 'import-keys') handleImport('/api/import', password, selectedFile, fetchKeys);
     else if (currentAction === 'import-passwords') handleImport('/api/passwords/import', password, selectedFile, fetchPasswords);
-    
+
     closePasswordModal();
 });
 
@@ -2092,22 +2089,22 @@ function handleExport(url, password, filename) {
     makeAuthenticatedRequest(url, { method: 'POST', body: formData })
     .then(response => {
         console.log('💾 Export response status:', response.status, response.ok);
-        
+
         // ⚠️ ВАЖНО: makeAuthenticatedRequest возвращает Response, нужно .json()
         if (!response.ok) {
-            throw new Error(`Export failed with status ${response.status}`);
+            throw new Error(`导出失败，状态码：${response.status}`);
         }
-        
+
         return response.json();
     })
     .then(data => {
-        console.log('💾 Export data parsed:', { 
-            hasStatus: !!data.status, 
+        console.log('💾 Export data parsed:', {
+            hasStatus: !!data.status,
             hasFileContent: !!data.fileContent,
             hasMessage: !!data.message,
             dataType: typeof data
         });
-        
+
         // 🔧 Для туннелирования: извлекаем fileContent из JSON wrapper
         let fileContent;
         if (data.fileContent) {
@@ -2124,7 +2121,7 @@ function handleExport(url, password, filename) {
             fileContent = JSON.stringify(data, null, 2);
             console.warn('⚠️ Fallback export: stringifying entire response');
         }
-        
+
         // Создаем файл с зашифрованным контентом
         const blob = new Blob([fileContent], { type: 'application/json' });
         const link = document.createElement('a');
@@ -2133,67 +2130,67 @@ function handleExport(url, password, filename) {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        
+
         showStatus(data.message || 'Export successful!');
         console.log('✅ Export file downloaded:', filename);
     })
     .catch(err => {
         console.error('❌ Export failed:', err);
-        showStatus('Export failed: ' + err.message, true);
+        showStatus('导出失败：' + err.message, true);
     });
 }
 
 function handleImport(url, password, file, callbackOnSuccess) {
     if (!file) {
-        showStatus('No file selected for import.', true);
+        showStatus('未选择要导入的文件。', true);
         return;
     }
     const reader = new FileReader();
     reader.onload = function(event) {
         const fileContent = event.target.result;
-        
+
         // 🔍 DEBUG: Логируем что прочитано из файла
         console.log(`📂 Import file read:`, {
             size: fileContent.length,
             preview: fileContent.substring(0, 100) + '...',
             type: typeof fileContent
         });
-        
+
         if (!fileContent || fileContent.length === 0) {
             console.error('❌ Import file is empty!');
-            showStatus('Import file is empty!', true);
+            showStatus('导入文件为空！', true);
             return;
         }
-        
+
         const formData = new FormData();
         formData.append('password', password);
         formData.append('data', fileContent);
-        
+
         console.log(`📦 FormData prepared for import:`, {
             password: '***',
             dataLength: fileContent.length
         });
-        
+
         makeAuthenticatedRequest(url, {
             method: 'POST',
             body: formData
         })
         .then(response => {
             console.log('📬 Import response status:', response.status, response.ok);
-            
+
             if (!response.ok) {
                 // ❌ Ошибка от сервера
                 return response.text().then(errorText => {
                     console.error(`❌ Import failed with ${response.status}: ${errorText}`);
-                    throw new Error(`Import failed: ${errorText || response.statusText}`);
+                    throw new Error(`导入失败：${errorText || response.statusText}`);
                 });
             }
-            
+
             return response.json();
         })
         .then(data => {
             console.log('📬 Import data parsed:', data);
-            
+
             // Обработка зашифрованного ответа от ESP32
             let message = 'Import successful!';
             if (typeof data === 'object' && data.message) {
@@ -2204,7 +2201,7 @@ function handleImport(url, password, file, callbackOnSuccess) {
             showStatus(message);
             callbackOnSuccess();
         })
-        .catch(err => showStatus('Import failed: ' + err.message, true));
+        .catch(err => showStatus('导入失败：' + err.message, true));
     };
     reader.readAsText(file);
 }
@@ -2236,7 +2233,7 @@ function fetchPasswords(){
         initializeDragAndDrop('passwords-table', 'passwords');
         return; // Используем кеш, не запрашиваем сервер
     }
-    
+
     makeAuthenticatedRequest('/api/passwords', {
         headers: {
             'X-User-Activity': 'true'  // Пользовательское действие
@@ -2246,16 +2243,16 @@ function fetchPasswords(){
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}`);
         }
-        
+
         const responseText = await response.text();
-        
+
         // 🔐 Обработка зашифрованных паролей (аналогично TOTP ключам)
         let data;
         let originalData = JSON.parse(responseText);
-        
+
         if (window.secureClient && window.secureClient.isReady) {
             data = await window.secureClient.decryptTOTPResponse(responseText);
-            
+
             // Проверяем если расшифровка НЕ удалась
             if (originalData.type === "secure" && data && data[0] && data[0].name === "🔐 Encrypted Key 1") {
                 showStatus('🔐 Passwords are encrypted - showing placeholders', false);
@@ -2265,12 +2262,12 @@ function fetchPasswords(){
         } else {
             data = originalData;
         }
-        
+
         passwordsData = data;
-        
+
         // ⚡ CACHE: Сохраняем пароли в кеш
         CacheManager.set('passwords_list', data);
-        
+
         const tbody = document.querySelector('#passwords-table tbody');
         tbody.innerHTML = '';
         passwordsData.forEach((password, index) => {
@@ -2284,20 +2281,20 @@ function fetchPasswords(){
     })
     .catch(err => {
         console.error('Error fetching passwords:', err);
-        showStatus('Error fetching passwords.', true);
+        showStatus('获取密码列表失败。', true);
     });
 }
-document.getElementById('add-password-form').addEventListener('submit',function(e){e.preventDefault();const name=document.getElementById('password-name').value;const password=document.getElementById('password-value').value;const formData=new FormData();formData.append('name',name);formData.append('password',password);makeAuthenticatedRequest('/api/passwords/add',{method:'POST',body:formData}).then(data=>{CacheManager.invalidate('passwords_list');showStatus('Password added successfully!');fetchPasswords();this.reset()}).catch(err=>showStatus('Error: '+err,true))});
-function removePassword(index){if(!confirm('Are you sure?'))return;const formData=new FormData();formData.append('index',index);makeAuthenticatedRequest('/api/passwords/delete',{method:'POST',body:formData}).then(data=>{CacheManager.invalidate('passwords_list');showStatus('Password removed successfully!');fetchPasswords()}).catch(err=>showStatus('Error: '+err,true))};
+document.getElementById('add-password-form').addEventListener('submit',function(e){e.preventDefault();const name=document.getElementById('password-name').value;const password=document.getElementById('password-value').value;const formData=new FormData();formData.append('name',name);formData.append('password',password);makeAuthenticatedRequest('/api/passwords/add',{method:'POST',body:formData}).then(data=>{CacheManager.invalidate('passwords_list');showStatus('密码添加成功！');fetchPasswords();this.reset()}).catch(err=>showStatus('错误：'+err,true))});
+function removePassword(index){if(!confirm('确定执行此操作吗？'))return;const formData=new FormData();formData.append('index',index);makeAuthenticatedRequest('/api/passwords/delete',{method:'POST',body:formData}).then(data=>{CacheManager.invalidate('passwords_list');showStatus('Password removed successfully!');fetchPasswords()}).catch(err=>showStatus('错误：'+err,true))};
 
 function copyPassword(index) {
     if (!passwordsData || !passwordsData[index]) {
-        showStatus('Password not found!', true);
+        showStatus('未找到密码！', true);
         return;
     }
-    
+
     const password = passwordsData[index].password;
-    
+
     // Try modern Clipboard API first
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(password).then(() => {
@@ -2321,7 +2318,7 @@ function fallbackCopyPassword(password) {
     document.body.appendChild(textArea);
     textArea.focus();
     textArea.select();
-    
+
     try {
         const successful = document.execCommand('copy');
         if (successful) {
@@ -2342,9 +2339,9 @@ function copyTOTPCode(index) {
         showStatus('TOTP code not found!', true);
         return;
     }
-    
+
     const totpCode = keysData[index].code;
-    
+
     // Try modern Clipboard API first
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(totpCode).then(() => {
@@ -2368,7 +2365,7 @@ function fallbackCopyTOTPCode(totpCode) {
     document.body.appendChild(textArea);
     textArea.focus();
     textArea.select();
-    
+
     try {
         const successful = document.execCommand('copy');
         if (successful) {
@@ -2390,18 +2387,18 @@ function showCopyNotification(message) {
     if (existingNotification) {
         existingNotification.remove();
     }
-    
+
     // Create new notification
     const notification = document.createElement('div');
     notification.className = 'copy-notification';
     notification.textContent = message;
     document.body.appendChild(notification);
-    
+
     // Show notification with animation
     setTimeout(() => {
         notification.classList.add('show');
     }, 10);
-    
+
     // Hide and remove notification after 2 seconds
     setTimeout(() => {
         notification.classList.remove('show');
@@ -2421,14 +2418,14 @@ async function fetchThemeSettings(){
         if(cachedTheme.theme==='light'){document.getElementById('theme-light').checked=true}else{document.getElementById('theme-dark').checked=true}
         return;
     }
-    
+
     try{
         const response=await makeEncryptedRequest('/api/theme');
         const data=await response.json();
-        
+
         // ⚡ CACHE: Сохраняем theme в кеш
         CacheManager.set('theme_settings', data);
-        
+
         if(data.theme==='light'){document.getElementById('theme-light').checked=true}else{document.getElementById('theme-dark').checked=true}
     }catch(err){
         showStatus('Error fetching theme settings.',true)
@@ -2437,7 +2434,7 @@ async function fetchThemeSettings(){
 async function fetchDisplaySettings(){try{const response=await makeEncryptedRequest('/api/display_settings');const data=await response.json();document.getElementById('display-timeout').value=data.display_timeout;const splashResponse=await makeEncryptedRequest('/api/splash/mode');if(splashResponse.ok){const splashData=await splashResponse.json();const selectElement=document.getElementById('splash-mode-select');if(selectElement)selectElement.value=splashData.mode}}catch(err){showStatus('Error fetching display settings.',true)}}
 document.getElementById('theme-selection-form').addEventListener('submit',function(e){e.preventDefault();const selectedTheme=document.querySelector('input[name="theme"]:checked').value;const formData=new FormData();formData.append('theme',selectedTheme);makeEncryptedRequest('/api/theme',{method:'POST',body:new URLSearchParams(formData)}).then(res=>res.json()).then(data=>{CacheManager.invalidate('theme_settings');if(data.success){showStatus(data.message)}else{showStatus(data.message||'Error applying theme',true)}}).catch(err=>showStatus('Error applying theme: '+err,true))});
 document.getElementById('display-timeout-form').addEventListener('submit',function(e){e.preventDefault();const timeout=document.getElementById('display-timeout').value;const formData=new FormData();formData.append('display_timeout',timeout);makeEncryptedRequest('/api/display_settings',{method:'POST',body:new URLSearchParams(formData)}).then(res=>res.json()).then(data=>{if(data.success){showStatus(data.message)}else{showStatus(data.message||'Error saving timeout',true)}}).catch(err=>showStatus('Error saving display timeout: '+err,true))});
-document.getElementById('save-splash-mode-btn').addEventListener('click',async function(){const selectElement=document.getElementById('splash-mode-select');if(!selectElement||!selectElement.value){showStatus('Please select a splash mode',true);return}const formData=new FormData();formData.append('mode',selectElement.value);try{const response=await makeEncryptedRequest('/api/splash/mode',{method:'POST',body:formData});if(response.ok){const data=await response.json();showStatus(data.success?'Splash mode saved! Reboot to apply.':'Error saving splash mode')}else{const text=await response.text();showStatus('Error: '+text,true)}}catch(err){showStatus('Error saving splash mode: '+err.message,true)}});
+document.getElementById('save-splash-mode-btn').addEventListener('click',async function(){const selectElement=document.getElementById('splash-mode-select');if(!selectElement||!selectElement.value){showStatus('请选择启动模式',true);return}const formData=new FormData();formData.append('mode',selectElement.value);try{const response=await makeEncryptedRequest('/api/splash/mode',{method:'POST',body:formData});if(response.ok){const data=await response.json();showStatus(data.success?'启动模式已保存！重启后生效。':'保存启动模式失败')}else{const text=await response.text();showStatus('错误：'+text,true)}}catch(err){showStatus('保存启动模式失败：'+err.message,true)}});
 
 async function fetchPinSettings(){
     // ⚡ CACHE: Проверяем кеш для PIN настроек
@@ -2449,27 +2446,27 @@ async function fetchPinSettings(){
         document.getElementById('pin-length').value = cachedPin.length;
         return;
     }
-    
+
     try{
     const response = await makeEncryptedRequest('/api/pincode_settings', {
         headers: {
             'X-User-Activity': 'true'  // Пользовательское действие для PIN настроек
         }
     });
-    
+
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}`);
         }
-        
+
         const responseText = await response.text();
-        
+
         // 🔐 Обработка зашифрованных PIN настроек (по аналогии с fetchKeys)
         let data;
         let originalData = JSON.parse(responseText);
-        
+
         if (window.secureClient && window.secureClient.isReady) {
             data = await window.secureClient.decryptTOTPResponse(responseText);
-            
+
             // Проверяем если расшифровка НЕ удалась
             if (originalData.type === "secure" && data) {
                 showStatus('✅ PIN settings decrypted successfully', false);
@@ -2477,10 +2474,10 @@ async function fetchPinSettings(){
         } else {
             data = originalData;
         }
-        
+
         // ⚡ CACHE: Сохраняем PIN настройки в кеш
         CacheManager.set('pin_settings', data);
-        
+
         document.getElementById('pin-enabled-device').checked = data.enabledForDevice;
         document.getElementById('pin-enabled-ble').checked = data.enabledForBle;
         document.getElementById('pin-length').value = data.length;
@@ -2494,7 +2491,7 @@ const jsonData={enabledForDevice:document.getElementById('pin-enabled-device').c
 makeEncryptedRequest('/api/pincode_settings',{method:'POST',body:JSON.stringify(jsonData),headers:{'Content-Type':'application/json'}}).then(res=>res.json()).then(data=>{CacheManager.invalidate('pin_settings');if(data.success){showStatus(data.message);document.getElementById('new-pin').value='';document.getElementById('confirm-pin').value=''}else{showStatus(data.message||'Error updating PIN settings',true)}}).catch(err=>showStatus('Error updating PIN settings: '+err,true))});
 
 // BLE PIN Management - PIN display removed for security
-document.getElementById('ble-pin-form').addEventListener('submit',function(e){e.preventDefault();const blePin=document.getElementById('ble-pin').value;const blePinConfirm=document.getElementById('ble-pin-confirm').value;if(blePin.length!==6||!/^\d{6}$/.test(blePin)){showStatus('BLE PIN must be exactly 6 digits!',true);return}if(blePin!==blePinConfirm){showStatus('BLE PINs do not match!',true);return}const formData=new FormData();formData.append('ble_pin',blePin);makeEncryptedRequest('/api/ble_pin_update',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){showStatus(data.message);document.getElementById('ble-pin').value='';document.getElementById('ble-pin-confirm').value=''}else{showStatus(data.message||'Error updating BLE PIN',true)}}).catch(err=>showStatus('Error updating BLE PIN: '+err,true))});
+document.getElementById('ble-pin-form').addEventListener('submit',function(e){e.preventDefault();const blePin=document.getElementById('ble-pin').value;const blePinConfirm=document.getElementById('ble-pin-confirm').value;if(blePin.length!==6||!/^\d{6}$/.test(blePin)){showStatus('BLE PIN 必须为 6 位数字！',true);return}if(blePin!==blePinConfirm){showStatus('两次 BLE PIN 输入不一致！',true);return}const formData=new FormData();formData.append('ble_pin',blePin);makeEncryptedRequest('/api/ble_pin_update',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){showStatus(data.message);document.getElementById('ble-pin').value='';document.getElementById('ble-pin-confirm').value=''}else{showStatus(data.message||'更新 BLE PIN 失败',true)}}).catch(err=>showStatus('更新 BLE PIN 失败：'+err,true))});
 
 // Clear BLE Clients Management (🔐 Зашифровано)
 document.getElementById('clear-ble-clients-btn').addEventListener('click',function(){if(!confirm('Are you sure you want to clear all BLE client connections? This will remove all paired devices and they will need to pair again.')){return}const formData=new FormData();makeEncryptedRequest('/api/clear_ble_clients',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){showStatus('BLE clients cleared successfully!')}else{showStatus(data.message||'Failed to clear BLE clients',true)}}).catch(err=>showStatus('Error clearing BLE clients: '+err,true))});
@@ -2503,7 +2500,7 @@ document.getElementById('clear-ble-clients-btn').addEventListener('click',functi
 async function fetchStartupMode(){try{const response=await makeEncryptedRequest('/api/startup_mode');const data=await response.json();document.getElementById('startup-mode').value=data.mode}catch(err){showStatus('Error fetching startup mode.',true)}}
 async function fetchDeviceSettings(){try{const response=await makeEncryptedRequest('/api/settings');const data=await response.json();document.getElementById('web-server-timeout').value=data.web_server_timeout;if(data.admin_login){document.getElementById('current-admin-login').textContent=data.admin_login}}catch(err){showStatus('Error fetching device settings.',true)}}
 document.getElementById('startup-mode-form').addEventListener('submit',function(e){e.preventDefault();const mode=document.getElementById('startup-mode').value;const formData=new FormData();formData.append('mode',mode);makeEncryptedRequest('/api/startup_mode',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){showStatus(data.message)}else{showStatus(data.message,true)}}).catch(err=>showStatus('Error saving startup mode: '+err,true))});
-document.getElementById('web-server-settings-form').addEventListener('submit',function(e){e.preventDefault();const timeout=document.getElementById('web-server-timeout').value;if(!confirm('Changing the web server timeout requires a device restart. Do you want to continue?')){return;}showStatus('Saving settings and restarting device...',false);const formData=new FormData();formData.append('web_server_timeout',timeout);makeEncryptedRequest('/api/settings',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){showStatus(data.message,false);}else{showStatus(data.message,true);}}).catch(err=>showStatus('Error saving settings: '+err,true))});
+document.getElementById('web-server-settings-form').addEventListener('submit',function(e){e.preventDefault();const timeout=document.getElementById('web-server-timeout').value;if(!confirm('修改 Web 服务器超时需要重启设备，是否继续？')){return;}showStatus('正在保存设置并重启设备...',false);const formData=new FormData();formData.append('web_server_timeout',timeout);makeEncryptedRequest('/api/settings',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){showStatus(data.message,false);}else{showStatus(data.message,true);}}).catch(err=>showStatus('保存设置失败：'+err,true))});
 // Password validation for change password form
 const passwordCriteria = {
     length: { el: document.getElementById('pwd-length'), regex: /.{8,}/ },
@@ -2528,17 +2525,17 @@ function validatePasswordConfirmation() {
     const password = document.getElementById('new-password').value;
     const confirmPassword = document.getElementById('confirm-password').value;
     const confirmMessage = document.getElementById('password-confirm-message');
-    
+
     if (confirmPassword.length === 0) {
         confirmMessage.textContent = '';
         return false;
     }
     if (password === confirmPassword) {
-        confirmMessage.textContent = 'Passwords match!';
+        confirmMessage.textContent = '两次输入密码一致！';
         confirmMessage.className = 'password-match';
         return true;
     } else {
-        confirmMessage.textContent = 'Passwords do not match.';
+        confirmMessage.textContent = '两次输入密码不一致。';
         confirmMessage.className = 'password-no-match';
         return false;
     }
@@ -2547,11 +2544,11 @@ function validatePasswordConfirmation() {
 function checkChangePasswordFormValidity() {
     const isPasswordStrong = validateNewPassword();
     const doPasswordsMatch = validatePasswordConfirmation();
-    
-    const isFormValid = currentPasswordType === 'web' ? 
+
+    const isFormValid = currentPasswordType === 'web' ?
         (isPasswordStrong && doPasswordsMatch) :
         (document.getElementById('new-password').value.length >= 8 && doPasswordsMatch);
-    
+
     document.getElementById('change-password-btn').disabled = !isFormValid;
 }
 
@@ -2581,31 +2578,31 @@ function switchPasswordType(type) {
     const confirmLabel = document.getElementById('confirm-password-label');
     const criteriaList = document.querySelector('.password-criteria');
     const submitBtn = document.getElementById('change-password-btn');
-    
+
     // Reset toggles
     webToggle.classList.remove('active', 'web-active');
     wifiToggle.classList.remove('active', 'wifi-active');
-    
+
     if (type === 'web') {
         webToggle.classList.add('active', 'web-active');
-        formTitle.textContent = 'Change 网页密码库 Password';
+        formTitle.textContent = '修改网页密码库密码';
         titleIcon.textContent = '🔒';
         description.textContent = '修改用于访问此 Web 界面的密码。';
-        newLabel.textContent = 'New Web Password';
-        confirmLabel.textContent = 'Confirm New Web Password';
+        newLabel.textContent = '新的网页密码';
+        confirmLabel.textContent = '确认新的网页密码';
         criteriaList.style.display = 'block';
-        submitBtn.textContent = 'Change Web Password';
+        submitBtn.textContent = '修改网页密码';
     } else {
         wifiToggle.classList.add('active', 'wifi-active');
-        formTitle.textContent = 'Change WiFi Access Point Password';
+        formTitle.textContent = '修改 WiFi 接入点密码';
         titleIcon.textContent = '📶';
-        description.textContent = 'Change the password for the WiFi Access Point used in AP mode.';
-        newLabel.textContent = 'New WiFi AP Password';
-        confirmLabel.textContent = 'Confirm New WiFi AP Password';
+        description.textContent = '修改 AP 模式下 WiFi 接入点的密码。';
+        newLabel.textContent = '新的 WiFi AP 密码';
+        confirmLabel.textContent = '确认新的 WiFi AP 密码';
         criteriaList.style.display = 'none'; // WiFi password has different requirements
-        submitBtn.textContent = 'Change WiFi 密码';
+        submitBtn.textContent = '修改 WiFi 密码';
     }
-    
+
     // Clear form
     document.getElementById('change-password-form').reset();
     checkChangePasswordFormValidity();
@@ -2633,35 +2630,35 @@ document.getElementById('change-password-form').addEventListener('submit',functi
     e.preventDefault();
     const newPass=document.getElementById('new-password').value;
     const confirmPass=document.getElementById('confirm-password').value;
-    
+
     if(newPass!==confirmPass){
-        showStatus('Passwords do not match!',true);
+        showStatus('两次密码输入不一致！',true);
         return;
     }
-    
+
     // Validate based on password type
     if(currentPasswordType === 'web' && !validateNewPassword()){
-        showStatus('Password does not meet requirements!',true);
+        showStatus('密码不符合要求！',true);
         return;
     }
-    
+
     if(currentPasswordType === 'wifi' && newPass.length < 8){
-        showStatus('WiFi password must be at least 8 characters!',true);
+        showStatus('WiFi 密码至少需要 8 个字符！',true);
         return;
     }
-    
+
     // Create FormData object
     const formData=new FormData();
     formData.append('password',newPass);
-    
+
     const endpoint = currentPasswordType === 'web' ? '/api/change_password' : '/api/change_ap_password';
-    
+
     console.log('🚀 Submitting password change:', {
         type: currentPasswordType,
         endpoint: endpoint,
         passwordLength: newPass.length
     });
-    
+
     makeEncryptedRequest(endpoint,{method:'POST',body:formData})
         .then(res=>res.text().then(text=>{
             if(res.ok) {
@@ -2678,14 +2675,14 @@ document.getElementById('change-password-form').addEventListener('submit',functi
 });
 // Custom splash upload/delete handlers removed - feature disabled for security
 
-document.getElementById('reboot-btn').addEventListener('click',()=>{if(!confirm('Are you sure you want to reboot?'))return;const formData=new FormData();makeEncryptedRequest('/api/reboot',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){showStatus('Rebooting...')}else{showStatus('Reboot failed',true)}}).catch(()=>showStatus('Rebooting...'))});
-document.getElementById('reboot-with-web-btn').addEventListener('click',()=>{if(!confirm('Reboot and auto-start web server on next boot?'))return;const formData=new FormData();makeEncryptedRequest('/api/reboot_with_web',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){showStatus('Rebooting with web server enabled...')}else{showStatus('Reboot failed',true)}}).catch(()=>showStatus('Rebooting with web server enabled...'))});
+document.getElementById('reboot-btn').addEventListener('click',()=>{if(!confirm('确定要重启设备吗？'))return;const formData=new FormData();makeEncryptedRequest('/api/reboot',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){showStatus('正在重启...')}else{showStatus('重启失败',true)}}).catch(()=>showStatus('正在重启...'))});
+document.getElementById('reboot-with-web-btn').addEventListener('click',()=>{if(!confirm('重启并在下次启动时自动开启 Web 服务？'))return;const formData=new FormData();makeEncryptedRequest('/api/reboot_with_web',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){showStatus('正在重启并启用 Web 服务...')}else{showStatus('重启失败',true)}}).catch(()=>showStatus('正在重启并启用 Web 服务...'))});
 
-async function fetchBleSettings(){try{const response=await makeEncryptedRequest('/api/ble_settings');const data=await response.json();document.getElementById('ble-device-name').value=data.device_name}catch(err){showStatus('Error fetching BLE settings.',true)}}
-document.getElementById('ble-settings-form').addEventListener('submit',function(e){e.preventDefault();const deviceName=document.getElementById('ble-device-name').value;const formData=new FormData();formData.append('device_name',deviceName);makeEncryptedRequest('/api/ble_settings',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){showStatus(data.message);fetchBleSettings()}else{showStatus(data.message,true)}}).catch(err=>showStatus('Error saving BLE settings: '+err,true))});
+async function fetchBleSettings(){try{const response=await makeEncryptedRequest('/api/ble_settings');const data=await response.json();document.getElementById('ble-device-name').value=data.device_name}catch(err){showStatus('获取 BLE 设置失败。',true)}}
+document.getElementById('ble-settings-form').addEventListener('submit',function(e){e.preventDefault();const deviceName=document.getElementById('ble-device-name').value;const formData=new FormData();formData.append('device_name',deviceName);makeEncryptedRequest('/api/ble_settings',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){showStatus(data.message);fetchBleSettings()}else{showStatus(data.message,true)}}).catch(err=>showStatus('保存 BLE 设置失败：'+err,true))});
 
-async function fetchMdnsSettings(){try{const response=await makeEncryptedRequest('/api/mdns_settings');const data=await response.json();document.getElementById('mdns-hostname').value=data.hostname}catch(err){showStatus('Error fetching mDNS settings.',true)}}
-document.getElementById('mdns-settings-form').addEventListener('submit',function(e){e.preventDefault();const hostname=document.getElementById('mdns-hostname').value;const formData=new FormData();formData.append('hostname',hostname);makeEncryptedRequest('/api/mdns_settings',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){showStatus(data.message);fetchMdnsSettings()}else{showStatus(data.message,true)}}).catch(err=>showStatus('Error saving mDNS settings: '+err,true))});
+async function fetchMdnsSettings(){try{const response=await makeEncryptedRequest('/api/mdns_settings');const data=await response.json();document.getElementById('mdns-hostname').value=data.hostname}catch(err){showStatus('获取 mDNS 设置失败。',true)}}
+document.getElementById('mdns-settings-form').addEventListener('submit',function(e){e.preventDefault();const hostname=document.getElementById('mdns-hostname').value;const formData=new FormData();formData.append('hostname',hostname);makeEncryptedRequest('/api/mdns_settings',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){showStatus(data.message);fetchMdnsSettings()}else{showStatus(data.message,true)}}).catch(err=>showStatus('保存 mDNS 设置失败：'+err,true))});
 
 
 let keysData = [];
@@ -2741,17 +2738,17 @@ window.CryptoJS = {
         0xCA, 0x82, 0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0, 0xAD, 0xD4, 0xA2, 0xAF, 0x9C, 0xA4, 0x72, 0xC0
         // ... (полная таблица 256 байт слишком большая для демонстрации)
     ]),
-    
+
     // Простая AES-GCM расшифровка (базовая реализация)
     AES: {
         decrypt: function(ciphertext, key, options) {
             // ВАЖНО: Это упрощенная реализация для демонстрации
             // В продакшене нужна полная AES-GCM библиотека
-            
+
             const keyBytes = CryptoJS.enc.Hex.parse(key);
             const dataBytes = CryptoJS.enc.Hex.parse(ciphertext.ciphertext);
             const ivBytes = CryptoJS.enc.Hex.parse(options.iv);
-            
+
             // Простая XOR расшифровка как fallback
             const result = new Uint8Array(dataBytes.sigBytes);
             for (let i = 0; i < result.length; i++) {
@@ -2759,11 +2756,11 @@ window.CryptoJS = {
                 result[i] ^= keyBytes.words[i % keyBytes.sigBytes] >> (24 - (i % 4) * 8) & 0xff;
                 result[i] ^= ivBytes.words[i % ivBytes.sigBytes] >> (24 - (i % 4) * 8) & 0xff;
             }
-            
+
             return CryptoJS.enc.Utf8.stringify({words: Array.from(result), sigBytes: result.length});
         }
     },
-    
+
     // Утилиты для работы с форматами
     enc: {
         Hex: {
@@ -2789,7 +2786,7 @@ window.CryptoJS = {
             }
         }
     },
-    
+
     mode: {
         GCM: {} // Placeholder для GCM режима
     }
@@ -2806,11 +2803,11 @@ class SecureClient {
         this.isReady = false;
         this.logs = [];
         this.requestCounter = 1; // Счетчик для защиты от replay атак
-        
+
         // Method Tunneling поддержка
         this.methodTunnelingEnabled = false;
         this.tunnelingStats = { totalRequests: 0, tunneledRequests: 0 };
-        
+
         // 🎭 Header Obfuscation поддержка
         this.headerObfuscationEnabled = true; // Автоматически включено
         this.headerMappings = {
@@ -2849,7 +2846,7 @@ class SecureClient {
                 client_id: this.sessionId,
                 client_public_key: "04e47518d46db780f6d858fe99f8354ee2b27014d4f0d60f6e895aa615eccc7d1512e1b37d59de6680029a4da834d68a354088aa39ba2132cb488c44704df9cc99"
             };
-            
+
             this.log(`[SecureClient] Attempting key exchange like test page...`);
 
             // 🔗 URL Obfuscation: применяем obfuscation если есть mapping
@@ -2879,11 +2876,11 @@ class SecureClient {
             if (response.ok) {
                 const data = await response.json();
                 this.log(`[SecureClient] Key exchange OK!`, 'success');
-                
+
                 // Сохраняем серверный ключ для ECDH
                 this.serverPublicKey = data.pubkey;
                 // 📉 Убран DEBUG лог - технические детали
-                
+
                 // ВАЖНО: Расшифровываем и сохраняем sessionKey если ESP32 его прислал
                 if (data.encryptedSessionKey) {
                     const staticKey = "SecureStaticKey2024!"; // Тот же ключ что на ESP32
@@ -2894,18 +2891,18 @@ class SecureClient {
                     this.sessionKey = data.sessionKey;
                     // 📉 Убран DEBUG лог - технические детали
                 }
-                
+
                 // Попытка вычисления AES ключа
                 this.deriveAESKey();
-                
+
                 // 🚇 АВТОМАТИЧЕСКОЕ ВКЛЮЧЕНИЕ ТУННЕЛИРОВАНИЯ
                 this.enableMethodTunneling();
                 // 📉 Убран DEBUG лог - повторяет информацию
-                
+
                 // 🎭 АВТОМАТИЧЕСКОЕ ВКЛЮЧЕНИЕ HEADER OBFUSCATION
                 this.enableHeaderObfuscation();
                 // 📉 Убран DEBUG лог - повторяет информацию
-                
+
                 this.isReady = true;
                 return true;
             } else {
@@ -2922,15 +2919,15 @@ class SecureClient {
     deriveAESKey() {
         // Теперь мы можем вычислить детерминированный AES ключ!
         // 📉 Убран DEBUG лог - технические детали
-        
+
         // Логика ESP32:
         // 1. clientNonce = первые 16 символов sessionId
         // 2. shared_secret = фиктивный (так как принимает любой ключ)
         // 3. AES key = HKDF(shared_secret, clientNonce)
-        
+
         const clientNonce = this.sessionId.substring(0, 16);
         // 📉 Убран DEBUG лог - технические детали
-        
+
         // ВРЕМЕННОЕ РЕШЕНИЕ: Просим ESP32 прислать нам свой ключ в response
         // В keyexchange response должен быть sessionKey для синхронизации
         if (this.sessionKey && this.sessionKey.length === 64) {
@@ -2941,7 +2938,7 @@ class SecureClient {
             this.aesKey = "b882e198cec417f006caff70d125e089b2e450394db1baa42b6c7ecc4639110e";
             this.log(`⚠️ FALLBACK: Using hardcoded ESP32 key!`); // ❗ Оставлен - важное предупреждение
         }
-        
+
         // 📉 Убраны DEBUG логи - технические детали
     }
 
@@ -2949,17 +2946,17 @@ class SecureClient {
         // Простой hash для создания детерминированного ключа
         let hash = 0;
         let result = '';
-        
+
         for (let i = 0; i < input.length; i++) {
             hash = ((hash << 5) - hash + input.charCodeAt(i)) & 0xffffffff;
         }
-        
+
         // Расширяем hash до 64 hex символов (32 bytes)
         const baseHash = Math.abs(hash).toString(16).padStart(8, '0');
         for (let i = 0; i < 8; i++) {
             result += baseHash;
         }
-        
+
         return result.substring(0, 64);
     }
 
@@ -2979,10 +2976,10 @@ class SecureClient {
         // Генерируем тот же ключ что и сервер: "MT_ESP32_" + clientId + "_METHOD_KEY"
         const clientId = this.sessionId || 'UNKNOWN';
         const encryptionKey = 'MT_ESP32_' + clientId + '_METHOD_KEY';
-        
+
         // Ограничиваем длину ключа (max 32 символа как на сервере)
         const limitedKey = encryptionKey.substring(0, 32);
-        
+
         const encryptedMethod = this.xorEncrypt(method, limitedKey);
         // 📉 Убран INFO лог - повторяется на каждый запрос
         return encryptedMethod;
@@ -3047,11 +3044,11 @@ class SecureClient {
     // 🎭 Header Obfuscation Functions
     processHeadersWithObfuscation(headers, endpoint, method) {
         if (!this.headerObfuscationEnabled) return headers;
-        
+
         this.headerObfuscationStats.totalObfuscated++;
         let obfuscatedHeaders = { ...headers };
         let headersMappedCount = 0;
-        
+
         // A) Header Mapping - переименование заголовков
         for (const [original, replacement] of Object.entries(this.headerMappings)) {
             if (obfuscatedHeaders[original]) {
@@ -3060,7 +3057,7 @@ class SecureClient {
                 headersMappedCount++;
             }
         }
-        
+
         // B) Fake Headers Injection - добавление ложных заголовков
         const fakeHeaders = {
             'X-Browser-Engine': 'Mozilla/5.0 (compatible; MSIE 10.0)',
@@ -3071,7 +3068,7 @@ class SecureClient {
         };
         Object.assign(obfuscatedHeaders, fakeHeaders);
         this.headerObfuscationStats.fakeHeadersInjected += Object.keys(fakeHeaders).length;
-        
+
         // C) Decoy Session Tokens - ложные токены для camouflage
         // Генерируем 2-3 токена похожих на реальные session/JWT
         const generateRandomToken = (length, format = 'hex') => {
@@ -3082,21 +3079,21 @@ class SecureClient {
             };
             return token;
         };
-        
+
         // Токен 1: JWT-подобный (3 части base64)
         const jwtHeader = btoa(JSON.stringify({alg:'HS256',typ:'JWT'})).replace(/=/g, '');
         const jwtPayload = generateRandomToken(43, 'base64');
         const jwtSignature = generateRandomToken(43, 'base64');
         obfuscatedHeaders['Authorization'] = `Bearer ${jwtHeader}.${jwtPayload}.${jwtSignature}`;
-        
+
         // Токен 2: Session token (32-64 hex)
         const sessionLength = 32 + Math.floor(Math.random() * 33); // 32-64 символов
         obfuscatedHeaders['X-Session-Token'] = generateRandomToken(sessionLength, 'hex');
-        
+
         // Токен 3: CSRF token (40-48 hex)
         const csrfLength = 40 + Math.floor(Math.random() * 9); // 40-48 символов
         obfuscatedHeaders['X-CSRF-Token'] = generateRandomToken(csrfLength, 'hex');
-        
+
         // Иногда добавляем Refresh token (30% вероятность)
         if (Math.random() < 0.3) {
             const refreshLength = 48 + Math.floor(Math.random() * 17); // 48-64
@@ -3105,9 +3102,9 @@ class SecureClient {
         } else {
             this.headerObfuscationStats.decoyTokensGenerated = (this.headerObfuscationStats.decoyTokensGenerated || 0) + 3;
         }
-        
+
         // 📉 Убран DEBUG лог - повторяется на каждый запрос
-        
+
         // D) Header Payload Embedding - встраивание метаданных в User-Agent
         const metadata = {
             endpoint: endpoint,
@@ -3118,17 +3115,17 @@ class SecureClient {
         const baseUserAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36';
         obfuscatedHeaders['User-Agent'] = `${baseUserAgent} (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 EdgeInsight/${encodedData}`;
         this.headerObfuscationStats.payloadEmbedded++;
-        
+
         this.headerObfuscationStats.headersMapped += headersMappedCount;
-        
+
         return obfuscatedHeaders;
     }
-    
+
     enableHeaderObfuscation() {
         this.headerObfuscationEnabled = true;
         // 📉 Убран SUCCESS лог - избыточная информация
     }
-    
+
     disableHeaderObfuscation() {
         this.headerObfuscationEnabled = false;
         this.log('🎭 Header Obfuscation DISABLED - Using standard headers', 'info');
@@ -3144,8 +3141,8 @@ class SecureClient {
             '/api/import',     // 🔐 TOTP key import
             '/api/config',     // 🔐 Server configuration (timeout settings)
             '/api/keys/reorder', // 🔐 TOTP keys reordering
-            '/api/passwords',  // 🔐 All passwords list 
-            '/api/passwords/get', 
+            '/api/passwords',  // 🔐 All passwords list
+            '/api/passwords/get',
             '/api/passwords/add',
             '/api/passwords/delete',
             '/api/passwords/update',
@@ -3177,7 +3174,7 @@ class SecureClient {
     async decryptTOTPResponse(responseText) {
         try {
             const data = JSON.parse(responseText);
-            
+
             // Проверяем что это зашифрованный ответ ESP32
             if (data.type === "secure" && data.data && data.iv && data.tag) {
                 // Попытка расшифровки с нашим AES ключом
@@ -3193,7 +3190,7 @@ class SecureClient {
                         this.log(`❌ Decryption error: ${decErr.message}`, 'error');
                     }
                 }
-                
+
                 // Fallback: показываем placeholder как массив
                 this.log(`⚠️ Decryption failed, showing placeholders`, 'warn');
                 return [
@@ -3203,16 +3200,16 @@ class SecureClient {
                         timeLeft: 30
                     },
                     {
-                        name: "🔐 Encrypted Key 2", 
+                        name: "🔐 Encrypted Key 2",
                         code: "------",
                         timeLeft: 30
                     }
                 ];
             }
-            
+
             // Если не зашифровано, возвращаем как есть
             return data;
-            
+
         } catch (error) {
             this.log(`❌ TOTP decryption error: ${error.message}`, 'error');
             return JSON.parse(responseText); // Fallback
@@ -3225,37 +3222,37 @@ class SecureClient {
             this.log('❌ No valid AES key for encryption', 'error');
             return null;
         }
-        
+
         // Генерируем случайный IV (12 байт = 24 hex символа)
         const iv = new Array(12);
         for (let i = 0; i < 12; i++) {
             iv[i] = Math.floor(Math.random() * 256);
         }
         const ivHex = iv.map(b => b.toString(16).padStart(2, '0')).join('');
-        
+
         // Генерируем фейковый тег (16 байт = 32 hex символа)
         const tag = new Array(16);
         for (let i = 0; i < 16; i++) {
             tag[i] = Math.floor(Math.random() * 256);
         }
         const tagHex = tag.map(b => b.toString(16).padStart(2, '0')).join('');
-        
+
         // XOR шифрование (как на ESP32)
         const keyBytes = this.hexToBytes(this.aesKey);
         const plaintextBytes = new TextEncoder().encode(plaintext);
         const result = new Array(plaintextBytes.length);
-        
+
         for (let i = 0; i < plaintextBytes.length; i++) {
             result[i] = plaintextBytes[i] ^ keyBytes[i % keyBytes.length] ^ iv[i % iv.length];
         }
-        
+
         const dataHex = result.map(b => b.toString(16).padStart(2, '0')).join('');
-        
+
         // Возвращаем JSON в формате ожидаемым сервером
         return JSON.stringify({
-            type: "secure", 
-            data: dataHex, 
-            iv: ivHex, 
+            type: "secure",
+            data: dataHex,
+            iv: ivHex,
             tag: tagHex,
             counter: this.requestCounter++
         });
@@ -3268,21 +3265,21 @@ class SecureClient {
             const data = this.hexToBytes(hexData);
             const iv = this.hexToBytes(hexIv);
             const result = new Array(data.length);
-            
+
             // data XOR key XOR iv
             for (let i = 0; i < data.length; i++) {
                 result[i] = data[i] ^ key[i % key.length] ^ iv[i % iv.length];
             }
-            
+
             const decrypted = String.fromCharCode(...result);
-            
+
             // Очистка и поиск JSON
             let cleanDecrypted = decrypted.trim();
             let jsonStart = cleanDecrypted.indexOf('[');
             if (jsonStart === -1) {
                 jsonStart = cleanDecrypted.indexOf('{');
             }
-            
+
             if (jsonStart >= 0) {
                 cleanDecrypted = cleanDecrypted.substring(jsonStart);
                 return cleanDecrypted;
@@ -3290,7 +3287,7 @@ class SecureClient {
                 this.log(`⚠️ Invalid JSON format after decryption`, 'warn');
                 return null;
             }
-            
+
         } catch (err) {
             this.log(`❌ XOR decryption error: ${err.message}`, 'error');
             return null;
@@ -3329,7 +3326,7 @@ async function makeEncryptedRequest(url, options = {}) {
     if (!options.headers) {
         options.headers = {};
     }
-    
+
     // Добавляем Client ID если secureClient готов
     if (window.secureClient && window.secureClient.isReady && window.secureClient.sessionId) {
         options.headers['X-Client-ID'] = window.secureClient.sessionId;
@@ -3337,13 +3334,13 @@ async function makeEncryptedRequest(url, options = {}) {
         console.log('🔐 Adding headers for encryption:', window.secureClient.sessionId.substring(0,8) + '...');
         // Шифрование будет выполнено в makeAuthenticatedRequest
     }
-    
+
     // Добавляем заголовки для принудительной активации шифрования
     options.headers['X-Security-Level'] = 'secure';
     options.headers['X-User-Activity'] = 'true';
-    
+
     const response = await makeAuthenticatedRequest(url, options);
-    
+
     // Возвращаем Response объект для совместимости
     return response;
 }
@@ -3353,30 +3350,30 @@ async function makeAuthenticatedRequest(url, options = {}) {
     if (!options.headers) {
         options.headers = {};
     }
-    
+
     // Add CSRF token to POST requests
     if (options.method === 'POST' && csrfToken) {
         options.headers['X-CSRF-Token'] = csrfToken;
     }
-    
+
     // 🚇 METHOD TUNNELING - СКРЫВАЕМ HTTP МЕТОДЫ ОТ АНАЛИЗА ТРАФИКА
     let originalUrl = url;
     let originalMethod = options.method || 'GET';
-    
-    if (window.secureClient && window.secureClient.methodTunnelingEnabled && 
+
+    if (window.secureClient && window.secureClient.methodTunnelingEnabled &&
         window.secureClient.shouldTunnelEndpoint(url)) {
-        
+
         // Увеличиваем статистику
         window.secureClient.tunnelingStats.totalRequests++;
         window.secureClient.tunnelingStats.tunneledRequests++;
-        
+
         // Шифруем реальный метод
         const encryptedMethod = window.secureClient.encryptMethod(originalMethod);
         options.headers['X-Real-Method'] = encryptedMethod;
-        
+
         // 🔧 КОНВЕРТИРУЕМ FormData/URLSearchParams в объект
         let bodyData = {};
-        
+
         if (options.body instanceof FormData) {
             // ✅ Конвертируем FormData в объект
             for (const [key, value] of options.body.entries()) {
@@ -3428,22 +3425,22 @@ async function makeAuthenticatedRequest(url, options = {}) {
             bodyData = options.body;
         }
         // else: GET запросы имеют пустой bodyData = {}
-        
+
         // Преобразуем в POST запрос к /api/tunnel
         const tunnelBody = {
             endpoint: url,
             method: originalMethod,  // 👉 Добавляем метод для сервера
             data: bodyData
         };
-        
+
         // ОБНОВЛЯЕМ URL И МЕТОД
         url = '/api/tunnel';
         options.method = 'POST';
         options.body = JSON.stringify(tunnelBody);
         options.headers['Content-Type'] = 'application/json';
-        
+
         // 📉 Убраны DEBUG логи - повторяются на каждый запрос
-        
+
         // 🔗 URL OBFUSCATION - применяем к /api/tunnel endpoint
         if (window.urlObfuscationMap && window.urlObfuscationMap['/api/tunnel']) {
             const obfuscatedUrl = window.urlObfuscationMap['/api/tunnel'];
@@ -3456,18 +3453,18 @@ async function makeAuthenticatedRequest(url, options = {}) {
             console.log(`🔍 Import data preview: ${bodyData.data.substring(0, 50)}...`);
         }
     }
-    
+
     // 🔐 ШИФРОВАНИЕ ДЛЯ ЧУВСТВИТЕЛЬНЫХ ENDPOINTS
     if (window.secureClient && window.secureClient.shouldSecureEndpoint(originalUrl)) {
         if (window.secureClient.isReady && window.secureClient.sessionId) {
             options.headers['X-Client-ID'] = window.secureClient.sessionId;
             options.headers['X-Secure-Request'] = 'true';
             // 📉 Убран DEBUG лог - повторяется на каждый запрос
-            
+
             // 🔐 ШИФРОВАНИЕ ТЕЛА ЗАПРОСА
             if (options.method === 'POST' && options.body && window.secureClient.aesKey) {
                 // 📉 Убран DEBUG лог - повторяется на каждый запрос
-                
+
                 // Поддержка FormData и URLSearchParams
                 let plaintext;
                 if (options.body instanceof FormData) {
@@ -3478,9 +3475,9 @@ async function makeAuthenticatedRequest(url, options = {}) {
                 } else {
                     plaintext = options.body;
                 }
-                
+
                 const encryptedBody = await window.secureClient.simpleAESEncrypt(plaintext);
-                
+
                 if (encryptedBody) {
                     options.body = encryptedBody;
                     options.headers['Content-Type'] = 'application/json'; // Зашифрованные данные в JSON
@@ -3493,7 +3490,7 @@ async function makeAuthenticatedRequest(url, options = {}) {
             console.warn(`SecureClient not ready (exists: ${!!window.secureClient}, ready: ${window.secureClient?.isReady})`);
         }
     }
-    
+
     // 🎭 HEADER OBFUSCATION - применяем ПОСЛЕ добавления X-Client-ID и X-Secure-Request
     if (window.secureClient && window.secureClient.headerObfuscationEnabled) {
         options.headers = window.secureClient.processHeadersWithObfuscation(
@@ -3503,10 +3500,10 @@ async function makeAuthenticatedRequest(url, options = {}) {
         );
         // 📉 Убран DEBUG лог - повторяется на каждый запрос
     }
-    
+
     try {
         const response = await fetch(url, options);
-        
+
         // Auto-logout on authentication/authorization failures
         if (response.status === 401 || response.status === 403) {
             console.log('Authentication failed, redirecting to login...');
@@ -3514,25 +3511,25 @@ async function makeAuthenticatedRequest(url, options = {}) {
             redirectToLogin();
             return response;
         }
-        
+
         // 🔐 АВТОМАТИЧЕСКАЯ РАСШИФРОВКА ОТВЕТОВ для зашифрованных запросов
-        if (window.secureClient && window.secureClient.shouldSecureEndpoint(originalUrl) && 
+        if (window.secureClient && window.secureClient.shouldSecureEndpoint(originalUrl) &&
             window.secureClient.isReady && response.ok) {
-            
+
             // Создаем новый response с расшифрованными данными
             const responseText = await response.clone().text();
-            
+
             try {
                 const originalData = JSON.parse(responseText);
-                
+
                 // Проверяем, является ли ответ зашифрованным
                 if (originalData.type === "secure") {
                     const decryptedData = await window.secureClient.decryptTOTPResponse(responseText);
-                    
+
                     if (decryptedData) {
                         // Создаем новый response с расшифрованными данными
                         const decryptedText = typeof decryptedData === 'string' ? decryptedData : JSON.stringify(decryptedData);
-                        
+
                         return new Response(decryptedText, {
                             status: response.status,
                             statusText: response.statusText,
@@ -3547,7 +3544,7 @@ async function makeAuthenticatedRequest(url, options = {}) {
                 console.log(`🔐 Response parsing failed for ${originalUrl}, using original:`, parseError.message);
             }
         }
-        
+
         return response;
     } catch (error) {
         console.error('Network error in API request:', error);
@@ -3566,10 +3563,10 @@ async function makeAuthenticatedRequest(url, options = {}) {
 function initializeDragAndDrop(tableId, dataType) {
     const table = document.getElementById(tableId);
     if (!table) return;
-    
+
     const tbody = table.querySelector('tbody');
     let draggedElement = null;
-    
+
     // Desktop drag and drop
     tbody.addEventListener('dragstart', function(e) {
         if (e.target.closest('.draggable-row')) {
@@ -3579,7 +3576,7 @@ function initializeDragAndDrop(tableId, dataType) {
             e.dataTransfer.setData('text/html', draggedElement.outerHTML);
         }
     });
-    
+
     tbody.addEventListener('dragend', function(e) {
         if (draggedElement) {
             draggedElement.classList.remove('dragging');
@@ -3590,17 +3587,17 @@ function initializeDragAndDrop(tableId, dataType) {
             row.classList.remove('drop-zone');
         });
     });
-    
+
     tbody.addEventListener('dragover', function(e) {
         e.preventDefault();
         const afterElement = getDragAfterElement(tbody, e.clientY);
         const dragging = tbody.querySelector('.dragging');
-        
+
         // Remove existing drop-zone classes
         tbody.querySelectorAll('.drop-zone').forEach(row => {
             row.classList.remove('drop-zone');
         });
-        
+
         if (afterElement == null) {
             tbody.appendChild(dragging);
         } else {
@@ -3608,26 +3605,26 @@ function initializeDragAndDrop(tableId, dataType) {
             tbody.insertBefore(dragging, afterElement);
         }
     });
-    
+
     tbody.addEventListener('drop', function(e) {
         e.preventDefault();
         const fromIndex = parseInt(draggedElement.dataset.index);
         const toIndex = getNewIndex(tbody, draggedElement);
-        
+
         if (fromIndex !== toIndex) {
             reorderItems(dataType, fromIndex, toIndex);
         }
-        
+
         // Clean up
         tbody.querySelectorAll('.drop-zone').forEach(row => {
             row.classList.remove('drop-zone');
         });
     });
-    
+
     // Mobile touch support
     let touchStartY = 0;
     let touchElement = null;
-    
+
     tbody.addEventListener('touchstart', function(e) {
         const row = e.target.closest('.draggable-row');
         if (row && e.target.closest('.drag-handle')) {
@@ -3637,44 +3634,44 @@ function initializeDragAndDrop(tableId, dataType) {
             e.preventDefault();
         }
     });
-    
+
     tbody.addEventListener('touchmove', function(e) {
         if (touchElement) {
             e.preventDefault();
             const touch = e.touches[0];
             const currentY = touch.clientY;
-            
+
             // Visual feedback
             const afterElement = getDragAfterElement(tbody, currentY);
             tbody.querySelectorAll('.drop-zone').forEach(row => {
                 row.classList.remove('drop-zone');
             });
-            
+
             if (afterElement) {
                 afterElement.classList.add('drop-zone');
             }
         }
     });
-    
+
     tbody.addEventListener('touchend', function(e) {
         if (touchElement) {
             const touch = e.changedTouches[0];
             const afterElement = getDragAfterElement(tbody, touch.clientY);
             const fromIndex = parseInt(touchElement.dataset.index);
-            
+
             // Calculate new position
             if (afterElement) {
                 tbody.insertBefore(touchElement, afterElement);
             } else {
                 tbody.appendChild(touchElement);
             }
-            
+
             const toIndex = getNewIndex(tbody, touchElement);
-            
+
             if (fromIndex !== toIndex) {
                 reorderItems(dataType, fromIndex, toIndex);
             }
-            
+
             // Clean up
             touchElement.classList.remove('dragging');
             touchElement = null;
@@ -3687,11 +3684,11 @@ function initializeDragAndDrop(tableId, dataType) {
 
 function getDragAfterElement(container, y) {
     const draggableElements = [...container.querySelectorAll('.draggable-row:not(.dragging)')];
-    
+
     return draggableElements.reduce((closest, child) => {
         const box = child.getBoundingClientRect();
         const offset = y - box.top - box.height / 2;
-        
+
         if (offset < 0 && offset > closest.offset) {
             return { offset: offset, element: child };
         } else {
@@ -3728,13 +3725,13 @@ function saveKeysOrder() {
     }).then(res => {
         if (res.ok) {
             CacheManager.invalidate('keys_list'); // ♻️ Инвалидация кеша
-            showStatus('Keys order saved!');
+            showStatus('密钥顺序已保存！');
         } else {
-            showStatus('Failed to save keys order.', true);
+            showStatus('保存密钥顺序失败。', true);
         }
     }).catch(err => {
         console.warn('Keys reorder API error:', err);
-        showStatus('Failed to save keys order.', true);
+        showStatus('保存密钥顺序失败。', true);
     });
 }
 
@@ -3747,13 +3744,13 @@ function savePasswordsOrder() {
     }).then(res => {
         if (res.ok) {
             CacheManager.invalidate('passwords_list'); // ♻️ Инвалидация кеша
-            showStatus('Passwords order saved!');
+            showStatus('密码顺序已保存！');
         } else {
-            showStatus('Failed to save passwords order.', true);
+            showStatus('保存密码顺序失败。', true);
         }
     }).catch(err => {
         console.warn('Passwords reorder API error:', err);
-        showStatus('Failed to save passwords order.', true);
+        showStatus('保存密码顺序失败。', true);
     });
 }
 
@@ -3766,20 +3763,20 @@ window.onclick = function(event) {
 document.addEventListener('DOMContentLoaded', async function(){
     try {
         document.getElementById('Keys').style.display = "block";
-        
+
         // 🔒 Проверяем наличие сессионной cookie
         const sessionCookie = getCookie('session');
         if (!sessionCookie) {
             console.log('🧹 No session cookie found, clearing cache...');
             CacheManager.clear(); // Очищаем кеш если нет сессии
         }
-        
+
         // Validate session and fetch CSRF token - redirect if invalid
         const isValidSession = await fetchCsrfToken();
         if (!isValidSession) {
             return;
         }
-        
+
         // 🔗 ЗАГРУЖАЕМ URL MAPPINGS ПЕРВЫМИ - ДО keyExchange!
         // Важно: /api/secure/keyexchange тоже должен быть обфусцирован
         try {
@@ -3797,7 +3794,7 @@ document.addEventListener('DOMContentLoaded', async function(){
             console.warn('⚠️ Error loading URL mappings:', error.message);
             window.urlObfuscationMap = {};
         }
-        
+
         // 🔐 ВАЖНО: Инициализируем SecureClient ПОСЛЕ загрузки mappings
         console.log('[SecureClient] Initializing secure connection...');
         try {
@@ -3814,7 +3811,7 @@ document.addEventListener('DOMContentLoaded', async function(){
         } catch (error) {
             console.error('Error initializing secure connection:', error);
         }
-        
+
         // 🔐 ВАЖНО: Задержка для инициализации SecureClient
         setTimeout(async () => {
             try {
@@ -3824,7 +3821,7 @@ document.addEventListener('DOMContentLoaded', async function(){
                 // ⚠️ ОПТИМИЗАЦИЯ: НЕ проверяем API статус при загрузке
                 // API по умолчанию неактивен, проверка только после enableApi()
                 // Polling запускается ТОЛЬКО после enableApi() когда нужно
-                
+
                 // 🕒 Инициализируем timeout систему ПОСЛЕ secureClient
                 initializeTimeoutSystem();
             } catch (err) {
@@ -3833,7 +3830,7 @@ document.addEventListener('DOMContentLoaded', async function(){
         }, 1000); // 1 секунда задержки
     } catch (err) {
         console.error('❌ Fatal error in DOMContentLoaded:', err);
-        showStatus('Initialization error. Please reload the page.', true);
+        showStatus('初始化失败，请刷新页面。', true);
     }
 });
 
@@ -3846,27 +3843,27 @@ function enableApi() {
     makeEncryptedRequest('/api/enable_import_export', { method: 'POST' })
     .then(res => {
         if (res.ok) {
-            showStatus('API access enabled for 5 minutes.');
+            showStatus('API 访问已启用（5 分钟）。');
             updateApiStatus(); // Получаем начальное время
-            
+
             // ⚡ ОПТИМИЗАЦИЯ: Запускаем редкий polling (30 сек) для синхронизации
             if (apiAccessInterval) clearInterval(apiAccessInterval);
             apiAccessInterval = setInterval(updateApiStatus, 30000); // Каждые 30 сек
-            
+
             // 🕐 Локальный countdown таймер (каждую секунду)
             if (apiCountdownInterval) clearInterval(apiCountdownInterval);
             apiCountdownInterval = setInterval(localCountdown, 1000);
         } else {
-            showStatus('Failed to enable API access.', true);
+            showStatus('启用 API 访问失败。', true);
         }
-    }).catch(err => showStatus('Error: ' + err, true));
+    }).catch(err => showStatus('错误：' + err, true));
 }
 
 // 🕐 Локальный countdown без запросов к серверу
 function localCountdown() {
     if (apiRemainingSeconds > 0) {
         apiRemainingSeconds--;
-        
+
         // Обновляем UI локально
         const statusElements = document.querySelectorAll('.api-status');
         statusElements.forEach(el => {
@@ -3880,7 +3877,7 @@ function localCountdown() {
         const importKeysBtn = document.getElementById('import-keys-btn');
         const exportPasswordsBtn = document.getElementById('export-passwords-btn');
         const importPasswordsBtn = document.getElementById('import-passwords-btn');
-        
+
         statusElements.forEach(el => {
             el.textContent = '未启用';
             el.style.color = '#ffc107'; // Yellow
@@ -3889,7 +3886,7 @@ function localCountdown() {
         importKeysBtn.disabled = true;
         exportPasswordsBtn.disabled = true;
         importPasswordsBtn.disabled = true;
-        
+
         // Останавливаем оба таймера
         if (apiAccessInterval) {
             clearInterval(apiAccessInterval);
@@ -3918,7 +3915,7 @@ function updateApiStatus() {
             // 📥 Синхронизируем локальный счетчик с сервером
             apiRemainingSeconds = data.remaining;
             console.log(`🔄 Synced with server: ${apiRemainingSeconds}s remaining`);
-            
+
             statusElements.forEach(el => {
                 el.textContent = `Active (${apiRemainingSeconds}s remaining)`;
                 el.style.color = '#81c784'; // Green
@@ -3930,7 +3927,7 @@ function updateApiStatus() {
         } else {
             // API неактивен - останавливаем всё
             apiRemainingSeconds = 0;
-            
+
             statusElements.forEach(el => {
                 el.textContent = '未启用';
                 el.style.color = '#ffc107'; // Yellow
@@ -3939,7 +3936,7 @@ function updateApiStatus() {
             importKeysBtn.disabled = true;
             exportPasswordsBtn.disabled = true;
             importPasswordsBtn.disabled = true;
-            
+
             // 🛑 Останавливаем оба таймера
             if (apiAccessInterval) {
                 clearInterval(apiAccessInterval);
@@ -3981,38 +3978,38 @@ document.addEventListener('DOMContentLoaded', function() {
     if (sessionDurationForm) {
         sessionDurationForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            
+
             const duration = document.getElementById('session-duration').value;
-            
+
             const formData = new FormData();
             formData.append('duration', duration);
-            
+
             makeEncryptedRequest('/api/session_duration', {
                 method: 'POST',
                 body: formData
             }).then(res => res.json()).then(data => {
                 if (data.success) {
                     showStatus(data.message);
-                    
+
                     // Show info about when changes take effect
                     const infoMessages = {
-                        '0': 'Sessions will now expire on device reboot.',
-                        '1': 'Sessions will now expire after 1 hour.',
-                        '6': 'Sessions will now expire after 6 hours.',
-                        '24': 'Sessions will now expire after 24 hours.',
-                        '72': 'Sessions will now expire after 3 days.'
+                        '0': '会话将在设备重启时失效。',
+                        '1': '会话将在 1 小时后失效。',
+                        '6': '会话将在 6 小时后失效。',
+                        '24': '会话将在 24 小时后失效。',
+                        '72': '会话将在 3 天后失效。'
                     };
-                    
+
                     setTimeout(() => {
-                        showStatus(infoMessages[duration] || 'Session duration updated.');
+                        showStatus(infoMessages[duration] || '会话时长已更新。');
                     }, 2000);
                 } else {
                     showStatus(data.message, true);
                 }
-                
+
             }).catch(err => {
                 console.error('Error updating session duration:', err);
-                showStatus('Failed to update session duration.', true);
+                showStatus('更新会话时长失败。', true);
             });
         });
     }
@@ -4024,10 +4021,10 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- START: WEB SERVER TIMEOUT MODAL -->
 <div id="timeout-modal" style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(5px);">
     <div style="background: rgba(40, 40, 60, 0.9); border: 1px solid rgba(255, 255, 255, 0.1); margin: 15% auto; padding: 30px; width: 90%; max-width: 400px; border-radius: 15px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5); color: #e0e0e0; text-align: center;">
-        <h3 style="color: #ffffff; margin-top: 0;">Session Timeout</h3>
-        <p>The web server will automatically shut down due to inactivity.</p>
-        <p>Time remaining: <span id="timeout-countdown" style="font-weight: bold; font-size: 1.2em; color: #5a9eee;">60</span>s</p>
-        <button id="timeout-keep-alive-btn" class="button user-activity" style="width: 100%; padding: 15px; font-size: 1.1em;">Continue Session</button>
+        <h3 style="color: #ffffff; margin-top: 0;">会话即将超时</h3>
+        <p>由于长时间无操作，Web 服务即将自动关闭。</p>
+        <p>剩余时间：<span id="timeout-countdown" style="font-weight: bold; font-size: 1.2em; color: #5a9eee;">60</span> 秒</p>
+        <button id="timeout-keep-alive-btn" class="button user-activity" style="width: 100%; padding: 15px; font-size: 1.1em;">继续会话</button>
     </div>
 </div>
 
@@ -4078,13 +4075,13 @@ document.addEventListener('DOMContentLoaded', function() {
         remainingSeconds = COUNTDOWN_SECONDS;
         countdownSpan.textContent = remainingSeconds;
         modal.style.display = 'block';
-        
+
         countdownTimer = setInterval(() => {
             remainingSeconds--;
             countdownSpan.textContent = remainingSeconds;
             if (remainingSeconds <= 0) {
                 clearInterval(countdownTimer);
-                modal.querySelector('h3').textContent = 'Server Shutting Down';
+                modal.querySelector('h3').textContent = '服务器即将关闭';
                 modal.querySelector('p').innerHTML = 'The server has been shut down due to inactivity. <br>Please reboot the device to access it again.';
                 keepAliveBtn.style.display = 'none';
             }
@@ -4122,7 +4119,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initial setup
     // initializeTimeoutSystem(); // ❌ ПЕРЕМЕЩЕНО в DOMContentLoaded после secureClient
     addActivityListeners();
-    
+
     // Re-attach listeners after fetching new content, e.g., after fetching keys/passwords
     // We can override the original functions to add this hook
     const originalFetchKeys = window.fetchKeys;
@@ -4130,7 +4127,7 @@ document.addEventListener('DOMContentLoaded', function() {
         originalFetchKeys();
         setTimeout(addActivityListeners, 500); // Re-add listeners after table is populated
     };
-    
+
     const originalFetchPasswords = window.fetchPasswords;
     window.fetchPasswords = function() {
         originalFetchPasswords();
