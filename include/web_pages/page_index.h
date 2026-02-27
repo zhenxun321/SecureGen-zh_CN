@@ -1066,7 +1066,11 @@ progress::-webkit-progress-value {
         <!-- Dynamic Form Title -->
         <div class="password-form-title" id="password-form-title">
             <span class="title-icon">🔒</span>
+<<<<<<< codex/add-chinese-localization-for-project
             <span id="password-form-title-text">修改网页密码库密码</span>
+=======
+            <span id="password-form-title-text">Change 网页密码库 Password</span>
+>>>>>>> master
         </div>
         
         <!-- Dynamic Description -->
