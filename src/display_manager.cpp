@@ -703,7 +703,7 @@ void DisplayManager::drawPasswordLayout(const String& name, const String& passwo
     // Создаем частично замаскированную версию пароля
     String maskedPassword = "";
     if (password.length() == 0) {
-        maskedPassword = "[Empty]";
+        maskedPassword = "[空]";
     } else if (password.length() == 1) {
         maskedPassword = password.substring(0, 1) + "*";
     } else if (password.length() == 2) {

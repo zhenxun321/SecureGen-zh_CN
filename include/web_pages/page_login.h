@@ -244,7 +244,7 @@ const char login_html[] PROGMEM = R"rawliteral(
                 
                 const updateTimer = () => {
                     if (timeLeft > 0) {
-                        lockoutMessage.textContent = `Too many failed attempts. Please try again in ${timeLeft} second(s).`;
+                        lockoutMessage.textContent = `登录失败次数过多，请在 ${timeLeft} 秒后重试。`;
                         timeLeft--;
                     } else {
                         clearInterval(timerInterval);
