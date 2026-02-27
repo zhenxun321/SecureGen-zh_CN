@@ -2,11 +2,11 @@
 
 const char page_register[] PROGMEM = R"rawliteral(
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register Admin - T-Display TOTP</title>
+    <title>注册管理员 - T-Display TOTP</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="alternate icon" href="/favicon.ico">
     <style>
@@ -155,35 +155,35 @@ const char page_register[] PROGMEM = R"rawliteral(
 </head>
 <body>
     <div class="container">
-        <h2>Create Admin Account</h2>
+        <h2>创建管理员账号</h2>
         <form action="/register" method="post">
             <div class="input-group">
-                <label for="username">Username</label>
+                <label for="username">用户名</label>
                 <input type="text" id="username" name="username" required autocomplete="off">
             </div>
             <div class="input-group">
-                <label for="password">Password</label>
+                <label for="password">密码</label>
                 <div class="password-input-container">
                     <input type="password" id="password" name="password" required>
                     <span class="password-toggle" onclick="togglePasswordVisibility('password', this)">👁</span>
                 </div>
             </div>
             <ul class="password-criteria">
-                <li id="length">At least 8 characters</li>
-                <li id="uppercase">An uppercase letter</li>
-                <li id="lowercase">A lowercase letter</li>
-                <li id="number">A number</li>
-                <li id="special">A special character (!@#$%)</li>
+                <li id="length">至少 8 个字符</li>
+                <li id="uppercase">至少 1 个大写字母</li>
+                <li id="lowercase">至少 1 个小写字母</li>
+                <li id="number">至少 1 个数字</li>
+                <li id="special">至少 1 个特殊字符（!@#$%）</li>
             </ul>
             <div class="input-group">
-                <label for="confirm-password">Confirm Password</label>
+                <label for="confirm-password">确认密码</label>
                 <div class="password-input-container">
                     <input type="password" id="confirm-password" name="confirm_password" required>
                     <span class="password-toggle" onclick="togglePasswordVisibility('confirm-password', this)">👁</span>
                 </div>
             </div>
             <div id="confirm-message"></div>
-            <button type="submit" id="register-button" disabled>Register</button>
+            <button type="submit" id="register-button" disabled>注册</button>
         </form>
     </div>
 
@@ -218,7 +218,7 @@ const char page_register[] PROGMEM = R"rawliteral(
                 console.log('🔗 Loaded URL obfuscation mappings for register page');
             })
             .catch(err => {
-                console.warn('⚠️ Failed to load URL mappings, using standard URLs:', err);
+                console.warn('⚠️ 加载 URL 映射失败，使用标准 URL:', err);
             });
 
         // Password visibility toggle function
@@ -272,11 +272,11 @@ const char page_register[] PROGMEM = R"rawliteral(
                 return false;
             }
             if (password === confirmPassword) {
-                confirmMessage.textContent = 'Passwords match!';
+                confirmMessage.textContent = '两次输入密码一致！';
                 confirmMessage.className = 'match';
                 return true;
             } else {
-                confirmMessage.textContent = 'Passwords do not match.';
+                confirmMessage.textContent = '两次输入密码不一致。';
                 confirmMessage.className = 'no-match';
                 return false;
             }
@@ -352,7 +352,7 @@ const char page_register[] PROGMEM = R"rawliteral(
                 }
             } catch (err) {
                 console.error('Registration error:', err);
-                alert('Network error. Please try again.');
+                alert('网络错误，请重试。');
             }
         });
     </script>

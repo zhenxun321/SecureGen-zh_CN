@@ -2,11 +2,11 @@
 
 const char login_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - T-Display TOTP</title>
+    <title>登录 - T-Display TOTP</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="alternate icon" href="/favicon.ico">
     <style>
@@ -148,22 +148,22 @@ const char login_html[] PROGMEM = R"rawliteral(
 </head>
 <body>
     <div class="container">
-        <h2>Admin Login</h2>
+        <h2>管理员登录</h2>
         <form action="/login" method="post">
             <div class="input-group">
-                <label for="username">Username</label>
+                <label for="username">用户名</label>
                 <input type="text" id="username" name="username" required>
             </div>
             <div class="input-group">
-                <label for="password">Password</label>
+                <label for="password">密码</label>
                 <div class="password-input-container">
                     <input type="password" id="password" name="password" required>
                     <span class="password-toggle" onclick="togglePasswordVisibility('password', this)">👁</span>
                 </div>
             </div>
-            <button type="submit" id="loginButton">Login</button>
+            <button type="submit" id="loginButton">登录</button>
         </form>
-        <p id="errorMessage" class="error-message">Invalid username or password.</p>
+        <p id="errorMessage" class="error-message">用户名或密码错误。</p>
         <p id="lockoutMessage" class="lockout-message"></p>
     </div>
 
