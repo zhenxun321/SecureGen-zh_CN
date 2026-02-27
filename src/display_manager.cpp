@@ -2,6 +2,27 @@
 #include "config.h"
 #include "log_manager.h"
 
+#if __has_include(<U8g2_for_TFT_eSPI.h>)
+#include <U8g2_for_TFT_eSPI.h>
+#define SECUREGEN_HAS_U8G2 1
+#else
+#define SECUREGEN_HAS_U8G2 0
+#endif
+
+#if SECUREGEN_HAS_U8G2
+namespace {
+U8g2_for_TFT_eSPI g_u8g2;
+bool g_u8g2Initialized = false;
+
+void ensureU8g2Ready(TFT_eSPI& tft) {
+    if (!g_u8g2Initialized) {
+        g_u8g2.begin(tft);
+        g_u8g2Initialized = true;
+    }
+}
+} // namespace
+#endif
+
 // Helper for the animation loop
 void schedule_next_update(DisplayManager* dm, AnimationManager* am);
 
@@ -458,12 +479,36 @@ void DisplayManager::clearMessageArea(int x, int y, int width, int height) {
 TFT_eSPI* DisplayManager::getTft() { return &tft; }
 void DisplayManager::fillRect(int32_t x, int32_t t, int32_t w, int32_t h, uint32_t color) { tft.fillRect(x, t, w, h, color); }
 
+void DisplayManager::drawUtf8Centered(const String& text, int x, int y, uint16_t fg, uint16_t bg, bool compact) {
+#if SECUREGEN_HAS_U8G2
+    ensureU8g2Ready(tft);
+    g_u8g2.setFont(u8g2_font_unifont_t_chinese2);
+    g_u8g2.setForegroundColor(fg);
+    g_u8g2.setBackgroundColor(bg);
+
+    int textWidth = g_u8g2.getUTF8Width(text.c_str());
+    int baselineY = y + ((g_u8g2.getFontAscent() - g_u8g2.getFontDescent()) / 2);
+    int drawX = x - textWidth / 2;
+
+    if (compact) {
+        baselineY -= 2;
+    }
+
+    g_u8g2.setCursor(drawX, baselineY);
+    g_u8g2.print(text.c_str());
+#else
+    (void)compact;
+    tft.setTextColor(fg, bg);
+    tft.drawString(text, x, y);
+#endif
+}
+
 bool DisplayManager::promptWebServerSelection() {
     tft.fillScreen(_currentThemeColors->background_dark);
     tft.setTextColor(_currentThemeColors->text_primary);
     tft.setTextDatum(MC_DATUM);
     tft.setTextSize(2);
-    tft.drawString("Start Web Server?", tft.width() / 2, 30);
+    drawUtf8Centered("启动 Web 服务?", tft.width() / 2, 30, _currentThemeColors->text_primary, _currentThemeColors->background_dark, true);
 
     bool selection = true; // true for "Yes", false for "No"
     
@@ -487,7 +532,9 @@ bool DisplayManager::promptWebServerSelection() {
             tft.drawRoundRect(yesX, btnY, btnWidth, btnHeight, 8, _currentThemeColors->text_secondary);
             tft.setTextColor(_currentThemeColors->text_primary);
         }
-        tft.drawString("Yes", yesX + btnWidth / 2, btnY + btnHeight / 2);
+        drawUtf8Centered("是", yesX + btnWidth / 2, btnY + btnHeight / 2,
+                         currentSelection ? _currentThemeColors->background_dark : _currentThemeColors->text_primary,
+                         _currentThemeColors->background_dark, true);
 
         // Draw "No" button
         if (!currentSelection) {
@@ -498,7 +545,9 @@ bool DisplayManager::promptWebServerSelection() {
             tft.drawRoundRect(noX, btnY, btnWidth, btnHeight, 8, _currentThemeColors->text_secondary);
             tft.setTextColor(_currentThemeColors->text_primary);
         }
-        tft.drawString("No", noX + btnWidth / 2, btnY + btnHeight / 2);
+        drawUtf8Centered("否", noX + btnWidth / 2, btnY + btnHeight / 2,
+                         !currentSelection ? _currentThemeColors->background_dark : _currentThemeColors->text_primary,
+                         _currentThemeColors->background_dark, true);
         
         // Reset text color to default for other text elements
         tft.setTextColor(_currentThemeColors->text_primary);
@@ -544,12 +593,12 @@ StartupMode DisplayManager::promptModeSelection() {
     tft.setTextColor(_currentThemeColors->text_primary);
     tft.setTextDatum(MC_DATUM);
     tft.setTextSize(2);
-    tft.drawString("Select Mode", tft.width() / 2, 20);
+    drawUtf8Centered("选择模式", tft.width() / 2, 20, _currentThemeColors->text_primary, _currentThemeColors->background_dark, true);
     
     // Подзаголовок с подсказкой
     tft.setTextSize(1);
     tft.setTextColor(_currentThemeColors->text_secondary);
-    tft.drawString("Auto: WiFi Mode (default)", tft.width() / 2, 45);
+    drawUtf8Centered("自动: WiFi 模式(默认)", tft.width() / 2, 45, _currentThemeColors->text_secondary, _currentThemeColors->background_dark, true);
 
     bool selection = true; // true для AP, false для Offline
     
@@ -588,7 +637,9 @@ StartupMode DisplayManager::promptModeSelection() {
         }
         tft.setTextDatum(MC_DATUM);
         tft.setTextSize(1);
-        tft.drawString("Offline", offlineX + btnWidth/2, btnY + btnHeight/2);
+        drawUtf8Centered("离线", offlineX + btnWidth/2, btnY + btnHeight/2,
+                         !currentSelection ? _currentThemeColors->background_dark : _currentThemeColors->text_secondary,
+                         _currentThemeColors->background_dark, true);
         
         // Сброс цвета текста
         tft.setTextColor(_currentThemeColors->text_primary);
@@ -679,7 +730,7 @@ void DisplayManager::drawPasswordLayout(const String& name, const String& passwo
 }
 
 void DisplayManager::drawBleInitLoader(int progress) {
-    drawGenericLoader(progress, "Activating BLE...");
+    drawGenericLoader(progress, "正在启动 BLE...");
 }
 
 void DisplayManager::drawGenericLoader(int progress, const String& text) {
@@ -698,7 +749,7 @@ void DisplayManager::drawGenericLoader(int progress, const String& text) {
         
         // Заголовок
         int textY = tft.height() / 2 - 30;
-        tft.drawString(text, tft.width() / 2, textY);
+        drawUtf8Centered(text, tft.width() / 2, textY, _currentThemeColors->text_primary, _currentThemeColors->background_dark, true);
         
         // Рамка прогресс-бара (один раз)
         int barWidth = 100;
@@ -750,10 +801,10 @@ void DisplayManager::drawBleAdvertisingPage(const String& deviceName, const Stri
     tft.setTextDatum(MC_DATUM);
     tft.setTextColor(_currentThemeColors->text_primary);
     tft.setTextSize(2);
-    tft.drawString("BLE Broadcasting", tft.width() / 2, 20);
+    drawUtf8Centered("BLE 广播中", tft.width() / 2, 20, _currentThemeColors->text_primary, _currentThemeColors->background_dark, true);
     
     tft.setTextSize(1);
-    tft.drawString("Device Name:", tft.width() / 2, 50);
+    drawUtf8Centered("设备名称:", tft.width() / 2, 50, _currentThemeColors->text_primary, _currentThemeColors->background_dark, true);
     tft.setTextSize(2);
     tft.drawString(deviceName, tft.width() / 2, 70);
     
@@ -762,7 +813,7 @@ void DisplayManager::drawBleAdvertisingPage(const String& deviceName, const Stri
 
     // Button labels
     tft.setTextSize(1);
-    tft.drawString("Back", 30, tft.height() - 20);
+    drawUtf8Centered("返回", 30, tft.height() - 20, _currentThemeColors->text_primary, _currentThemeColors->background_dark, true);
 }
 
 void DisplayManager::drawBleConfirmPage(const String& passwordName, const String& password, const String& deviceName) {
@@ -794,16 +845,16 @@ void DisplayManager::drawBleConfirmPage(const String& passwordName, const String
     // Информация об устройстве
     tft.setTextSize(1);
     tft.setTextColor(_currentThemeColors->accent_primary);
-    tft.drawString("BLE Connected", tft.width() / 2, tft.height() / 2 + 20);
+    drawUtf8Centered("BLE 已连接", tft.width() / 2, tft.height() / 2 + 20, _currentThemeColors->accent_primary, _currentThemeColors->background_dark, true);
 
     // Кнопки внизу
     tft.setTextSize(1);
     tft.setTextColor(_currentThemeColors->text_secondary);
     tft.setTextDatum(TL_DATUM);
-    tft.drawString("Back", 5, tft.height() - 10);
+    drawUtf8Centered("返回", 20, tft.height() - 10, _currentThemeColors->text_secondary, _currentThemeColors->background_dark, true);
     
     tft.setTextDatum(TR_DATUM);
-    tft.drawString("Send", tft.width() - 5, tft.height() - 10);
+    drawUtf8Centered("发送", tft.width() - 20, tft.height() - 10, _currentThemeColors->text_secondary, _currentThemeColors->background_dark, true);
     
     // Восстанавливаем центральное выравнивание
     tft.setTextDatum(MC_DATUM);
@@ -814,7 +865,7 @@ void DisplayManager::drawBleSendingPage() {
     tft.setTextDatum(MC_DATUM);
     tft.setTextColor(_currentThemeColors->text_primary);
     tft.setTextSize(2);
-    tft.drawString("Sending...", tft.width() / 2, tft.height() / 2);
+    drawUtf8Centered("发送中...", tft.width() / 2, tft.height() / 2, _currentThemeColors->text_primary, _currentThemeColors->background_dark, true);
 }
 
 void DisplayManager::drawBleResultPage(bool success) {
@@ -823,11 +874,11 @@ void DisplayManager::drawBleResultPage(bool success) {
     if (success) {
         tft.setTextColor(_currentThemeColors->accent_primary);
         tft.setTextSize(2);
-        tft.drawString("Sent Successfully!", tft.width() / 2, tft.height() / 2);
+        drawUtf8Centered("发送成功!", tft.width() / 2, tft.height() / 2, _currentThemeColors->accent_primary, _currentThemeColors->background_dark, true);
     } else {
         tft.setTextColor(_currentThemeColors->error_color);
         tft.setTextSize(2);
-        tft.drawString("Failed to Send", tft.width() / 2, tft.height() / 2);
+        drawUtf8Centered("发送失败", tft.width() / 2, tft.height() / 2, _currentThemeColors->error_color, _currentThemeColors->background_dark, true);
     }
 }
 
@@ -894,9 +945,9 @@ void DisplayManager::drawNoItemsPage(const String& text) {
     tft.setTextColor(_currentThemeColors->text_primary);
     tft.setTextSize(1); // Уменьшенный размер
     
-    String line1 = "No " + text + " found";
-    tft.drawString(line1, tft.width() / 2, tft.height() / 2 - 12);
+    String line1 = "未找到 " + text;
+    drawUtf8Centered(line1, tft.width() / 2, tft.height() / 2 - 12, _currentThemeColors->text_primary, _currentThemeColors->background_dark, true);
     
     tft.setTextColor(_currentThemeColors->text_secondary);
-    tft.drawString("Add via Web UI", tft.width() / 2, tft.height() / 2 + 8);
+    drawUtf8Centered("请在 Web 界面添加", tft.width() / 2, tft.height() / 2 + 8, _currentThemeColors->text_secondary, _currentThemeColors->background_dark, true);
 }

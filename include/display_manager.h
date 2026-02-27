@@ -54,6 +54,8 @@ public:
     void updateMessage(const String& text, int x, int y, int size = 2); // Update text without full redraw
     void clearMessageArea(int x, int y, int width, int height); // Clear specific area
     void fillRect(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t color);
+    // UTF-8 text helper (uses U8g2 when available, falls back to TFT_eSPI drawString)
+    void drawUtf8Centered(const String& text, int x, int y, uint16_t fg = TFT_WHITE, uint16_t bg = TFT_BLACK, bool compact = false);
     TFT_eSPI* getTft();
 
 private:
