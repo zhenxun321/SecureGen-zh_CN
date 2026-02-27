@@ -1,5 +1,7 @@
 # ESP32 T-Display Multifunctional Security Device
 
+> 🌐 Language: English | [简体中文](README.zh-CN.md)
+
 <div align="center">
 
 **Open-source hardware security device featuring TOTP Authenticator and Password Manager with BLE Keyboard**
