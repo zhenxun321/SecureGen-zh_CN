@@ -1066,7 +1066,7 @@ progress::-webkit-progress-value {
         <!-- Dynamic Form Title -->
         <div class="password-form-title" id="password-form-title">
             <span class="title-icon">🔒</span>
-            <span id="password-form-title-text">修改网页密码库密码</span>
+            <span id="password-form-title-text">修改 Web 密码库密码</span>
         </div>
 
         <!-- Dynamic Description -->
@@ -1079,7 +1079,7 @@ progress::-webkit-progress-value {
         </div>
         <hr class="modern-hr">
         <form id="change-password-form">
-            <label for="new-password" id="new-password-label">新的网页密码</label>
+            <label for="new-password" id="new-password-label">新的 Web 密码</label>
             <div class="password-input-container">
                 <input type="password" id="new-password" name="new-password" required class="user-activity">
                 <span class="password-toggle" onclick="togglePasswordVisibility('new-password', this)">O</span>
@@ -1091,7 +1091,7 @@ progress::-webkit-progress-value {
                 <li id="pwd-number">至少 1 个数字</li>
                 <li id="pwd-special">至少 1 个特殊字符（!@#$%）</li>
             </ul>
-            <label for="confirm-password" id="confirm-password-label">确认新的网页密码</label>
+            <label for="confirm-password" id="confirm-password-label">确认新的 Web 密码</label>
             <div class="password-input-container">
                 <input type="password" id="confirm-password" name="confirm-password" required class="user-activity">
                 <span class="password-toggle" onclick="togglePasswordVisibility('confirm-password', this)">O</span>
@@ -2584,13 +2584,13 @@ function switchPasswordType(type) {
 
     if (type === 'web') {
         webToggle.classList.add('active', 'web-active');
-        formTitle.textContent = '修改网页密码库密码';
+        formTitle.textContent = '修改 Web 密码库密码';
         titleIcon.textContent = '🔒';
         description.textContent = '修改用于访问此 Web 界面的密码。';
-        newLabel.textContent = '新的网页密码';
-        confirmLabel.textContent = '确认新的网页密码';
+        newLabel.textContent = '新的 Web 密码';
+        confirmLabel.textContent = '确认新的 Web 密码';
         criteriaList.style.display = 'block';
-        submitBtn.textContent = '修改网页密码';
+        submitBtn.textContent = '修改 Web 密码';
     } else {
         wifiToggle.classList.add('active', 'wifi-active');
         formTitle.textContent = '修改 WiFi 接入点密码';
