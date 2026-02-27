@@ -895,7 +895,7 @@ progress::-webkit-progress-value {
     <div class="content-box">
         <h4>当前密钥</h4>
         <table id="keys-table">
-            <thead><tr><th>::</th><th>Name</th><th>Code</th><th>Timer</th><th>Progress</th><th>Actions</th></tr></thead>
+            <thead><tr><th>::</th><th>名称</th><th>验证码</th><th>计时</th><th>进度</th><th>操作</th></tr></thead>
             <tbody></tbody>
         </table>
     </div>
@@ -931,7 +931,7 @@ progress::-webkit-progress-value {
     <div class="content-box">
         <h4>当前密码</h4>
         <table id="passwords-table">
-            <thead><tr><th>::</th><th>Name</th><th>Actions</th></tr></thead>
+            <thead><tr><th>::</th><th>名称</th><th>操作</th></tr></thead>
             <tbody></tbody>
         </table>
     </div>
@@ -965,7 +965,7 @@ progress::-webkit-progress-value {
         <div style="margin-bottom: 20px;">
             <label for="splash-mode-select" style="font-weight: bold; display: block; margin-bottom: 10px;">内置启动画面模式：</label>
             <select id="splash-mode-select" class="user-activity" style="width: 100%; padding: 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px;">
-                <option value="disabled">Disabled (No splash screen)</option>
+                <option value="disabled">禁用（不显示启动画面）</option>
                 <option value="securegen">SecureGen</option>
                 <option value="bladerunner">BladeRunner</option>
                 <option value="combs">Combs</option>
@@ -979,12 +979,12 @@ progress::-webkit-progress-value {
         <form id="display-timeout-form">
             <label for="display-timeout">屏幕超时（多久后关闭显示）：</label>
             <select id="display-timeout" name="display_timeout" required class="user-activity">
-                <option value="15">15 seconds</option>
-                <option value="30">30 seconds</option>
-                <option value="60">1 minute</option>
-                <option value="300">5 minutes</option>
-                <option value="1800">30 minutes</option>
-                <option value="0">Never</option>
+                <option value="15">15 秒</option>
+                <option value="30">30 秒</option>
+                <option value="60">1 分钟</option>
+                <option value="300">5 分钟</option>
+                <option value="1800">30 分钟</option>
+                <option value="0">从不</option>
             </select>
             <button type="submit" class="button user-activity">保存超时设置</button>
         </form>
@@ -1058,7 +1058,7 @@ progress::-webkit-progress-value {
                 </div>
                 <div class="toggle-option" id="wifi-password-toggle">
                     <span class="toggle-icon">📶</span>
-                    <span>WiFi Access Point</span>
+                    <span>WiFi 接入点</span>
                 </div>
             </div>
         </div>
@@ -1066,65 +1066,69 @@ progress::-webkit-progress-value {
         <!-- Dynamic Form Title -->
         <div class="password-form-title" id="password-form-title">
             <span class="title-icon">🔒</span>
+<<<<<<< codex/add-chinese-localization-for-project
+            <span id="password-form-title-text">修改网页密码库密码</span>
+=======
             <span id="password-form-title-text">Change 网页密码库 Password</span>
+>>>>>>> master
         </div>
         
         <!-- Dynamic Description -->
         <div class="password-type-description" id="password-type-description">
-            Change the password for accessing this web interface.
+            修改用于访问此 Web 界面的密码。
         </div>
         
         <div class="login-display-container">
-            <p>Current Login: <strong id="current-admin-login">Loading...</strong></p>
+            <p>当前登录名：<strong id="current-admin-login">加载中...</strong></p>
         </div>
         <hr class="modern-hr">
         <form id="change-password-form">
-            <label for="new-password" id="new-password-label">New Web Password</label>
+            <label for="new-password" id="new-password-label">新的网页密码</label>
             <div class="password-input-container">
                 <input type="password" id="new-password" name="new-password" required class="user-activity">
                 <span class="password-toggle" onclick="togglePasswordVisibility('new-password', this)">O</span>
             </div>
             <ul class="password-criteria">
-                <li id="pwd-length">At least 8 characters</li>
-                <li id="pwd-uppercase">An uppercase letter</li>
-                <li id="pwd-lowercase">A lowercase letter</li>
-                <li id="pwd-number">A number</li>
-                <li id="pwd-special">A special character (!@#$%)</li>
+                <li id="pwd-length">至少 8 个字符</li>
+                <li id="pwd-uppercase">至少 1 个大写字母</li>
+                <li id="pwd-lowercase">至少 1 个小写字母</li>
+                <li id="pwd-number">至少 1 个数字</li>
+                <li id="pwd-special">至少 1 个特殊字符（!@#$%）</li>
             </ul>
-            <label for="confirm-password" id="confirm-password-label">Confirm New Web Password</label>
+            <label for="confirm-password" id="confirm-password-label">确认新的网页密码</label>
             <div class="password-input-container">
                 <input type="password" id="confirm-password" name="confirm-password" required class="user-activity">
                 <span class="password-toggle" onclick="togglePasswordVisibility('confirm-password', this)">O</span>
             </div>
             <div id="password-confirm-message"></div>
-            <button type="submit" id="change-password-btn" class="button user-activity" disabled>Change Password</button>
+            <button type="submit" id="change-password-btn" class="button user-activity" disabled>修改密码</button>
         </form>
     </div>
     <div class="form-container">
-        <h4>Bluetooth Settings</h4>
+        <h4>蓝牙设置</h4>
         <form id="ble-settings-form">
-            <label for="ble-device-name">BLE Device Name (max 15 chars):</label>
+            <label for="ble-device-name">BLE 设备名（最多 15 个字符）：</label>
             <input type="text" id="ble-device-name" name="device_name" maxlength="15" required class="user-activity">
-            <button type="submit" class="button user-activity">Save BLE Name</button>
+            <button type="submit" class="button user-activity">保存 BLE 名称</button>
         </form>
     </div>
     <div class="form-container">
-        <h4>mDNS Settings</h4>
+        <h4>mDNS 设置</h4>
         <form id="mdns-settings-form">
-            <label for="mdns-hostname">mDNS Hostname (e.g., 't-disp-totp'):</label>
+            <label for="mdns-hostname">mDNS 主机名（例如：'t-disp-totp'）：</label>
             <input type="text" id="mdns-hostname" name="hostname" maxlength="63" required class="user-activity">
-            <button type="submit" class="button user-activity">Save mDNS Hostname</button>
+            <button type="submit" class="button user-activity">保存 mDNS 主机名</button>
         </form>
     </div>
     <div class="form-container">
-        <h4>Startup Mode</h4>
+        <h4>启动模式</h4>
         <form id="startup-mode-form">
             <label for="startup-mode">Default mode on startup:</label>
             <select id="startup-mode" name="startup_mode" required class="user-activity">
                 <option value="totp">TOTP Authenticator</option>
                 <option value="password">Password Manager</option>
             </select>
-            <button type="submit" class="button user-activity">Save Startup Mode</button>
+            <button type="submit" class="button user-activity">保存启动模式</button>
         </form>
     </div>
     <div class="form-container">
@@ -1135,7 +1139,7 @@ progress::-webkit-progress-value {
                 <option value="5">5 minutes</option>
                 <option value="10">10 minutes</option>
                 <option value="60">1 hour</option>
-                <option value="0">Never</option>
+                <option value="0">从不</option>
             </select>
             <button type="submit" class="button user-activity">Save Setting</button>
         </form>
@@ -2586,7 +2590,7 @@ function switchPasswordType(type) {
         webToggle.classList.add('active', 'web-active');
         formTitle.textContent = 'Change 网页密码库 Password';
         titleIcon.textContent = '🔒';
-        description.textContent = 'Change the password for accessing this web interface.';
+        description.textContent = '修改用于访问此 Web 界面的密码。';
         newLabel.textContent = 'New Web Password';
         confirmLabel.textContent = 'Confirm New Web Password';
         criteriaList.style.display = 'block';
