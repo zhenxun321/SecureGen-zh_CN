@@ -962,6 +962,7 @@ progress::-webkit-progress-value {
     <div class="form-container">
         <h4>启动画面</h4>
 
+        
         <div style="margin-bottom: 20px;">
             <label for="splash-mode-select" style="font-weight: bold; display: block; margin-bottom: 10px;">内置启动画面模式：</label>
             <select id="splash-mode-select" class="user-activity" style="width: 100%; padding: 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px;">
@@ -1026,7 +1027,7 @@ progress::-webkit-progress-value {
                 <input type="password" id="ble-pin" name="ble_pin" pattern="\d{6}" maxlength="6" placeholder="输入 6 位 PIN" class="user-activity">
                 <span class="password-toggle" onclick="togglePasswordVisibility('ble-pin', this)">O</span>
             </div>
-
+            
             <label for="ble-pin-confirm">确认 BLE 客户端 PIN：</label>
             <div class="password-input-container">
                 <input type="password" id="ble-pin-confirm" name="ble_pin_confirm" pattern="\d{6}" maxlength="6" placeholder="确认 6 位 PIN" class="user-activity">
@@ -1048,7 +1049,7 @@ progress::-webkit-progress-value {
     <h3>设备设置</h3>
     <div class="form-container">
         <h4>密码管理</h4>
-
+        
         <!-- Password Type Selector -->
         <div class="password-type-selector">
             <div class="toggle-container">
