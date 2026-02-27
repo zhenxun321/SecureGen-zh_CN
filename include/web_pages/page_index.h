@@ -1066,12 +1066,12 @@ progress::-webkit-progress-value {
         <!-- Dynamic Form Title -->
         <div class="password-form-title" id="password-form-title">
             <span class="title-icon">🔒</span>
-            <span id="password-form-title-text">修改网页密码库密码</span>
+            <span id="password-form-title-text">修改 Web 密码库密码</span>
         </div>
 
         <!-- Dynamic Description -->
         <div class="password-type-description" id="password-type-description">
-            修改用于访问此网页界面的密码。
+            修改用于访问此 Web 界面的密码。
         </div>
 
         <div class="login-display-container">
@@ -1079,7 +1079,7 @@ progress::-webkit-progress-value {
         </div>
         <hr class="modern-hr">
         <form id="change-password-form">
-            <label for="new-password" id="new-password-label">新的网页密码</label>
+            <label for="new-password" id="new-password-label">新的 Web 密码</label>
             <div class="password-input-container">
                 <input type="password" id="new-password" name="new-password" required class="user-activity">
                 <span class="password-toggle" onclick="togglePasswordVisibility('new-password', this)">O</span>
@@ -1091,7 +1091,7 @@ progress::-webkit-progress-value {
                 <li id="pwd-number">至少 1 个数字</li>
                 <li id="pwd-special">至少 1 个特殊字符（!@#$%）</li>
             </ul>
-            <label for="confirm-password" id="confirm-password-label">确认新的网页密码</label>
+            <label for="confirm-password" id="confirm-password-label">确认新的 Web 密码</label>
             <div class="password-input-container">
                 <input type="password" id="confirm-password" name="confirm-password" required class="user-activity">
                 <span class="password-toggle" onclick="togglePasswordVisibility('confirm-password', this)">O</span>
@@ -1128,7 +1128,7 @@ progress::-webkit-progress-value {
         </form>
     </div>
     <div class="form-container">
-        <h4>网页服务器</h4>
+        <h4>Web 服务器</h4>
         <form id="web-server-settings-form">
             <label for="web-server-timeout">无操作自动关闭：</label>
             <select id="web-server-timeout" name="web_server_timeout" required class="user-activity">
@@ -1162,7 +1162,7 @@ progress::-webkit-progress-value {
     <div class="form-container">
         <h4>系统</h4>
         <button id="reboot-btn" class="button-action user-activity">重启设备</button>
-        <button id="reboot-with-web-btn" class="button user-activity">重启并启用网页服务</button>
+        <button id="reboot-with-web-btn" class="button user-activity">重启并启用 Web 服务</button>
         <button id="clear-ble-clients-btn" class="button-action user-activity">清除 BLE 客户端</button>
         <button onclick="logout()" class="button-delete user-activity">退出登录</button>
     </div>
@@ -1218,8 +1218,8 @@ progress::-webkit-progress-value {
             <li><strong>BLE 加密：</strong>所有 BLE 特征都要求加密通信（ESP_GATT_PERM_READ_ENC_MITM）。在建立并通过认证的安全连接前，密码传输会被阻止。</li>
             <li><strong>设备绑定：</strong>受信设备会通过安全绑定被记住。你可以在设置中点击“清除 BLE 客户端”，或通过修改 BLE PIN 清除绑定设备。</li>
             <li><strong>加密存储：</strong>所有敏感数据（TOTP 密钥、密码和配置）都会以加密方式存储在设备内部 Flash 中，采用 AES-256-CDC，密码使用 PBKDF2 哈希。</li>
-            <li><strong>网页界面安全：</strong>网页控制面板要求安全登录，并内置防暴力破解机制；会话会自动超时。</li>
-            <li><strong>类 HTTPS 加密：</strong>网页界面在 HTTP 之上使用增强加密，包括 ECDH 密钥交换、AES-GCM 加密、URL 混淆与方法隧道，即使在未加密连接上也能提升通信安全性。</li>
+            <li><strong>Web 界面安全：</strong>Web 控制面板要求安全登录，并内置防暴力破解机制；会话会自动超时。</li>
+            <li><strong>类 HTTPS 加密：</strong>Web 界面在 HTTP 之上使用增强加密，包括 ECDH 密钥交换、AES-GCM 加密、URL 混淆与方法隧道，即使在未加密连接上也能提升通信安全性。</li>
             <li><strong>导入/导出：</strong>导出密钥或密码时，备份文件会用 Web 管理员密码加密。请妥善保管该密码，恢复备份时需要使用。</li>
         </ul>
 
@@ -2499,7 +2499,7 @@ document.getElementById('clear-ble-clients-btn').addEventListener('click',functi
 async function fetchStartupMode(){try{const response=await makeEncryptedRequest('/api/startup_mode');const data=await response.json();document.getElementById('startup-mode').value=data.mode}catch(err){showStatus('获取启动模式失败。',true)}}
 async function fetchDeviceSettings(){try{const response=await makeEncryptedRequest('/api/settings');const data=await response.json();document.getElementById('web-server-timeout').value=data.web_server_timeout;if(data.admin_login){document.getElementById('current-admin-login').textContent=data.admin_login}}catch(err){showStatus('获取设备设置失败。',true)}}
 document.getElementById('startup-mode-form').addEventListener('submit',function(e){e.preventDefault();const mode=document.getElementById('startup-mode').value;const formData=new FormData();formData.append('mode',mode);makeEncryptedRequest('/api/startup_mode',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){showStatus(data.message)}else{showStatus(data.message,true)}}).catch(err=>showStatus('保存启动模式失败：'+err,true))});
-document.getElementById('web-server-settings-form').addEventListener('submit',function(e){e.preventDefault();const timeout=document.getElementById('web-server-timeout').value;if(!confirm('修改网页服务器超时需要重启设备，是否继续？')){return;}showStatus('正在保存设置并重启设备...',false);const formData=new FormData();formData.append('web_server_timeout',timeout);makeEncryptedRequest('/api/settings',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){showStatus(data.message,false);}else{showStatus(data.message,true);}}).catch(err=>showStatus('保存设置失败：'+err,true))});
+document.getElementById('web-server-settings-form').addEventListener('submit',function(e){e.preventDefault();const timeout=document.getElementById('web-server-timeout').value;if(!confirm('修改 Web 服务器超时需要重启设备，是否继续？')){return;}showStatus('正在保存设置并重启设备...',false);const formData=new FormData();formData.append('web_server_timeout',timeout);makeEncryptedRequest('/api/settings',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){showStatus(data.message,false);}else{showStatus(data.message,true);}}).catch(err=>showStatus('保存设置失败：'+err,true))});
 // Password validation for change password form
 const passwordCriteria = {
     length: { el: document.getElementById('pwd-length'), regex: /.{8,}/ },
@@ -2584,13 +2584,13 @@ function switchPasswordType(type) {
 
     if (type === 'web') {
         webToggle.classList.add('active', 'web-active');
-        formTitle.textContent = '修改网页密码库密码';
+        formTitle.textContent = '修改 Web 密码库密码';
         titleIcon.textContent = '🔒';
-        description.textContent = '修改用于访问此网页界面的密码。';
-        newLabel.textContent = '新的网页密码';
-        confirmLabel.textContent = '确认新的网页密码';
+        description.textContent = '修改用于访问此 Web 界面的密码。';
+        newLabel.textContent = '新的 Web 密码';
+        confirmLabel.textContent = '确认新的 Web 密码';
         criteriaList.style.display = 'block';
-        submitBtn.textContent = '修改网页密码';
+        submitBtn.textContent = '修改 Web 密码';
     } else {
         wifiToggle.classList.add('active', 'wifi-active');
         formTitle.textContent = '修改 WiFi 接入点密码';
@@ -2675,7 +2675,7 @@ document.getElementById('change-password-form').addEventListener('submit',functi
 // Custom splash upload/delete handlers removed - feature disabled for security
 
 document.getElementById('reboot-btn').addEventListener('click',()=>{if(!confirm('确定要重启设备吗？'))return;const formData=new FormData();makeEncryptedRequest('/api/reboot',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){showStatus('正在重启...')}else{showStatus('重启失败',true)}}).catch(()=>showStatus('正在重启...'))});
-document.getElementById('reboot-with-web-btn').addEventListener('click',()=>{if(!confirm('重启并在下次启动时自动开启网页服务？'))return;const formData=new FormData();makeEncryptedRequest('/api/reboot_with_web',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){showStatus('正在重启并启用网页服务...')}else{showStatus('重启失败',true)}}).catch(()=>showStatus('正在重启并启用网页服务...'))});
+document.getElementById('reboot-with-web-btn').addEventListener('click',()=>{if(!confirm('重启并在下次启动时自动开启 Web 服务？'))return;const formData=new FormData();makeEncryptedRequest('/api/reboot_with_web',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){showStatus('正在重启并启用 Web 服务...')}else{showStatus('重启失败',true)}}).catch(()=>showStatus('正在重启并启用 Web 服务...'))});
 
 async function fetchBleSettings(){try{const response=await makeEncryptedRequest('/api/ble_settings');const data=await response.json();document.getElementById('ble-device-name').value=data.device_name}catch(err){showStatus('获取 BLE 设置失败。',true)}}
 document.getElementById('ble-settings-form').addEventListener('submit',function(e){e.preventDefault();const deviceName=document.getElementById('ble-device-name').value;const formData=new FormData();formData.append('device_name',deviceName);makeEncryptedRequest('/api/ble_settings',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){showStatus(data.message);fetchBleSettings()}else{showStatus(data.message,true)}}).catch(err=>showStatus('保存 BLE 设置失败：'+err,true))});
@@ -4021,7 +4021,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <div id="timeout-modal" style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(5px);">
     <div style="background: rgba(40, 40, 60, 0.9); border: 1px solid rgba(255, 255, 255, 0.1); margin: 15% auto; padding: 30px; width: 90%; max-width: 400px; border-radius: 15px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5); color: #e0e0e0; text-align: center;">
         <h3 style="color: #ffffff; margin-top: 0;">会话即将超时</h3>
-        <p>由于长时间无操作，网页服务即将自动关闭。</p>
+        <p>由于长时间无操作，Web 服务即将自动关闭。</p>
         <p>剩余时间：<span id="timeout-countdown" style="font-weight: bold; font-size: 1.2em; color: #5a9eee;">60</span> 秒</p>
         <button id="timeout-keep-alive-btn" class="button user-activity" style="width: 100%; padding: 15px; font-size: 1.1em;">继续会话</button>
     </div>

@@ -218,7 +218,7 @@ const char wifi_setup_html[] PROGMEM = R"rawliteral(
 </head>
 <body>
     <div class="container">
-        <h2>🛜 无线网络配置</h2>
+        <h2>🛜 WiFi 配置</h2>
         
         <div id="status-message" class="status-message"></div>
         
@@ -414,7 +414,7 @@ const char wifi_setup_html[] PROGMEM = R"rawliteral(
                 // Try to load a simple resource from the device to test connectivity
                 const img = new Image();
                 img.onload = () => {
-                    showStatus('发现设备！正在跳转到网页界面...');
+                    showStatus('发现设备！正在跳转到 Web 界面...');
                     setTimeout(() => {
                         window.location.href = 'http://' + window.location.hostname + '/';
                     }, 2000);
