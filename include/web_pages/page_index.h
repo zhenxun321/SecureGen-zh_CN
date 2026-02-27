@@ -1,7 +1,7 @@
 #pragma once
 
 const char PAGE_INDEX[] PROGMEM = R"rawliteral(
-<!DOCTYPE HTML><html><head><meta charset="UTF-8"><title>TOTP Authenticator</title><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="alternate icon" href="/favicon.ico"><style>
+<!DOCTYPE HTML><html><head><meta charset="UTF-8"><title>TOTP 身份验证器</title><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="alternate icon" href="/favicon.ico"><style>
 @keyframes gradient-animation {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
@@ -870,114 +870,114 @@ progress::-webkit-progress-value {
     margin-bottom: 15px;
 }
 
-</style></head><body><h2>Authenticator Control Panel</h2><div id="status" class="status-message" style="display:none;"></div>
+</style></head><body><h2>身份验证器控制面板</h2><div id="status" class="status-message" style="display:none;"></div>
 <div class="tabs">
-    <button class="tab-link active user-activity" onclick="openTab(event, 'Keys')">Keys</button>
-    <button class="tab-link user-activity" onclick="openTab(event, 'Passwords')">Passwords</button>
-    <button class="tab-link user-activity" onclick="openTab(event, 'Display')">Display</button>
+    <button class="tab-link active user-activity" onclick="openTab(event, 'Keys')">密钥</button>
+    <button class="tab-link user-activity" onclick="openTab(event, 'Passwords')">密码库</button>
+    <button class="tab-link user-activity" onclick="openTab(event, 'Display')">显示</button>
     <button class="tab-link user-activity" onclick="openTab(event, 'Pin')">PIN</button>
-    <button class="tab-link user-activity" onclick="openTab(event, 'Settings')">Settings</button>
-    <button class="tab-link user-activity" onclick="openTab(event, 'Instructions')">Instructions</button>
+    <button class="tab-link user-activity" onclick="openTab(event, 'Settings')">设置</button>
+    <button class="tab-link user-activity" onclick="openTab(event, 'Instructions')">使用说明</button>
 </div>
 
 <div id="Keys" class="tab-content" style="display:block;">
-    <h3>Manage Keys</h3>
+    <h3>管理密钥</h3>
     <div class="form-container">
-        <h4>Add New Key</h4>
+        <h4>添加新密钥</h4>
         <form id="add-key-form">
-            <label for="key-name">Name:</label>
+            <label for="key-name">名称：</label>
             <input type="text" id="key-name" name="name" class="user-activity" required>
-            <label for="key-secret">Secret (Base32):</label>
+            <label for="key-secret">密钥（Base32）：</label>
             <input type="text" id="key-secret" name="secret" class="user-activity" required>
-            <button type="submit" class="button user-activity">Add Key</button>
+            <button type="submit" class="button user-activity">添加密钥</button>
         </form>
     </div>
     <div class="content-box">
-        <h4>Current Keys</h4>
+        <h4>当前密钥</h4>
         <table id="keys-table">
             <thead><tr><th>::</th><th>Name</th><th>Code</th><th>Timer</th><th>Progress</th><th>Actions</th></tr></thead>
             <tbody></tbody>
         </table>
     </div>
     <div class="form-container">
-        <h4>Import/Export Keys</h4>
+        <h4>导入/导出密钥</h4>
         <div class="api-access-container">
-            <p><strong>API Status:</strong> <span class="api-status" style="font-weight:bold; color:#ffc107;">Inactive</span></p>
-            <button class="enable-api-btn button user-activity">Enable API Access (5 min)</button>
+            <p><strong>API 状态：</strong> <span class="api-status" style="font-weight:bold; color:#ffc107;">未启用</span></p>
+            <button class="enable-api-btn button user-activity">启用 API 访问（5 分钟）</button>
         </div>
         <div id="import-export-buttons" style="margin-top: 15px;">
-            <button id="export-keys-btn" class="button-action user-activity" disabled>Export Keys</button>
-            <button id="import-keys-btn" class="button-action user-activity" disabled>Import Keys</button>
+            <button id="export-keys-btn" class="button-action user-activity" disabled>导出密钥</button>
+            <button id="import-keys-btn" class="button-action user-activity" disabled>导入密钥</button>
             <input type="file" id="import-file" style="display: none;" accept=".json" class="user-activity">
         </div>
     </div>
 </div>
 
 <div id="Passwords" class="tab-content">
-    <h3>Manage Passwords</h3>
+    <h3>管理密码</h3>
     <div class="form-container">
-        <h4>Add New Password</h4>
+        <h4>添加新密码</h4>
         <form id="add-password-form">
-            <label for="password-name">Name:</label>
+            <label for="password-name">名称：</label>
             <input type="text" id="password-name" name="name" class="user-activity" required>
-            <label for="password-value">Password:</label>
+            <label for="password-value">密码：</label>
             <div class="password-input-container">
                 <input type="text" id="password-value" name="password" class="user-activity" required>
-                <span class="password-generate" onclick="openPasswordGeneratorModal()" title="Generate Password">#</span>
+                <span class="password-generate" onclick="openPasswordGeneratorModal()" title="生成密码">#</span>
             </div>
-            <button type="submit" class="button user-activity">Add Password</button>
+            <button type="submit" class="button user-activity">添加密码</button>
         </form>
     </div>
     <div class="content-box">
-        <h4>Current Passwords</h4>
+        <h4>当前密码</h4>
         <table id="passwords-table">
             <thead><tr><th>::</th><th>Name</th><th>Actions</th></tr></thead>
             <tbody></tbody>
         </table>
     </div>
     <div class="form-container">
-        <h4>Import/Export Passwords</h4>
+        <h4>导入/导出密码</h4>
         <div class="api-access-container">
-            <p><strong>API Status:</strong> <span class="api-status" style="font-weight:bold; color:#ffc107;">Inactive</span></p>
-            <button class="enable-api-btn button user-activity">Enable API Access (5 min)</button>
+            <p><strong>API 状态：</strong> <span class="api-status" style="font-weight:bold; color:#ffc107;">未启用</span></p>
+            <button class="enable-api-btn button user-activity">启用 API 访问（5 分钟）</button>
         </div>
         <div id="import-export-buttons-passwords" style="margin-top: 15px;">
-            <button id="export-passwords-btn" class="button-action user-activity" disabled>Export Passwords</button>
-            <button id="import-passwords-btn" class="button-action user-activity" disabled>Import Passwords</button>
+            <button id="export-passwords-btn" class="button-action user-activity" disabled>导出密码</button>
+            <button id="import-passwords-btn" class="button-action user-activity" disabled>导入密码</button>
             <input type="file" id="import-passwords-file" style="display: none;" accept=".json" class="user-activity">
         </div>
     </div>
 </div>
 
 <div id="Display" class="tab-content">
-    <h3>Display Settings</h3>
+    <h3>显示设置</h3>
     <div class="form-container">
-        <h4>Theme Selection</h4>
+        <h4>主题选择</h4>
         <form id="theme-selection-form">
-            <label><input type="radio" name="theme" value="light" id="theme-light" class="user-activity"> Light Theme</label><br>
-            <label><input type="radio" name="theme" value="dark" id="theme-dark" class="user-activity"> Dark Theme</label><br>
-            <button type="submit" class="button user-activity">Apply Theme</button>
+            <label><input type="radio" name="theme" value="light" id="theme-light" class="user-activity"> 浅色主题</label><br>
+            <label><input type="radio" name="theme" value="dark" id="theme-dark" class="user-activity"> 深色主题</label><br>
+            <button type="submit" class="button user-activity">应用主题</button>
         </form>
     </div>
     <div class="form-container">
-        <h4>Splash Screen</h4>
+        <h4>启动画面</h4>
         
         <div style="margin-bottom: 20px;">
-            <label for="splash-mode-select" style="font-weight: bold; display: block; margin-bottom: 10px;">Embedded Splash Mode:</label>
+            <label for="splash-mode-select" style="font-weight: bold; display: block; margin-bottom: 10px;">内置启动画面模式：</label>
             <select id="splash-mode-select" class="user-activity" style="width: 100%; padding: 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px;">
                 <option value="disabled">Disabled (No splash screen)</option>
                 <option value="securegen">SecureGen</option>
                 <option value="bladerunner">BladeRunner</option>
                 <option value="combs">Combs</option>
             </select>
-            <button id="save-splash-mode-btn" class="button user-activity">Save Mode</button>
+            <button id="save-splash-mode-btn" class="button user-activity">保存模式</button>
         </div>
         <!-- Custom splash upload removed for security - only embedded splash screens available -->
     </div>
     <div class="form-container">
-        <h4>Screen Timeout</h4>
+        <h4>屏幕超时</h4>
         <form id="display-timeout-form">
-            <label for="display-timeout">Screen timeout (turn off display after):</label>
+            <label for="display-timeout">屏幕超时（多久后关闭显示）：</label>
             <select id="display-timeout" name="display_timeout" required class="user-activity">
                 <option value="15">15 seconds</option>
                 <option value="30">30 seconds</option>
@@ -986,75 +986,75 @@ progress::-webkit-progress-value {
                 <option value="1800">30 minutes</option>
                 <option value="0">Never</option>
             </select>
-            <button type="submit" class="button user-activity">Save Timeout</button>
+            <button type="submit" class="button user-activity">保存超时设置</button>
         </form>
     </div>
 </div>
 
 <div id="Pin" class="tab-content">
-    <h3>PIN Code Settings</h3>
+    <h3>PIN 码设置</h3>
     <div class="form-container">
         <form id="pincode-settings-form">
-            <label for="pin-enabled-device">Enable PIN on device startup:</label>
+            <label for="pin-enabled-device">设备启动时启用 PIN：</label>
             <input type="checkbox" id="pin-enabled-device" name="enabledForDevice" class="user-activity"><br><br>
-            <label for="pin-enabled-ble">Enable PIN for BLE password transmission:</label>
+            <label for="pin-enabled-ble">BLE 密码传输启用 PIN：</label>
             <input type="checkbox" id="pin-enabled-ble" name="enabledForBle" class="user-activity"><br><br>
-            <label for="pin-length">PIN Length (4-10):</label>
+            <label for="pin-length">PIN 长度（4-10）：</label>
             <input type="number" id="pin-length" name="length" min="4" max="10" required class="user-activity"><br><br>
-            <label for="new-pin">New PIN:</label>
+            <label for="new-pin">新 PIN：</label>
             <div class="password-input-container">
-                <input type="password" id="new-pin" name="pin" placeholder="Leave blank to keep current" class="user-activity">
+                <input type="password" id="new-pin" name="pin" placeholder="留空则保持不变" class="user-activity">
                 <span class="password-toggle" onclick="togglePasswordVisibility('new-pin', this)">O</span>
             </div>
-            <label for="confirm-pin">Confirm New PIN:</label>
+            <label for="confirm-pin">确认新 PIN：</label>
             <div class="password-input-container">
-                <input type="password" id="confirm-pin" name="pin_confirm" placeholder="Leave blank to keep current" class="user-activity">
+                <input type="password" id="confirm-pin" name="pin_confirm" placeholder="留空则保持不变" class="user-activity">
                 <span class="password-toggle" onclick="togglePasswordVisibility('confirm-pin', this)">O</span>
             </div>
-            <button type="submit" class="button user-activity">Save PIN Settings</button>
+            <button type="submit" class="button user-activity">保存 PIN 设置</button>
         </form>
     </div>
 
     <!-- BLE PIN Settings Section -->
     <div class="form-container" style="margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 25px;">
-        <h4 style="color: #4a90e2; margin-bottom: 15px;">BLE Client Authentication PIN</h4>
-        <p style="color: #888; font-size: 0.9em; margin-bottom: 20px;"><strong>Security Notice:</strong> Current BLE PIN is not displayed for security. It will only be shown on device screen during pairing.</p>
+        <h4 style="color: #4a90e2; margin-bottom: 15px;">BLE 客户端认证 PIN</h4>
+        <p style="color: #888; font-size: 0.9em; margin-bottom: 20px;"><strong>安全提示：</strong>出于安全原因，当前 BLE PIN 不会显示。仅会在配对时显示在设备屏幕上。</p>
         
         <form id="ble-pin-form">
-            <label for="ble-pin">New BLE Client PIN (6 digits):</label>
+            <label for="ble-pin">新的 BLE 客户端 PIN（6 位）：</label>
             <div class="password-input-container">
-                <input type="password" id="ble-pin" name="ble_pin" pattern="\d{6}" maxlength="6" placeholder="Enter 6-digit PIN" class="user-activity">
+                <input type="password" id="ble-pin" name="ble_pin" pattern="\d{6}" maxlength="6" placeholder="输入 6 位 PIN" class="user-activity">
                 <span class="password-toggle" onclick="togglePasswordVisibility('ble-pin', this)">O</span>
             </div>
             
-            <label for="ble-pin-confirm">Confirm BLE Client PIN:</label>
+            <label for="ble-pin-confirm">确认 BLE 客户端 PIN：</label>
             <div class="password-input-container">
-                <input type="password" id="ble-pin-confirm" name="ble_pin_confirm" pattern="\d{6}" maxlength="6" placeholder="Confirm 6-digit PIN" class="user-activity">
+                <input type="password" id="ble-pin-confirm" name="ble_pin_confirm" pattern="\d{6}" maxlength="6" placeholder="确认 6 位 PIN" class="user-activity">
                 <span class="password-toggle" onclick="togglePasswordVisibility('ble-pin-confirm', this)">O</span>
             </div>
             
             <div style="margin: 15px 0; padding: 12px; background: rgba(255,193,7,0.1); border: 1px solid rgba(255,193,7,0.3); border-radius: 6px;">
                 <small style="color: #ffc107; font-size: 0.85rem;">
-                    <strong>Important:</strong> This PIN will be displayed on the ESP32 screen during BLE pairing for clients to enter.
+                    <strong>重要：</strong>在 BLE 配对期间，此 PIN 会显示在 ESP32 屏幕上供客户端输入。
                 </small>
             </div>
 
-            <button type="submit" class="button user-activity" style="background-color: #28a745;">Update BLE PIN</button>
+            <button type="submit" class="button user-activity" style="background-color: #28a745;">更新 BLE PIN</button>
         </form>
     </div>
 </div>
 
 <div id="Settings" class="tab-content">
-    <h3>Device Settings</h3>
+    <h3>设备设置</h3>
     <div class="form-container">
-        <h4>Password Management</h4>
+        <h4>密码管理</h4>
         
         <!-- Password Type Selector -->
         <div class="password-type-selector">
             <div class="toggle-container">
                 <div class="toggle-option active web-active" id="web-password-toggle">
                     <span class="toggle-icon">🔒</span>
-                    <span>Web Cabinet</span>
+                    <span>网页密码库</span>
                 </div>
                 <div class="toggle-option" id="wifi-password-toggle">
                     <span class="toggle-icon">📶</span>
@@ -1066,7 +1066,7 @@ progress::-webkit-progress-value {
         <!-- Dynamic Form Title -->
         <div class="password-form-title" id="password-form-title">
             <span class="title-icon">🔒</span>
-            <span id="password-form-title-text">Change Web Cabinet Password</span>
+            <span id="password-form-title-text">Change 网页密码库 Password</span>
         </div>
         
         <!-- Dynamic Description -->
@@ -1282,14 +1282,14 @@ progress::-webkit-progress-value {
         <h3>Edit Password</h3>
         <p>Change the name and password for this entry</p>
         <div class="form-group">
-            <label for="edit-password-name">Name:</label>
+            <label for="edit-password-name">名称：</label>
             <input type="text" id="edit-password-name" style="width: calc(100% - 24px);" class="user-activity" required>
         </div>
         <div class="form-group">
             <label for="edit-password-value">Password:</label>
             <div class="password-input-container">
                 <input type="text" id="edit-password-value" style="width: calc(100% - 52px); font-family: monospace;" class="user-activity" required>
-                <span class="password-generate" onclick="generatePasswordForEdit()" title="Generate Password">#</span>
+                <span class="password-generate" onclick="generatePasswordForEdit()" title="生成密码">#</span>
                 <span class="password-toggle" onclick="togglePasswordVisibility('edit-password-value', this)">O</span>
             </div>
             <div class="password-strength-container">
@@ -2584,7 +2584,7 @@ function switchPasswordType(type) {
     
     if (type === 'web') {
         webToggle.classList.add('active', 'web-active');
-        formTitle.textContent = 'Change Web Cabinet Password';
+        formTitle.textContent = 'Change 网页密码库 Password';
         titleIcon.textContent = '🔒';
         description.textContent = 'Change the password for accessing this web interface.';
         newLabel.textContent = 'New Web Password';
@@ -2599,7 +2599,7 @@ function switchPasswordType(type) {
         newLabel.textContent = 'New WiFi AP Password';
         confirmLabel.textContent = 'Confirm New WiFi AP Password';
         criteriaList.style.display = 'none'; // WiFi password has different requirements
-        submitBtn.textContent = 'Change WiFi Password';
+        submitBtn.textContent = 'Change WiFi 密码';
     }
     
     // Clear form
@@ -3878,7 +3878,7 @@ function localCountdown() {
         const importPasswordsBtn = document.getElementById('import-passwords-btn');
         
         statusElements.forEach(el => {
-            el.textContent = 'Inactive';
+            el.textContent = '未启用';
             el.style.color = '#ffc107'; // Yellow
         });
         exportKeysBtn.disabled = true;
@@ -3928,7 +3928,7 @@ function updateApiStatus() {
             apiRemainingSeconds = 0;
             
             statusElements.forEach(el => {
-                el.textContent = 'Inactive';
+                el.textContent = '未启用';
                 el.style.color = '#ffc107'; // Yellow
             });
             exportKeysBtn.disabled = true;
