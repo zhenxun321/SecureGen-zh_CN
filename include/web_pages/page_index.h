@@ -2130,7 +2130,7 @@ function handleExport(url, password, filename) {
         link.click();
         document.body.removeChild(link);
 
-        showStatus(data.message || 'Export successful!');
+        showStatus(data.message || '导出成功！');
         console.log('✅ Export file downloaded:', filename);
     })
     .catch(err => {
@@ -2191,7 +2191,7 @@ function handleImport(url, password, file, callbackOnSuccess) {
             console.log('📬 Import data parsed:', data);
 
             // Обработка зашифрованного ответа от ESP32
-            let message = 'Import successful!';
+            let message = '导入成功！';
             if (typeof data === 'object' && data.message) {
                 message = data.message;
             } else if (typeof data === 'string') {
