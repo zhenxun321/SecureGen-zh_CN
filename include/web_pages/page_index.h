@@ -1566,7 +1566,7 @@ function updateKeysTable(data) {
         row.innerHTML = `
             <td><span class="drag-handle">::</span></td>
             <td>${key.name}</td>
-            <td class="code" id="code-${index}" style="font-family:monospace;font-weight:bold;" onclick="copyTOTPCode(${index})" title="Click to copy TOTP code">${key.code}</td>
+            <td class="code" id="code-${index}" style="font-family:monospace;font-weight:bold;" onclick="copyTOTPCode(${index})" title="点击复制 TOTP 验证码">${key.code}</td>
             <td><span id="timer-${index}" style="font-weight:bold;color:#44ff44;">${key.timeLeft}s</span></td>
             <td><progress id="progress-${index}" value="${key.timeLeft}" max="30"></progress></td>
             <td><button class="button-delete user-activity" onclick="removeKey(${index})">删除</button></td>
@@ -1805,7 +1805,7 @@ function editPassword(index) {
 
     makeAuthenticatedRequest('/api/passwords/get', { method: 'POST', body: new URLSearchParams(formData) })
         .then(async response => {
-            if (!response.ok) throw new Error('Failed to fetch password');
+            if (!response.ok) throw new Error('获取密码失败');
 
             const responseText = await response.text();
 
@@ -2327,7 +2327,7 @@ function fallbackCopyPassword(password) {
         }
     } catch (err) {
         console.error('Copy failed:', err);
-        showStatus('Copy not supported in this browser', true);
+        showStatus('当前浏览器不支持复制功能', true);
     } finally {
         document.body.removeChild(textArea);
     }
@@ -2370,11 +2370,11 @@ function fallbackCopyTOTPCode(totpCode) {
         if (successful) {
             showCopyNotification('TOTP code copied!');
         } else {
-            showStatus('Failed to copy TOTP code', true);
+            showStatus('复制 TOTP 验证码失败', true);
         }
     } catch (err) {
         console.error('Copy failed:', err);
-        showStatus('Copy not supported in this browser', true);
+        showStatus('当前浏览器不支持复制功能', true);
     } finally {
         document.body.removeChild(textArea);
     }
