@@ -3,11 +3,11 @@
 
 const char page_splash_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Splash Screen Manager</title>
+    <title>启动画面管理</title>
     <style>
         * {
             margin: 0;
@@ -245,27 +245,27 @@ const char page_splash_html[] PROGMEM = R"rawliteral(
 </head>
 <body>
     <div class="container">
-        <h1>🖼️ Splash Screen Manager</h1>
-        <p class="subtitle">Customize your device's boot splash screen</p>
+        <h1>🖼️ 启动画面管理</h1>
+        <p class="subtitle">自定义设备开机启动画面</p>
         
         <!-- Current Status -->
         <div class="section">
-            <h2>📊 Current Status</h2>
+            <h2>📊 当前状态</h2>
             <div id="statusInfo">
-                <p>Mode: <span id="currentMode">Loading...</span></p>
-                <p>Custom Splash: <span id="customStatus">Loading...</span></p>
+                <p>模式：<span id="currentMode">加载中...</span></p>
+                <p>自定义启动图：<span id="customStatus">加载中...</span></p>
             </div>
         </div>
         
         <!-- Embedded Splash Selection -->
         <div class="section">
-            <h2>🎨 Embedded Splash Screens</h2>
+            <h2>🎨 内置启动画面</h2>
             <div class="radio-group">
                 <div class="radio-option">
                     <input type="radio" id="mode_bladerunner" name="splash_mode" value="bladerunner">
                     <label for="mode_bladerunner">
                         BladeRunner
-                        <small>Cyberpunk-themed splash screen</small>
+                        <small>赛博朋克风启动画面</small>
                     </label>
                 </div>
                 
@@ -273,48 +273,48 @@ const char page_splash_html[] PROGMEM = R"rawliteral(
                     <input type="radio" id="mode_combs" name="splash_mode" value="combs">
                     <label for="mode_combs">
                         Combs
-                        <small>Geometric pattern splash screen</small>
+                        <small>几何图案启动画面</small>
                     </label>
                 </div>
                 
                 <div class="radio-option">
                     <input type="radio" id="mode_disabled" name="splash_mode" value="disabled">
                     <label for="mode_disabled">
-                        Disabled
-                        <small>No splash screen on boot</small>
+                        禁用
+                        <small>开机不显示启动画面</small>
                     </label>
                 </div>
             </div>
-            <button onclick="saveSplashMode()">💾 Save Embedded Splash Mode</button>
+            <button onclick="saveSplashMode()">💾 保存内置启动模式</button>
         </div>
         
         <!-- Custom Splash Upload -->
         <div class="section">
-            <h2>📤 Upload Custom Splash</h2>
+            <h2>📤 上传自定义启动图</h2>
             <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
                 <div class="upload-icon">📁</div>
-                <p><strong>Click to select</strong> or drag and drop</p>
+                <p><strong>点击选择文件</strong> 或拖拽到此处</p>
                 <p style="font-size: 12px; color: #666; margin-top: 5px;">
-                    Upload a raw RGB565 file (240x135px, 64800 bytes)
+                    上传 RGB565 原始文件（240x135，64800 字节）
                 </p>
             </div>
             <input type="file" id="fileInput" accept=".raw,.bin" onchange="handleFileSelect(event)">
             
             <div class="preview-info">
-                <strong>ℹ️ How to create a custom splash:</strong><br>
-                1. Create a 240x135px image<br>
-                2. Convert to RGB565: <code>ffmpeg -i input.png -vf "crop=240:135,format=rgb565be" -f rawvideo output.raw</code><br>
-                3. Upload the .raw file here
+                <strong>ℹ️ 如何制作自定义启动图：</strong><br>
+                1. 创建一张 240x135 像素图片<br>
+                2. 转换为 RGB565：<code>ffmpeg -i input.png -vf "crop=240:135,format=rgb565be" -f rawvideo output.raw</code><br>
+                3. 在此上传 .raw 文件
             </div>
             
-            <button id="uploadBtn" onclick="uploadSplash()" disabled>📤 Upload Splash</button>
-            <button class="btn-danger" onclick="deleteCustomSplash()">🗑️ Delete Custom Splash</button>
+            <button id="uploadBtn" onclick="uploadSplash()" disabled>📤 上传启动图</button>
+            <button class="btn-danger" onclick="deleteCustomSplash()">🗑️ 删除自定义启动图</button>
         </div>
         
         <div id="message" class="message"></div>
         
         <div class="back-link">
-            <a href="/">← Back to Main Page</a>
+            <a href="/">← 返回主页面</a>
         </div>
     </div>
     
@@ -337,7 +337,7 @@ const char page_splash_html[] PROGMEM = R"rawliteral(
                     return false;
                 }
             } catch (error) {
-                console.error('Error fetching CSRF token:', error);
+                console.error('获取 CSRF token 失败:', error);
                 return false;
             }
             return false;
@@ -381,7 +381,7 @@ const char page_splash_html[] PROGMEM = R"rawliteral(
                 options.headers['X-Secure-Request'] = 'true';
                 // Шифрование будет выполнено в makeAuthenticatedRequest
             } else {
-                console.warn('SecureClient not ready, using regular request');
+                console.warn('SecureClient 未就绪，使用普通请求');
             }
             
             // Добавляем заголовки для принудительной активации шифрования
@@ -434,15 +434,15 @@ const char page_splash_html[] PROGMEM = R"rawliteral(
             try {
                 // 🔐 ЗАЩИЩЕННЫЙ ЗАПРОС - скопировано с главной страницы
                 const response = await makeEncryptedRequest('/api/splash/mode');
-                if (!response.ok) throw new Error('Failed to load status');
+                if (!response.ok) throw new Error('加载状态失败');
                 
                 const data = await response.json();
                 
                 // Update status display
-                document.getElementById('currentMode').textContent = data.mode || 'random';
+                document.getElementById('currentMode').textContent = data.mode || '随机';
                 document.getElementById('customStatus').innerHTML = data.has_custom 
-                    ? '<span class="status-badge status-active">Active</span>'
-                    : '<span class="status-badge status-inactive">None</span>';
+                    ? '<span class="status-badge status-active">已启用</span>'
+                    : '<span class="status-badge status-inactive">无</span>';
                 
                 // Set radio button
                 const modeRadio = document.getElementById(`mode_${data.mode}`);
@@ -450,7 +450,7 @@ const char page_splash_html[] PROGMEM = R"rawliteral(
                     modeRadio.checked = true;
                 }
             } catch (error) {
-                showMessage('Failed to load status: ' + error.message, 'error');
+                showMessage('加载状态失败：' + error.message, 'error');
             }
         }
         
@@ -469,21 +469,21 @@ const char page_splash_html[] PROGMEM = R"rawliteral(
             uploadArea.innerHTML = `
                 <div class="upload-icon">✅</div>
                 <p><strong>${file.name}</strong></p>
-                <p style="font-size: 12px; color: #666;">Size: ${file.size} bytes</p>
+                <p style="font-size: 12px; color: #666;">大小：${file.size} 字节</p>
             `;
             
             document.getElementById('uploadBtn').disabled = false;
             
             // Validate file size
             if (file.size !== 64800) {
-                showMessage(`Warning: File size is ${file.size} bytes. Expected 64800 bytes for 240x135 RGB565 image.`, 'error');
+                showMessage(`警告：文件大小为 ${file.size} 字节。240x135 RGB565 图像应为 64800 字节。`, 'error');
             }
         }
         
         async function saveSplashMode() {
             const selectedMode = document.querySelector('input[name="splash_mode"]:checked');
             if (!selectedMode) {
-                showMessage('Please select a splash mode', 'error');
+                showMessage('请选择启动模式', 'error');
                 return;
             }
             
@@ -497,18 +497,18 @@ const char page_splash_html[] PROGMEM = R"rawliteral(
                     body: formData
                 });
                 
-                if (!response.ok) throw new Error('Failed to save mode');
+                if (!response.ok) throw new Error('保存模式失败');
                 
-                showMessage('Splash mode saved successfully! Reboot to see changes.', 'success');
+                showMessage('启动模式已保存！重启后生效。', 'success');
                 loadStatus();
             } catch (error) {
-                showMessage('Failed to save mode: ' + error.message, 'error');
+                showMessage('保存模式失败：' + error.message, 'error');
             }
         }
         
         async function uploadSplash() {
             if (!selectedFile) {
-                showMessage('Please select a file first', 'error');
+                showMessage('请先选择文件', 'error');
                 return;
             }
             
@@ -516,7 +516,7 @@ const char page_splash_html[] PROGMEM = R"rawliteral(
                 const formData = new FormData();
                 formData.append('file', selectedFile);
                 
-                showMessage('Uploading...', 'info');
+                showMessage('上传中...', 'info');
                 
                 const response = await fetch('/api/splash/upload', {
                     method: 'POST',
@@ -529,7 +529,7 @@ const char page_splash_html[] PROGMEM = R"rawliteral(
                     throw new Error(text);
                 }
                 
-                showMessage('Custom splash uploaded successfully! Reboot to see it.', 'success');
+                showMessage('自定义启动图上传成功！重启后可见。', 'success');
                 selectedFile = null;
                 document.getElementById('uploadBtn').disabled = true;
                 loadStatus();
@@ -537,18 +537,18 @@ const char page_splash_html[] PROGMEM = R"rawliteral(
                 // Reset upload area
                 document.getElementById('uploadArea').innerHTML = `
                     <div class="upload-icon">📁</div>
-                    <p><strong>Click to select</strong> or drag and drop</p>
+                    <p><strong>点击选择文件</strong> 或拖拽到此处</p>
                     <p style="font-size: 12px; color: #666; margin-top: 5px;">
-                        Upload a raw RGB565 file (240x135px, 64800 bytes)
+                        上传 RGB565 原始文件（240x135，64800 字节）
                     </p>
                 `;
             } catch (error) {
-                showMessage('Upload failed: ' + error.message, 'error');
+                showMessage('上传失败：' + error.message, 'error');
             }
         }
         
         async function deleteCustomSplash() {
-            if (!confirm('Are you sure you want to delete the custom splash screen?')) {
+            if (!confirm('确定要删除自定义启动图吗？')) {
                 return;
             }
             
@@ -557,12 +557,12 @@ const char page_splash_html[] PROGMEM = R"rawliteral(
                     method: 'POST'
                 });
                 
-                if (!response.ok) throw new Error('Failed to delete');
+                if (!response.ok) throw new Error('删除失败');
                 
-                showMessage('Custom splash deleted successfully!', 'success');
+                showMessage('自定义启动图已删除！', 'success');
                 loadStatus();
             } catch (error) {
-                showMessage('Failed to delete: ' + error.message, 'error');
+                showMessage('删除失败：' + error.message, 'error');
             }
         }
         
