@@ -2174,7 +2174,7 @@ void WebServerManager::start() {
                 if (decryptedContent.isEmpty()) {
                     LOG_WARNING("WebServer", "Failed to decrypt imported passwords. Wrong password or corrupt file.");
                     
-                    String errorResponse = "Decryption failed. Wrong password or corrupt file.";
+                    String errorResponse = "解密失败：密码错误或文件已损坏。";
                     
 #ifdef SECURE_LAYER_ENABLED
                     // КРИТИЧНО: Принудительное шифрование ошибок для password операций
@@ -2197,11 +2197,11 @@ void WebServerManager::start() {
                 
                 if (passwordManager.replaceAllPasswords(decryptedContent)) {
                     LOG_INFO("WebServer", "Passwords imported successfully.");
-                    response = "Import successful!";
+                    response = "导入成功！";
                     statusCode = 200;
                 } else {
                     LOG_ERROR("WebServer", "Failed to process imported passwords after decryption.");
-                    response = "Failed to process passwords after decryption.";
+                    response = "解密后处理密码数据失败。";
                     statusCode = 500;
                 }
                 
@@ -2773,7 +2773,7 @@ void WebServerManager::start() {
 
             if (decryptedContent.isEmpty()) {
                 LOG_WARNING("WebServer", "Failed to decrypt imported TOTP keys. Wrong password or corrupt file.");
-                request->send(400, "text/plain", "Decryption failed. Wrong password or corrupt file.");
+                request->send(400, "text/plain", "解密失败：密码错误或文件已损坏。");
                 return;
             }
 
@@ -2783,7 +2783,7 @@ void WebServerManager::start() {
                 // Формируем JSON ответ с подтверждением
                 JsonDocument responseDoc;
                 responseDoc["status"] = "success";
-                responseDoc["message"] = "Import successful!";
+                responseDoc["message"] = "导入成功！";
                 String jsonResponse;
                 serializeJson(responseDoc, jsonResponse);
                 
@@ -4397,14 +4397,14 @@ void WebServerManager::start() {
                     
                     if (decryptedContent.isEmpty()) {
                         LOG_WARNING("WebServer", "🚇 TUNNELED import failed: Decryption failed");
-                        return request->send(400, "text/plain", "Decryption failed. Wrong password or corrupt file.");
+                        return request->send(400, "text/plain", "解密失败：密码错误或文件已损坏。");
                     }
                     
                     if (keyManager.replaceAllKeys(decryptedContent)) {
                         LOG_INFO("WebServer", "🚇 TUNNELED TOTP import: Keys imported successfully");
                         
                         // 🛡️ Ручное формирование JSON
-                        String jsonResponse = "{\"status\":\"success\",\"message\":\"Import successful!\"}";
+                        String jsonResponse = "{\"status\":\"success\",\"message\":\"导入成功！\"}";
                         
                         LOG_INFO("WebServer", "🔐 IMPORT ENCRYPTION: Securing tunneled import response [TUNNELED]");
                         WebServerSecureIntegration::sendSecureResponse(request, 200, "application/json", jsonResponse, secureLayer);
@@ -4518,7 +4518,7 @@ void WebServerManager::start() {
                     
                     if (decryptedContent.isEmpty()) {
                         LOG_WARNING("WebServer", "🚇 TUNNELED passwords import failed: Decryption failed");
-                        return request->send(400, "text/plain", "Decryption failed. Wrong password or corrupt file.");
+                        return request->send(400, "text/plain", "解密失败：密码错误或文件已损坏。");
                     }
                     
                     if (passwordManager.replaceAllPasswords(decryptedContent)) {
@@ -4526,7 +4526,7 @@ void WebServerManager::start() {
                         
                         JsonDocument responseDoc;
                         responseDoc["status"] = "success";
-                        responseDoc["message"] = "Import successful!";
+                        responseDoc["message"] = "导入成功！";
                         String jsonResponse;
                         serializeJson(responseDoc, jsonResponse);
                         
@@ -4538,7 +4538,7 @@ void WebServerManager::start() {
                         
                         JsonDocument errorDoc;
                         errorDoc["status"] = "error";
-                        errorDoc["message"] = "Failed to process passwords after decryption.";
+                        errorDoc["message"] = "解密后处理密码数据失败。";
                         String errorResponse;
                         serializeJson(errorDoc, errorResponse);
                         
@@ -6432,7 +6432,7 @@ void WebServerManager::start() {
                         if (decryptedContent.isEmpty()) {
                             LOG_WARNING("WebServer", "🔗 Obfuscated passwords import failed: Decryption failed");
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(400, "text/plain", "Decryption failed. Wrong password or corrupt file.");
+                            return request->send(400, "text/plain", "解密失败：密码错误或文件已损坏。");
                         }
                         
                         if (passwordManager.replaceAllPasswords(decryptedContent)) {
@@ -6440,7 +6440,7 @@ void WebServerManager::start() {
                             
                             JsonDocument responseDoc;
                             responseDoc["status"] = "success";
-                            responseDoc["message"] = "Import successful!";
+                            responseDoc["message"] = "导入成功！";
                             String jsonResponse;
                             serializeJson(responseDoc, jsonResponse);
                             
@@ -6453,7 +6453,7 @@ void WebServerManager::start() {
                             
                             JsonDocument errorDoc;
                             errorDoc["status"] = "error";
-                            errorDoc["message"] = "Failed to process passwords after decryption.";
+                            errorDoc["message"] = "解密后处理密码数据失败。";
                             String errorResponse;
                             serializeJson(errorDoc, errorResponse);
                             
@@ -6556,13 +6556,13 @@ void WebServerManager::start() {
                         if (decryptedContent.isEmpty()) {
                             LOG_WARNING("WebServer", "🔗 Obfuscated import failed: Decryption failed");
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(400, "text/plain", "Decryption failed. Wrong password or corrupt file.");
+                            return request->send(400, "text/plain", "解密失败：密码错误或文件已损坏。");
                         }
                         
                         if (keyManager.replaceAllKeys(decryptedContent)) {
                             LOG_INFO("WebServer", "🔗 Obfuscated TOTP import: Keys imported successfully");
                             
-                            String jsonResponse = "{\"status\":\"success\",\"message\":\"Import successful!\"}";
+                            String jsonResponse = "{\"status\":\"success\",\"message\":\"导入成功！\"}";
                             
                             LOG_INFO("WebServer", "🔐 OBFUSCATED IMPORT: Securing response");
                             WebServerSecureIntegration::sendSecureResponse(request, 200, "application/json", jsonResponse, secureLayer);
