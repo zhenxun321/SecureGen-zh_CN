@@ -323,7 +323,7 @@ const char login_html[] PROGMEM = R"rawliteral(
                     }
                 } catch (err) {
                     console.error('Login error:', err);
-                    errorMessage.textContent = 'Network error. Please try again.';
+                    errorMessage.textContent = '网络错误，请重试。';
                     errorMessage.style.display = 'block';
                 }
             });

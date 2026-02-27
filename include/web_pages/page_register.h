@@ -348,7 +348,7 @@ const char page_register[] PROGMEM = R"rawliteral(
                 } else {
                     // Ошибка
                     const text = await response.text();
-                    alert('Registration failed: ' + text);
+                    alert('注册失败：' + text);
                 }
             } catch (err) {
                 console.error('Registration error:', err);

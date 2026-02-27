@@ -1569,7 +1569,7 @@ function updateKeysTable(data) {
             <td class="code" id="code-${index}" style="font-family:monospace;font-weight:bold;" onclick="copyTOTPCode(${index})" title="Click to copy TOTP code">${key.code}</td>
             <td><span id="timer-${index}" style="font-weight:bold;color:#44ff44;">${key.timeLeft}s</span></td>
             <td><progress id="progress-${index}" value="${key.timeLeft}" max="30"></progress></td>
-            <td><button class="button-delete user-activity" onclick="removeKey(${index})">Remove</button></td>
+            <td><button class="button-delete user-activity" onclick="removeKey(${index})">删除</button></td>
         `;
     });
 
@@ -2227,7 +2227,7 @@ function fetchPasswords(){
             row.className = 'draggable-row';
             row.draggable = true;
             row.dataset.index = index;
-            row.innerHTML = '<td><span class="drag-handle">::</span></td><td>' + password.name + '</td><td><button class="button user-activity" onclick="copyPassword(' + index + ')" style="margin-right: 5px;">Copy</button><button class="button-action user-activity" onclick="editPassword(' + index + ')" style="margin-right: 5px;">Edit</button><button class="button-delete user-activity" onclick="removePassword(' + index + ')">Remove</button></td>';
+            row.innerHTML = '<td><span class="drag-handle">::</span></td><td>' + password.name + '</td><td><button class="button user-activity" onclick="copyPassword(' + index + ')" style="margin-right: 5px;">复制</button><button class="button-action user-activity" onclick="editPassword(' + index + ')" style="margin-right: 5px;">编辑</button><button class="button-delete user-activity" onclick="removePassword(' + index + ')">删除</button></td>';
         });
         initializeDragAndDrop('passwords-table', 'passwords');
         return; // Используем кеш, не запрашиваем сервер
@@ -2274,7 +2274,7 @@ function fetchPasswords(){
             row.className = 'draggable-row';
             row.draggable = true;
             row.dataset.index = index;
-            row.innerHTML = '<td><span class="drag-handle">::</span></td><td>' + password.name + '</td><td><button class="button user-activity" onclick="copyPassword(' + index + ')" style="margin-right: 5px;">Copy</button><button class="button-action user-activity" onclick="editPassword(' + index + ')" style="margin-right: 5px;">Edit</button><button class="button-delete user-activity" onclick="removePassword(' + index + ')">Remove</button></td>';
+            row.innerHTML = '<td><span class="drag-handle">::</span></td><td>' + password.name + '</td><td><button class="button user-activity" onclick="copyPassword(' + index + ')" style="margin-right: 5px;">复制</button><button class="button-action user-activity" onclick="editPassword(' + index + ')" style="margin-right: 5px;">编辑</button><button class="button-delete user-activity" onclick="removePassword(' + index + ')">删除</button></td>';
         });
         initializeDragAndDrop('passwords-table', 'passwords');
     })
@@ -2284,7 +2284,7 @@ function fetchPasswords(){
     });
 }
 document.getElementById('add-password-form').addEventListener('submit',function(e){e.preventDefault();const name=document.getElementById('password-name').value;const password=document.getElementById('password-value').value;const formData=new FormData();formData.append('name',name);formData.append('password',password);makeAuthenticatedRequest('/api/passwords/add',{method:'POST',body:formData}).then(data=>{CacheManager.invalidate('passwords_list');showStatus('密码添加成功！');fetchPasswords();this.reset()}).catch(err=>showStatus('错误：'+err,true))});
-function removePassword(index){if(!confirm('确定执行此操作吗？'))return;const formData=new FormData();formData.append('index',index);makeAuthenticatedRequest('/api/passwords/delete',{method:'POST',body:formData}).then(data=>{CacheManager.invalidate('passwords_list');showStatus('Password removed successfully!');fetchPasswords()}).catch(err=>showStatus('错误：'+err,true))};
+function removePassword(index){if(!confirm('确定执行此操作吗？'))return;const formData=new FormData();formData.append('index',index);makeAuthenticatedRequest('/api/passwords/delete',{method:'POST',body:formData}).then(data=>{CacheManager.invalidate('passwords_list');showStatus('密码删除成功！');fetchPasswords()}).catch(err=>showStatus('错误：'+err,true))};
 
 function copyPassword(index) {
     if (!passwordsData || !passwordsData[index]) {
@@ -2297,7 +2297,7 @@ function copyPassword(index) {
     // Try modern Clipboard API first
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(password).then(() => {
-            showStatus('Password copied to clipboard!');
+            showStatus('密码已复制到剪贴板！');
         }).catch(err => {
             console.warn('Clipboard API failed:', err);
             fallbackCopyPassword(password);
@@ -2321,9 +2321,9 @@ function fallbackCopyPassword(password) {
     try {
         const successful = document.execCommand('copy');
         if (successful) {
-            showStatus('Password copied to clipboard!');
+            showStatus('密码已复制到剪贴板！');
         } else {
-            showStatus('Failed to copy password', true);
+            showStatus('复制密码失败', true);
         }
     } catch (err) {
         console.error('Copy failed:', err);
@@ -2484,7 +2484,7 @@ async function fetchPinSettings(){
         showStatus('Error fetching PIN settings: ' + err.message, true);
     }
 }
-document.getElementById('pincode-settings-form').addEventListener('submit',function(e){e.preventDefault();const newPin=document.getElementById('new-pin').value;const confirmPin=document.getElementById('confirm-pin').value;if(newPin!==confirmPin){showStatus('PINs do not match!',true);return}
+document.getElementById('pincode-settings-form').addEventListener('submit',function(e){e.preventDefault();const newPin=document.getElementById('new-pin').value;const confirmPin=document.getElementById('confirm-pin').value;if(newPin!==confirmPin){showStatus('两次 PIN 输入不一致！',true);return}
 // ✅ FIX: Используем JSON вместо FormData для правильной передачи boolean
 const jsonData={enabledForDevice:document.getElementById('pin-enabled-device').checked,enabledForBle:document.getElementById('pin-enabled-ble').checked,length:parseInt(document.getElementById('pin-length').value)};if(newPin){jsonData.pin=newPin;jsonData.pin_confirm=confirmPin}
 makeEncryptedRequest('/api/pincode_settings',{method:'POST',body:JSON.stringify(jsonData),headers:{'Content-Type':'application/json'}}).then(res=>res.json()).then(data=>{CacheManager.invalidate('pin_settings');if(data.success){showStatus(data.message);document.getElementById('new-pin').value='';document.getElementById('confirm-pin').value=''}else{showStatus(data.message||'更新 PIN 设置失败',true)}}).catch(err=>showStatus('更新 PIN 设置失败：'+err,true))});
