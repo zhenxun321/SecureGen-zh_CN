@@ -962,7 +962,6 @@ progress::-webkit-progress-value {
     <div class="form-container">
         <h4>启动画面</h4>
 
-        
         <div style="margin-bottom: 20px;">
             <label for="splash-mode-select" style="font-weight: bold; display: block; margin-bottom: 10px;">内置启动画面模式：</label>
             <select id="splash-mode-select" class="user-activity" style="width: 100%; padding: 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px;">
@@ -1027,7 +1026,7 @@ progress::-webkit-progress-value {
                 <input type="password" id="ble-pin" name="ble_pin" pattern="\d{6}" maxlength="6" placeholder="输入 6 位 PIN" class="user-activity">
                 <span class="password-toggle" onclick="togglePasswordVisibility('ble-pin', this)">O</span>
             </div>
-            
+
             <label for="ble-pin-confirm">确认 BLE 客户端 PIN：</label>
             <div class="password-input-container">
                 <input type="password" id="ble-pin-confirm" name="ble_pin_confirm" pattern="\d{6}" maxlength="6" placeholder="确认 6 位 PIN" class="user-activity">
@@ -1049,7 +1048,7 @@ progress::-webkit-progress-value {
     <h3>设备设置</h3>
     <div class="form-container">
         <h4>密码管理</h4>
-        
+
         <!-- Password Type Selector -->
         <div class="password-type-selector">
             <div class="toggle-container">
@@ -1434,7 +1433,7 @@ function redirectToLogin() {
     window.location.href = loginURL;
 }
 
-function logout(){CacheManager.clear();const formData=new FormData();makeEncryptedRequest('/logout',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){console.log('Logout successful, clearing cookies and redirecting...');document.cookie='session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';setTimeout(()=>{window.location.replace(window.urlObfuscationMap&&window.urlObfuscationMap['/login']?window.urlObfuscationMap['/login']:'/login')},500)}else{showStatus('退出登录失败',true)}}).catch(err=>{console.error('Logout error:',err);document.cookie='session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';setTimeout(()=>{window.location.replace(window.urlObfuscationMap&&window.urlObfuscationMap['/login']?window.urlObfuscationMap['/login']:'/login')},500)})}
+function logout(){CacheManager.clear();const formData=new FormData();makeEncryptedRequest('/logout',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){console.log('退出成功，正在清理 Cookie 并跳转...');document.cookie='session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';setTimeout(()=>{window.location.replace(window.urlObfuscationMap&&window.urlObfuscationMap['/login']?window.urlObfuscationMap['/login']:'/login')},500)}else{showStatus('退出登录失败',true)}}).catch(err=>{console.error('退出登录错误:',err);document.cookie='session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';setTimeout(()=>{window.location.replace(window.urlObfuscationMap&&window.urlObfuscationMap['/login']?window.urlObfuscationMap['/login']:'/login')},500)})}
 function showStatus(message,isError=false){const statusDiv=document.getElementById('status');statusDiv.textContent=message;statusDiv.className='status-message '+(isError?'status-err':'status-ok');statusDiv.style.display='block';setTimeout(()=>statusDiv.style.display='none',5000)}
 
 function openTab(evt,tabName){
@@ -1519,9 +1518,9 @@ function fetchKeys(){
 
             // Проверяем если расшифровка НЕ удалась
             if (originalData.type === "secure" && data && data[0] && data[0].name === "🔐 Encrypted Key 1") {
-                showStatus('🔐 TOTP keys are encrypted - showing placeholders', false);
+                showStatus('🔐 TOTP 密钥已加密 - 显示占位符', false);
             } else if (originalData.type === "secure" && Array.isArray(data)) {
-                showStatus('✅ TOTP keys decrypted successfully', false);
+                showStatus('✅ TOTP 密钥解密成功', false);
             }
         } else {
             data = originalData;
@@ -1820,7 +1819,7 @@ function editPassword(index) {
                 // Проверяем если расшифровка НЕ удалась
                 if (originalData.type === "secure" && (!data || !data.name)) {
                     console.warn('🔐 Password data is encrypted but decryption failed');
-                    showStatus('🔐 Password is encrypted - decryption failed', true);
+                    showStatus('🔐 密码已加密 - 解密失败', true);
                     return;
                 }
             } else {
@@ -2255,9 +2254,9 @@ function fetchPasswords(){
 
             // Проверяем если расшифровка НЕ удалась
             if (originalData.type === "secure" && data && data[0] && data[0].name === "🔐 Encrypted Key 1") {
-                showStatus('🔐 Passwords are encrypted - showing placeholders', false);
+                showStatus('🔐 密码已加密 - 显示占位符', false);
             } else if (originalData.type === "secure" && Array.isArray(data)) {
-                showStatus('✅ Passwords decrypted successfully', false);
+                showStatus('✅ 密码解密成功', false);
             }
         } else {
             data = originalData;
@@ -2280,7 +2279,7 @@ function fetchPasswords(){
         initializeDragAndDrop('passwords-table', 'passwords');
     })
     .catch(err => {
-        console.error('Error fetching passwords:', err);
+        console.error('获取密码失败:', err);
         showStatus('获取密码列表失败。', true);
     });
 }
@@ -3867,7 +3866,7 @@ function localCountdown() {
         // Обновляем UI локально
         const statusElements = document.querySelectorAll('.api-status');
         statusElements.forEach(el => {
-            el.textContent = `Active (${apiRemainingSeconds}s remaining)`;
+            el.textContent = `已启用（剩余 ${apiRemainingSeconds} 秒）`;
             el.style.color = '#81c784'; // Green
         });
     } else {
@@ -3917,7 +3916,7 @@ function updateApiStatus() {
             console.log(`🔄 Synced with server: ${apiRemainingSeconds}s remaining`);
 
             statusElements.forEach(el => {
-                el.textContent = `Active (${apiRemainingSeconds}s remaining)`;
+                el.textContent = `已启用（剩余 ${apiRemainingSeconds} 秒）`;
                 el.style.color = '#81c784'; // Green
             });
             exportKeysBtn.disabled = false;
@@ -3968,7 +3967,7 @@ async function fetchSessionDurationSettings() {
             select.value = data.duration;
         }
     }catch(err){
-        console.error('Error fetching session duration settings:', err);
+        console.error('获取会话时长设置失败:', err);
     }
 }
 
@@ -4008,7 +4007,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
             }).catch(err => {
-                console.error('Error updating session duration:', err);
+                console.error('更新会话时长失败:', err);
                 showStatus('更新会话时长失败。', true);
             });
         });
