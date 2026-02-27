@@ -2487,7 +2487,7 @@ async function fetchPinSettings(){
 document.getElementById('pincode-settings-form').addEventListener('submit',function(e){e.preventDefault();const newPin=document.getElementById('new-pin').value;const confirmPin=document.getElementById('confirm-pin').value;if(newPin!==confirmPin){showStatus('PINs do not match!',true);return}
 // ✅ FIX: Используем JSON вместо FormData для правильной передачи boolean
 const jsonData={enabledForDevice:document.getElementById('pin-enabled-device').checked,enabledForBle:document.getElementById('pin-enabled-ble').checked,length:parseInt(document.getElementById('pin-length').value)};if(newPin){jsonData.pin=newPin;jsonData.pin_confirm=confirmPin}
-makeEncryptedRequest('/api/pincode_settings',{method:'POST',body:JSON.stringify(jsonData),headers:{'Content-Type':'application/json'}}).then(res=>res.json()).then(data=>{CacheManager.invalidate('pin_settings');if(data.success){showStatus(data.message);document.getElementById('new-pin').value='';document.getElementById('confirm-pin').value=''}else{showStatus(data.message||'Error updating PIN settings',true)}}).catch(err=>showStatus('Error updating PIN settings: '+err,true))});
+makeEncryptedRequest('/api/pincode_settings',{method:'POST',body:JSON.stringify(jsonData),headers:{'Content-Type':'application/json'}}).then(res=>res.json()).then(data=>{CacheManager.invalidate('pin_settings');if(data.success){showStatus(data.message);document.getElementById('new-pin').value='';document.getElementById('confirm-pin').value=''}else{showStatus(data.message||'更新 PIN 设置失败',true)}}).catch(err=>showStatus('更新 PIN 设置失败：'+err,true))});
 
 // BLE PIN Management - PIN display removed for security
 document.getElementById('ble-pin-form').addEventListener('submit',function(e){e.preventDefault();const blePin=document.getElementById('ble-pin').value;const blePinConfirm=document.getElementById('ble-pin-confirm').value;if(blePin.length!==6||!/^\d{6}$/.test(blePin)){showStatus('BLE PIN 必须为 6 位数字！',true);return}if(blePin!==blePinConfirm){showStatus('两次 BLE PIN 输入不一致！',true);return}const formData=new FormData();formData.append('ble_pin',blePin);makeEncryptedRequest('/api/ble_pin_update',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){showStatus(data.message);document.getElementById('ble-pin').value='';document.getElementById('ble-pin-confirm').value=''}else{showStatus(data.message||'更新 BLE PIN 失败',true)}}).catch(err=>showStatus('更新 BLE PIN 失败：'+err,true))});
@@ -2556,10 +2556,10 @@ function togglePasswordVisibility(inputId, toggleElement) {
     const passwordInput = document.getElementById(inputId);
     if (passwordInput.type === 'password') {
         passwordInput.type = 'text';
-        toggleElement.textContent = 'X';
+        toggleElement.textContent = '🙈';
     } else {
         passwordInput.type = 'password';
-        toggleElement.textContent = 'O';
+        toggleElement.textContent = '👁';
     }
 }
 
@@ -2596,8 +2596,8 @@ function switchPasswordType(type) {
         formTitle.textContent = '修改 WiFi 接入点密码';
         titleIcon.textContent = '📶';
         description.textContent = '修改 AP 模式下 WiFi 接入点的密码。';
-        newLabel.textContent = '新的 WiFi AP 密码';
-        confirmLabel.textContent = '确认新的 WiFi AP 密码';
+        newLabel.textContent = '新的 WiFi 接入点密码';
+        confirmLabel.textContent = '确认新的 WiFi 接入点密码';
         criteriaList.style.display = 'none'; // WiFi password has different requirements
         submitBtn.textContent = '修改 WiFi 密码';
     }
