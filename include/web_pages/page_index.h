@@ -1554,7 +1554,7 @@ function updateKeysTable(data) {
 
     if (!keysData || keysData.length === 0) {
         const row = tbody.insertRow();
-        row.innerHTML = '<td colspan="6" style="text-align:center;color:#666;">No keys added yet</td>';
+        row.innerHTML = '<td colspan="6" style="text-align:center;color:#666;">暂无密钥</td>';
         return;
     }
 
@@ -1938,7 +1938,7 @@ function savePasswordEdit() {
                 fetchPasswords(); // Refresh table
             } else {
                 return response.text().then(text => {
-                    throw new Error(text || 'Unknown error');
+                    throw new Error(text || '未知错误');
                 });
             }
         })
