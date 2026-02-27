@@ -2335,7 +2335,7 @@ function fallbackCopyPassword(password) {
 
 function copyTOTPCode(index) {
     if (!keysData || !keysData[index]) {
-        showStatus('TOTP code not found!', true);
+        showStatus('未找到 TOTP 验证码！', true);
         return;
     }
 
@@ -2427,12 +2427,12 @@ async function fetchThemeSettings(){
 
         if(data.theme==='light'){document.getElementById('theme-light').checked=true}else{document.getElementById('theme-dark').checked=true}
     }catch(err){
-        showStatus('Error fetching theme settings.',true)
+        showStatus('获取主题设置失败。',true)
     }
 }
-async function fetchDisplaySettings(){try{const response=await makeEncryptedRequest('/api/display_settings');const data=await response.json();document.getElementById('display-timeout').value=data.display_timeout;const splashResponse=await makeEncryptedRequest('/api/splash/mode');if(splashResponse.ok){const splashData=await splashResponse.json();const selectElement=document.getElementById('splash-mode-select');if(selectElement)selectElement.value=splashData.mode}}catch(err){showStatus('Error fetching display settings.',true)}}
-document.getElementById('theme-selection-form').addEventListener('submit',function(e){e.preventDefault();const selectedTheme=document.querySelector('input[name="theme"]:checked').value;const formData=new FormData();formData.append('theme',selectedTheme);makeEncryptedRequest('/api/theme',{method:'POST',body:new URLSearchParams(formData)}).then(res=>res.json()).then(data=>{CacheManager.invalidate('theme_settings');if(data.success){showStatus(data.message)}else{showStatus(data.message||'Error applying theme',true)}}).catch(err=>showStatus('Error applying theme: '+err,true))});
-document.getElementById('display-timeout-form').addEventListener('submit',function(e){e.preventDefault();const timeout=document.getElementById('display-timeout').value;const formData=new FormData();formData.append('display_timeout',timeout);makeEncryptedRequest('/api/display_settings',{method:'POST',body:new URLSearchParams(formData)}).then(res=>res.json()).then(data=>{if(data.success){showStatus(data.message)}else{showStatus(data.message||'Error saving timeout',true)}}).catch(err=>showStatus('Error saving display timeout: '+err,true))});
+async function fetchDisplaySettings(){try{const response=await makeEncryptedRequest('/api/display_settings');const data=await response.json();document.getElementById('display-timeout').value=data.display_timeout;const splashResponse=await makeEncryptedRequest('/api/splash/mode');if(splashResponse.ok){const splashData=await splashResponse.json();const selectElement=document.getElementById('splash-mode-select');if(selectElement)selectElement.value=splashData.mode}}catch(err){showStatus('获取显示设置失败。',true)}}
+document.getElementById('theme-selection-form').addEventListener('submit',function(e){e.preventDefault();const selectedTheme=document.querySelector('input[name="theme"]:checked').value;const formData=new FormData();formData.append('theme',selectedTheme);makeEncryptedRequest('/api/theme',{method:'POST',body:new URLSearchParams(formData)}).then(res=>res.json()).then(data=>{CacheManager.invalidate('theme_settings');if(data.success){showStatus(data.message)}else{showStatus(data.message||'应用主题失败',true)}}).catch(err=>showStatus('应用主题失败：'+err,true))});
+document.getElementById('display-timeout-form').addEventListener('submit',function(e){e.preventDefault();const timeout=document.getElementById('display-timeout').value;const formData=new FormData();formData.append('display_timeout',timeout);makeEncryptedRequest('/api/display_settings',{method:'POST',body:new URLSearchParams(formData)}).then(res=>res.json()).then(data=>{if(data.success){showStatus(data.message)}else{showStatus(data.message||'保存超时设置失败',true)}}).catch(err=>showStatus('保存显示超时失败：'+err,true))});
 document.getElementById('save-splash-mode-btn').addEventListener('click',async function(){const selectElement=document.getElementById('splash-mode-select');if(!selectElement||!selectElement.value){showStatus('请选择启动模式',true);return}const formData=new FormData();formData.append('mode',selectElement.value);try{const response=await makeEncryptedRequest('/api/splash/mode',{method:'POST',body:formData});if(response.ok){const data=await response.json();showStatus(data.success?'启动模式已保存！重启后生效。':'保存启动模式失败')}else{const text=await response.text();showStatus('错误：'+text,true)}}catch(err){showStatus('保存启动模式失败：'+err.message,true)}});
 
 async function fetchPinSettings(){
@@ -2468,7 +2468,7 @@ async function fetchPinSettings(){
 
             // Проверяем если расшифровка НЕ удалась
             if (originalData.type === "secure" && data) {
-                showStatus('✅ PIN settings decrypted successfully', false);
+                showStatus('✅ PIN 设置解密成功', false);
             }
         } else {
             data = originalData;
@@ -2481,7 +2481,7 @@ async function fetchPinSettings(){
         document.getElementById('pin-enabled-ble').checked = data.enabledForBle;
         document.getElementById('pin-length').value = data.length;
     }catch(err){
-        showStatus('Error fetching PIN settings: ' + err.message, true);
+        showStatus('获取 PIN 设置失败：' + err.message, true);
     }
 }
 document.getElementById('pincode-settings-form').addEventListener('submit',function(e){e.preventDefault();const newPin=document.getElementById('new-pin').value;const confirmPin=document.getElementById('confirm-pin').value;if(newPin!==confirmPin){showStatus('两次 PIN 输入不一致！',true);return}
