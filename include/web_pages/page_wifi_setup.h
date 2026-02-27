@@ -2,11 +2,11 @@
 
 const char wifi_setup_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WiFi Setup - T-Display TOTP</title>
+    <title>WiFi 配置 - T-Display TOTP</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="alternate icon" href="/favicon.ico">
     <style>
@@ -218,34 +218,34 @@ const char wifi_setup_html[] PROGMEM = R"rawliteral(
 </head>
 <body>
     <div class="container">
-        <h2>🛜 WiFi Setup</h2>
+        <h2>🛜 无线网络配置</h2>
         
         <div id="status-message" class="status-message"></div>
         
         <form id="wifi-form" action="/save" method="POST">
             <div class="input-group">
-                <label for="ssid">Select Network</label>
-                <button type="button" class="refresh-btn" onclick="scanNetworks()">🔄 Refresh Networks</button>
+                <label for="ssid">选择网络</label>
+                <button type="button" class="refresh-btn" onclick="scanNetworks()">🔄 刷新网络</button>
                 <select id="ssid" name="ssid" required>
-                    <option value="">Scanning networks...</option>
+                    <option value="">正在扫描网络...</option>
                 </select>
             </div>
             
             <div class="input-group">
-                <label for="password">WiFi Password</label>
+                <label for="password">WiFi 密码</label>
                 <div class="password-input-container">
-                    <input type="password" id="password" name="password" placeholder="Enter network password">
+                    <input type="password" id="password" name="password" placeholder="输入网络密码">
                     <span class="password-toggle" onclick="togglePasswordVisibility('password', this)">👁</span>
                 </div>
-                <div class="network-info">Leave empty for open networks</div>
+                <div class="network-info">开放网络可留空</div>
             </div>
             
-            <button type="submit" id="submit-btn">💾 Save and Connect</button>
+            <button type="submit" id="submit-btn">💾 保存并连接</button>
         </form>
         
         <div id="loading" class="loading">
-            <div>⏳ Connecting to network...</div>
-            <div style="font-size: 0.8rem; margin-top: 0.5rem;">This may take up to 30 seconds</div>
+            <div>⏳ 正在连接网络...</div>
+            <div style="font-size: 0.8rem; margin-top: 0.5rem;">最多可能需要 30 秒</div>
         </div>
     </div>
 
@@ -287,21 +287,21 @@ const char wifi_setup_html[] PROGMEM = R"rawliteral(
             const select = document.getElementById('ssid');
             const refreshBtn = document.querySelector('.refresh-btn');
             
-            select.innerHTML = '<option value="">Scanning networks...</option>';
+            select.innerHTML = '<option value="">正在扫描网络...</option>';
             refreshBtn.disabled = true;
-            refreshBtn.innerHTML = '⏳ Scanning...';
+            refreshBtn.innerHTML = '⏳ 扫描中...';
             
             fetch('/scan')
             .then(response => {
-                if (!response.ok) throw new Error('Network scan failed');
+                if (!response.ok) throw new Error('网络扫描失败');
                 return response.json();
             })
             .then(data => {
                 select.innerHTML = '';
                 
                 if (data.length === 0) {
-                    select.innerHTML = '<option value="">No networks found</option>';
-                    showStatus('No WiFi networks found. Try refreshing.', true);
+                    select.innerHTML = '<option value="">未找到网络</option>';
+                    showStatus('未找到 WiFi 网络，请尝试刷新。', true);
                 } else {
                     data.forEach(net => {
                         const option = document.createElement('option');
@@ -318,16 +318,16 @@ const char wifi_setup_html[] PROGMEM = R"rawliteral(
                         option.innerHTML = `${net.ssid} ${strengthIcon} (${net.rssi}dBm)`;
                         select.appendChild(option);
                     });
-                    showStatus(`Found ${data.length} networks`);
+                    showStatus(`找到 ${data.length} 个网络`);
                 }
             })
             .catch(err => {
-                select.innerHTML = '<option value="">Scan failed - try again</option>';
-                showStatus('Failed to scan networks: ' + err.message, true);
+                select.innerHTML = '<option value="">扫描失败，请重试</option>';
+                showStatus('扫描网络失败：' + err.message, true);
             })
             .finally(() => {
                 refreshBtn.disabled = false;
-                refreshBtn.innerHTML = '🔄 Refresh Networks';
+                refreshBtn.innerHTML = '🔄 刷新网络';
             });
         }
 
@@ -339,7 +339,7 @@ const char wifi_setup_html[] PROGMEM = R"rawliteral(
             const password = document.getElementById('password').value;
             
             if (!ssid) {
-                showStatus('Please select a network', true);
+                showStatus('请选择一个网络', true);
                 return;
             }
             
@@ -362,17 +362,17 @@ const char wifi_setup_html[] PROGMEM = R"rawliteral(
             })
             .then(response => {
                 if (response.ok) {
-                    showStatus('WiFi settings saved! Device is rebooting...');
+                    showStatus('WiFi 设置已保存！设备正在重启...');
                     // Start looking for the device after it connects to WiFi
                     setTimeout(startDeviceSearch, 8000); // Wait 8 seconds for reboot
                 } else {
-                    throw new Error('Failed to save settings');
+                    throw new Error('保存设置失败');
                 }
             })
             .catch(err => {
                 form.style.display = 'block';
                 loading.style.display = 'none';
-                showStatus('Error: ' + err.message, true);
+                showStatus('错误：' + err.message, true);
             });
         });
 
@@ -382,7 +382,7 @@ const char wifi_setup_html[] PROGMEM = R"rawliteral(
         
         function startDeviceSearch() {
             searchAttempt = 0;
-            showStatus('✅ WiFi settings saved! Stay here - you will be automatically redirected to the registration page...');
+            showStatus('✅ WiFi 设置已保存！请停留在此页面，稍后将自动跳转到注册页...');
             
             // Start periodic search every 8 seconds
             searchInterval = setInterval(performDeviceSearch, 8000);
@@ -397,7 +397,7 @@ const char wifi_setup_html[] PROGMEM = R"rawliteral(
             // After 3 attempts (24 seconds), just try to redirect
             if (searchAttempt >= 3) {
                 clearInterval(searchInterval);
-                showStatus('🚀 Device ready! Redirecting to registration page in 2 seconds...');
+                showStatus('🚀 设备已就绪！2 秒后跳转到注册页...');
                 setTimeout(() => {
                     window.location.href = 'http://##MDNS_HOSTNAME##.local/';
                 }, 2000);
@@ -406,7 +406,7 @@ const char wifi_setup_html[] PROGMEM = R"rawliteral(
             
             // Update status for early attempts
             const remainingTime = (4-searchAttempt) * 8;
-            showStatus(`⏳ Device connecting to WiFi... Stay here! Auto-redirect in ${remainingTime} seconds (${searchAttempt}/3)`);
+            showStatus(`⏳ 设备正在连接 WiFi... 请停留在此页面！${remainingTime} 秒后自动跳转（${searchAttempt}/3）`);
         }
 
         function tryMdnsAccess() {
@@ -414,7 +414,7 @@ const char wifi_setup_html[] PROGMEM = R"rawliteral(
                 // Try to load a simple resource from the device to test connectivity
                 const img = new Image();
                 img.onload = () => {
-                    showStatus('Device found! Redirecting to web interface...');
+                    showStatus('发现设备！正在跳转到网页界面...');
                     setTimeout(() => {
                         window.location.href = 'http://' + window.location.hostname + '/';
                     }, 2000);
@@ -422,7 +422,7 @@ const char wifi_setup_html[] PROGMEM = R"rawliteral(
                 };
                 img.onerror = () => {
                     // Try direct redirect approach - if user is on same WiFi, it should work
-                    showStatus('Trying direct connection...');
+                    showStatus('正在尝试直接连接...');
                     setTimeout(() => {
                         window.location.href = 'http://' + window.location.hostname + '/';
                     }, 1000);
@@ -466,7 +466,7 @@ const char wifi_setup_html[] PROGMEM = R"rawliteral(
                         .then(() => {
                             if (!found) {
                                 found = true;
-                                showStatus(`Device found at ${ip}! Redirecting...`);
+                                showStatus(`已在 ${ip} 找到设备！正在跳转...`);
                                 setTimeout(() => {
                                     window.location.href = `http://${ip}/`;
                                 }, 2000);
