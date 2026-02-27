@@ -466,7 +466,7 @@ const char wifi_setup_html[] PROGMEM = R"rawliteral(
                         .then(() => {
                             if (!found) {
                                 found = true;
-                                showStatus(`Device found at ${ip}! Redirecting...`);
+                                showStatus(`已在 ${ip} 找到设备！正在跳转...`);
                                 setTimeout(() => {
                                     window.location.href = `http://${ip}/`;
                                 }, 2000);

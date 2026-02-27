@@ -2344,7 +2344,7 @@ function copyTOTPCode(index) {
     // Try modern Clipboard API first
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(totpCode).then(() => {
-            showCopyNotification('TOTP code copied!');
+            showCopyNotification('TOTP 验证码已复制！');
         }).catch(err => {
             console.warn('Clipboard API failed:', err);
             fallbackCopyTOTPCode(totpCode);
@@ -2368,7 +2368,7 @@ function fallbackCopyTOTPCode(totpCode) {
     try {
         const successful = document.execCommand('copy');
         if (successful) {
-            showCopyNotification('TOTP code copied!');
+            showCopyNotification('TOTP 验证码已复制！');
         } else {
             showStatus('复制 TOTP 验证码失败', true);
         }
