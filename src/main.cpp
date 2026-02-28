@@ -99,7 +99,7 @@ void showWebServerInfoPage() {
     // Title
     tft->setTextColor(colors->accent_primary, colors->background_dark);
     tft->setTextSize(2);
-    tft->drawString("Web Server Started!", tft->width() / 2, 25);
+    tft->drawString("Web 服务已启动!", tft->width() / 2, 25);
     
     // IP Address
     String ip = wifiManager.getIP();
@@ -117,7 +117,7 @@ void showWebServerInfoPage() {
     // Instructions
     tft->setTextColor(colors->text_secondary, colors->background_dark);
     tft->setTextSize(1);
-    tft->drawString("Ready for connections", tft->width() / 2, 105);
+    tft->drawString("可开始连接", tft->width() / 2, 105);
     
     // 🌌 Плавное появление
     for (int i = 0; i <= 255; i += 15) {
@@ -129,14 +129,14 @@ void showWebServerInfoPage() {
     delay(3000);
     
     // 🧹 КРИТИЧНО: Очистка экрана перед возвратом к TOTP
-    // Без этого текст "Ready for connections" остается под шкалой!
+    // Без этого текст "可开始连接" остается под шкалой!
     tft->fillScreen(colors->background_dark);
 }
 
 void handleFactoryResetOnBoot() {
     displayManager.init();
-    displayManager.showMessage("Hold both buttons", 10, 20, false, 2);
-    displayManager.showMessage("for factory reset.", 10, 40, false, 2);
+    displayManager.showMessage("同时按住两个按键", 10, 20, false, 2);
+    displayManager.showMessage("可恢复出厂设置", 10, 40, false, 2);
     
     unsigned long startTime = millis();
     
@@ -145,7 +145,7 @@ void handleFactoryResetOnBoot() {
         
         if (holdTime > factoryResetHoldTime) {
             displayManager.init();
-            displayManager.showMessage("FACTORY RESET!", 10, 30, true, 2);
+            displayManager.showMessage("恢复出厂中!", 10, 30, true, 2);
             
             LOG_CRITICAL("Main", "--- FACTORY RESET ---");
             LOG_INFO("Main", "Clearing active web sessions...");
@@ -194,14 +194,14 @@ void handleFactoryResetOnBoot() {
             nvs_flash_erase_partition("nvs");
             LOG_INFO("Main", "NVS partition cleared");
 
-            displayManager.showMessage("Done. Rebooting...", 10, 60);
+            displayManager.showMessage("完成，正在重启...", 10, 60);
             
             delay(2500);
             ESP.restart();
         }
         
         int progress = (holdTime * 100) / factoryResetHoldTime;
-        displayManager.showMessage("Resetting: " + String(progress) + "%", 10, 100);
+        displayManager.showMessage("正在重置: " + String(progress) + "%", 10, 100);
         delay(100);
     }
     LOG_INFO("Main", "Factory reset aborted. Continuing boot");
@@ -224,7 +224,7 @@ void setup() {
         } else {
             DisplayManager tempDisplay;
             tempDisplay.init();
-            tempDisplay.showMessage("LittleFS Failed!", 10, 30, true);
+            tempDisplay.showMessage("文件系统挂载失败!", 10, 30, true);
             while(1);
         }
     }
@@ -236,7 +236,7 @@ void setup() {
         LOG_CRITICAL("Main", "LittleFS Mount Failed!");
         DisplayManager tempDisplay;
         tempDisplay.init();
-        tempDisplay.showMessage("LittleFS Failed", 10, 30, true);
+        tempDisplay.showMessage("文件系统挂载失败", 10, 30, true);
         while(1);
     }
 
@@ -346,13 +346,13 @@ void setup() {
         
         // Отображение информации на экране
         displayManager.init();
-        displayManager.showMessage("AP Mode Active", 10, 20, false, 2);
-        displayManager.showMessage("Network: " + apName, 10, 40, false, 1);
-        displayManager.showMessage("Password: " + apPassword, 10, 55, false, 1);
+        displayManager.showMessage("AP 模式已启用", 10, 20, false, 2);
+        displayManager.showMessage("网络: " + apName, 10, 40, false, 1);
+        displayManager.showMessage("密码: " + apPassword, 10, 55, false, 1);
         displayManager.showMessage("IP: " + WiFi.softAPIP().toString(), 10, 70, false, 1);
-        displayManager.showMessage("Domain: " + hostname + ".local", 10, 85, false, 1);
-        displayManager.showMessage("Connect to network", 10, 100, false, 1);
-        displayManager.showMessage("for web access", 10, 115, false, 1);
+        displayManager.showMessage("域名: " + hostname + ".local", 10, 85, false, 1);
+        displayManager.showMessage("请连接到网络", 10, 100, false, 1);
+        displayManager.showMessage("以访问 Web 界面", 10, 115, false, 1);
         
         // Автозапуск веб-сервера в AP режиме
         delay(3000);
@@ -363,22 +363,22 @@ void setup() {
         displayManager.clearMessageArea(0, 0, 240, 135);
         
         // ❗ ПРОПУСКАЕМ WiFi подключение и синхронизацию времени
-        // TOTP коды будут показывать "TIME NOT SYNCED"
+        // TOTP коды будут показывать "TIME 未同步"
         timeSynced = false;
         
     } else if (selectedMode == StartupMode::OFFLINE_MODE) {
         // 🔌 OFFLINE MODE
-        LOG_INFO("Main", "User chose Offline Mode. No WiFi, no AP, no web server.");
+        LOG_INFO("Main", "User chose 离线模式. No WiFi, no AP, no web server.");
         
         // Полное отключение WiFi
         WiFi.mode(WIFI_OFF);
         
         // Отображение информации
         displayManager.init();
-        displayManager.showMessage("Offline Mode", 10, 20, false, 2);
-        displayManager.showMessage("No WiFi Connection", 10, 40, false, 1);
-        displayManager.showMessage("BLE & Passwords Work", 10, 55, false, 1);
-        displayManager.showMessage("TOTP: NOT SYNCED", 10, 70, false, 1);
+        displayManager.showMessage("离线模式", 10, 20, false, 2);
+        displayManager.showMessage("无 WiFi 连接", 10, 40, false, 1);
+        displayManager.showMessage("BLE 与密码功能可用", 10, 55, false, 1);
+        displayManager.showMessage("TOTP：未同步", 10, 70, false, 1);
         delay(3000);
         
         // Очистка экрана
@@ -455,16 +455,16 @@ void setup() {
 
         if (!timeSynced) {
             // ⚠️ OFFLINE FALLBACK: Продолжаем работу без синхронизации времени
-            // TOTP будет показывать "NOT SYNCED", но пароли и BLE работают нормально
+            // TOTP будет показывать "未同步", но пароли и BLE работают нормально
             LOG_WARNING("Main", "All 3 NTP servers failed (pool.ntp.org, time.google.com, time.cloudflare.com)");
-            LOG_WARNING("Main", "Continuing in offline mode. TOTP: NOT SYNCED, Passwords: OK");
+            LOG_WARNING("Main", "Continuing in offline mode. TOTP：未同步, 密码功能：正常");
             
             displayManager.init();
-            displayManager.showMessage("WARNING:", 10, 20, false, 2);
-            displayManager.showMessage("Time sync failed!", 10, 40, false, 2);
-            displayManager.showMessage("TOTP: NOT SYNCED", 10, 60, false, 1);
-            displayManager.showMessage("Passwords: OK", 10, 75, false, 1);
-            displayManager.showMessage("Continuing...", 10, 95, false, 1);
+            displayManager.showMessage("警告:", 10, 20, false, 2);
+            displayManager.showMessage("时间同步失败!", 10, 40, false, 2);
+            displayManager.showMessage("TOTP：未同步", 10, 60, false, 1);
+            displayManager.showMessage("密码功能：正常", 10, 75, false, 1);
+            displayManager.showMessage("继续运行...", 10, 95, false, 1);
             delay(3000);
             
             // Устанавливаем timeSynced = false для offline режима
@@ -494,8 +494,8 @@ void setup() {
             } else {
                 LOG_ERROR("Main", "WiFi reconnection failed! Web server not started.");
                 displayManager.init();
-                displayManager.showMessage("ERROR:", 10, 20, true, 2);
-                displayManager.showMessage("WiFi reconnect failed!", 10, 40, false, 2);
+                displayManager.showMessage("错误:", 10, 20, true, 2);
+                displayManager.showMessage("WiFi 重连失败!", 10, 40, false, 2);
                 delay(2000);
             }
         } else {
@@ -510,8 +510,8 @@ void setup() {
                 } else {
                     LOG_ERROR("Main", "WiFi reconnection failed! Web server not started.");
                     displayManager.init();
-                    displayManager.showMessage("ERROR:", 10, 20, true, 2);
-                    displayManager.showMessage("WiFi reconnect failed!", 10, 40, false, 2);
+                    displayManager.showMessage("错误:", 10, 20, true, 2);
+                    displayManager.showMessage("WiFi 重连失败!", 10, 40, false, 2);
                     delay(2000);
                 }
             } else {
@@ -647,9 +647,9 @@ void handleButtons() {
         if (button2PressStartTime == 0) {
             button2PressStartTime = millis();
         } else if (millis() - button2PressStartTime > powerOffHoldTime) {
-            LOG_INFO("Main", "Button 2 LONG PRESS: Shutting down...");
+            LOG_INFO("Main", "Button 2 LONG PRESS: 正在关闭...");
             displayManager.init();
-            displayManager.showMessage("Shutting down...", 10, 30, false, 2);
+            displayManager.showMessage("正在关闭...", 10, 30, false, 2);
             delay(1000);
             displayManager.turnOff();
             esp_deep_sleep_start();
@@ -657,7 +657,7 @@ void handleButtons() {
             unsigned long holdTime = millis() - button2PressStartTime;
             if (holdTime >= 1000 && holdTime < powerOffHoldTime) {
                 int progress = map(holdTime - 1000, 0, 4000, 0, 100);
-                displayManager.drawGenericLoader(progress, "Shutting down...");
+                displayManager.drawGenericLoader(progress, "正在关闭...");
             }
         }
     } else {
@@ -841,10 +841,10 @@ void loop() {
                         // ⚠️ Проверка синхронизации времени
                         if (!totpGenerator.isTimeSynced()) {
                             // Показываем предупреждение вместо TOTP кода (убрали TIME для краткости)
-                            displayManager.updateTOTPCode("NOT SYNCED", 0);
+                            displayManager.updateTOTPCode("未同步", 0);
                             
                             // 🌐 Дополнительные предупреждения ТОЛЬКО для WiFi Mode
-                            // В AP и Offline режимах - только "TIME NOT SYNCED" без подсказок
+                            // В AP и Offline режимах - только "TIME 未同步" без подсказок
                             if (WiFi.getMode() == WIFI_STA && WiFi.isConnected()) {
                                 // Показываем предупреждения периодически для WiFi режима
                                 static unsigned long lastWarningTime = 0;
@@ -868,10 +868,10 @@ void loop() {
                                     tft->setTextColor(displayManager.getCurrentThemeColors()->text_secondary, 
                                                     displayManager.getCurrentThemeColors()->background_dark);
                                     tft->setTextSize(1);
-                                    tft->drawString("⚠️ Connect to network", tft->width() / 2, 120);
-                                    tft->drawString("for time sync", tft->width() / 2, 135);
-                                    tft->drawString("or switch to passwords", tft->width() / 2, 150);
-                                    tft->drawString("(Hold BTN1)", tft->width() / 2, 165);
+                                    tft->drawString("⚠️ 请连接到网络", tft->width() / 2, 120);
+                                    tft->drawString("以进行时间同步", tft->width() / 2, 135);
+                                    tft->drawString("或切换到密码模式", tft->width() / 2, 150);
+                                    tft->drawString("（长按 BTN1）", tft->width() / 2, 165);
                                 }
                             }
                         } else {
@@ -927,7 +927,7 @@ void loop() {
                             
                             bool bleStarted = bleKeyboardManager.begin();
                             if (bleStarted) {
-                                String pinMsg = "PIN: " + String(bleKeyboardManager.getStaticPIN());
+                                String pinMsg = "PIN：" + String(bleKeyboardManager.getStaticPIN());
                                 displayManager.drawBleAdvertisingPage(bleKeyboardManager.getDeviceName(), pinMsg, 0);
                                 bleInitialized = true;
                                 devicePinChecked = false; // Reset for next time
@@ -959,7 +959,7 @@ void loop() {
                             }
                             
                             if (!pinPageDrawn) {
-                                String pinMsg = "Enter PIN: " + String(bleKeyboardManager.getStaticPIN());
+                                String pinMsg = "请输入 PIN：" + String(bleKeyboardManager.getStaticPIN());
                                 displayManager.drawBleAdvertisingPage(bleKeyboardManager.getDeviceName(), pinMsg, 0);
                                 pinPageDrawn = true;
                             }
