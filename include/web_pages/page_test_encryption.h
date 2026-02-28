@@ -35,14 +35,14 @@ const char page_test_encryption_html[] PROGMEM = R"rawliteral(
         <h1>🔐 ESP32 安全集成测试 v3.0</h1>
         <p>用于验证 SecureLayerManager、方法隧道、URL 混淆和流量填充的综合测试页面。</p>
         <div style="background: #e3f2fd; padding: 10px; border-radius: 5px; margin: 10px 0; border-left: 4px solid #2196f3;">
-            <strong>🏷️ NEW: HTTP Headers Obfuscation v3.0</strong> - Маскировка заголовков, внедрение ложных заголовков, и скрытие данных в User-Agent
+            <strong>🏷️ 新功能：HTTP 请求头混淆 v3.0</strong> - 对请求头进行伪装、注入伪造头并在 User-Agent 中隐藏数据
         </div>
 
         <div class="test-section info">
-            <h3>📋 Тестовые эндпоинты:</h3>
+            <h3>📋 测试端点：</h3>
             <ul>
-                <li><strong>/api/passwords/get</strong> - Получение расшифрованных паролей (КРИТИЧЕСКИ ЧУВСТВИТЕЛЬНЫЙ)</li>
-                <li><strong>/api/keys</strong> - Получение TOTP кодов и секретов (ВЫСОКО ЧУВСТВИТЕЛЬНЫЙ)</li>
+                <li><strong>/api/passwords/get</strong> - 获取解密后的密码（极高敏感）</li>
+                <li><strong>/api/keys</strong> - 获取 TOTP 代码与密钥（高敏感）</li>
             </ul>
         </div>
 
@@ -91,7 +91,7 @@ const char page_test_encryption_html[] PROGMEM = R"rawliteral(
 
         <div class="test-section">
             <h3>📝 调试日志</h3>
-            <button onclick="clearLogs()">Clear Logs</button>
+            <button onclick="clearLogs()">清空日志</button>
             <div id="debugLogs"></div>
         </div>
     </div>
@@ -398,8 +398,8 @@ const char page_test_encryption_html[] PROGMEM = R"rawliteral(
                                 return { success: true, data, encrypted: false };
                             }
                         } catch (parseError) {
-                            this.log(`❌ Failed to parse JSON response: ${parseError.message}`, 'error');
-                            return { success: false, error: 'JSON parse error', encrypted: false };
+                            this.log(`❌ 解析 JSON 响应失败：${parseError.message}`, 'error');
+                            return { success: false, error: 'JSON 解析错误', encrypted: false };
                         }
                     } else {
                         this.log(`❌ ${endpoint} failed: ${response.status} - ${responseText}`, 'error');
@@ -539,7 +539,7 @@ const char page_test_encryption_html[] PROGMEM = R"rawliteral(
         // UI Functions
         function updateConnectionStatus(message, type = 'info') {
             const statusDiv = document.getElementById('connectionStatus');
-            statusDiv.innerHTML = `Status: ${message}`;
+            statusDiv.innerHTML = `状态：${message}`;
             statusDiv.className = type;
         }
 
@@ -564,13 +564,13 @@ const char page_test_encryption_html[] PROGMEM = R"rawliteral(
 
         function updateTunnelingStatus(message, type = 'info') {
             const statusDiv = document.getElementById('tunnelingStatus');
-            statusDiv.innerHTML = `Status: ${message}`;
+            statusDiv.innerHTML = `状态：${message}`;
             statusDiv.className = type;
         }
 
         function updateHeaderObfuscationStatus(message, type = 'info') {
             const statusDiv = document.getElementById('headerObfuscationStatus');
-            statusDiv.innerHTML = `Status: ${message}`;
+            statusDiv.innerHTML = `状态：${message}`;
             statusDiv.className = type;
         }
 
