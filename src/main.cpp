@@ -310,7 +310,7 @@ void setup() {
             LOG_INFO("Main", "Device PIN disabled or not set. Continuing startup...");
     }
     
-    displayManager.updateMessage("Initializing...", 10, 10, 2);
+    displayManager.updateMessage("初始化中...", 10, 10, 2);
     
     // 🌌 ПРОМПТИНГ ВЫБОРА РЕЖИМА (AP/Offline/WiFi)
     LOG_INFO("Main", "Prompting for startup mode...");
@@ -391,7 +391,7 @@ void setup() {
     } else {
         // 🌐 WIFI MODE (по умолчанию)
         LOG_INFO("Main", "User chose WiFi mode (or timeout). Connecting to WiFi...");
-        displayManager.updateMessage("Connecting WiFi...", 10, 10, 2);
+        displayManager.updateMessage("正在连接 WiFi...", 10, 10, 2);
         
         if (!wifiManager.connect()) {
             LOG_WARNING("Main", "No WiFi credentials found. Starting config portal...");
@@ -427,7 +427,7 @@ void setup() {
         LOG_INFO("Main", "Syncing time with multiple NTP servers...");
         for (int i = 0; i < 3; i++) {
             // 🔄 Обновляем только текст без полной перерисовки
-            displayManager.updateMessage("Time Sync... (" + String(i + 1) + "/3)", 10, 10, 2);
+            displayManager.updateMessage("正在同步时间... (" + String(i + 1) + "/3)", 10, 10, 2);
             
             // ✅ Каждая попытка использует СВОЙ NTP сервер
             LOG_INFO("Main", "NTP attempt " + String(i+1) + ": " + String(ntpServers[i]));
@@ -440,7 +440,7 @@ void setup() {
                 timeSynced = true;
                 LOG_INFO("Main", "Time Synced Successfully on attempt " + String(i+1) + " (" + String(ntpServers[i]) + ")!");
                 // 🔄 Обновляем только текст
-                displayManager.updateMessage("Time Synced!", 10, 10, 2);
+                displayManager.updateMessage("时间同步完成！", 10, 10, 2);
                 delay(1000);
                 break;
             }

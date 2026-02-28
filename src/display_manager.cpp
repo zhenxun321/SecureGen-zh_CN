@@ -26,6 +26,33 @@ void ensureU8g2Ready(TFT_eSPI& tft) {
 // Helper for the animation loop
 void schedule_next_update(DisplayManager* dm, AnimationManager* am);
 
+
+bool hasNonAscii(const String& text) {
+    for (size_t i = 0; i < text.length(); ++i) {
+        if (static_cast<uint8_t>(text[i]) & 0x80) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void drawUtf8TopLeft(TFT_eSPI& tft, const String& text, int x, int y, uint16_t fg, uint16_t bg) {
+#if SECUREGEN_HAS_U8G2
+    if (hasNonAscii(text)) {
+        ensureU8g2Ready(tft);
+        g_u8g2.setFont(u8g2_font_unifont_t_chinese2);
+        g_u8g2.setForegroundColor(fg);
+        g_u8g2.setBackgroundColor(bg);
+        int baselineY = y + g_u8g2.getFontAscent();
+        g_u8g2.setCursor(x, baselineY);
+        g_u8g2.print(text.c_str());
+        return;
+    }
+#endif
+    tft.setTextColor(fg, bg);
+    tft.drawString(text, x, y);
+}
+
 void animation_callback(float val, bool finished, DisplayManager* dm, AnimationManager* am) {
     dm->updateHeader();
     if (finished) {
@@ -430,7 +457,7 @@ void DisplayManager::showMessage(const String& text, int x, int y, bool isError,
     tft.setCursor(x, y);
     tft.setTextSize(size);
     tft.setTextColor(isError ? _currentThemeColors->error_color : _currentThemeColors->text_primary, _currentThemeColors->background_dark);
-    tft.println(text);
+    drawUtf8TopLeft(tft, text, x, y, isError ? _currentThemeColors->error_color : _currentThemeColors->text_primary, _currentThemeColors->background_dark);
     tft.setTextDatum(MC_DATUM);
 }
 
@@ -439,11 +466,10 @@ void DisplayManager::showMessage(const String& text, int x, int y, bool isError,
     tft.setCursor(x, y);
     tft.setTextSize(size);
     if (inverted) {
-        tft.setTextColor(_currentThemeColors->background_dark, _currentThemeColors->text_primary);
+        drawUtf8TopLeft(tft, text, x, y, _currentThemeColors->background_dark, _currentThemeColors->text_primary);
     } else {
-        tft.setTextColor(isError ? _currentThemeColors->error_color : _currentThemeColors->text_primary, _currentThemeColors->background_dark);
+        drawUtf8TopLeft(tft, text, x, y, isError ? _currentThemeColors->error_color : _currentThemeColors->text_primary, _currentThemeColors->background_dark);
     }
-    tft.println(text);
     tft.setTextDatum(MC_DATUM);
     tft.setTextColor(_currentThemeColors->text_primary, _currentThemeColors->background_dark);
 }
@@ -459,14 +485,20 @@ void DisplayManager::updateMessage(const String& text, int x, int y, int size) {
     
     // Рассчитываем размер области текста
     int textWidth = tft.textWidth(text);
+#if SECUREGEN_HAS_U8G2
+    if (hasNonAscii(text)) {
+        ensureU8g2Ready(tft);
+        g_u8g2.setFont(u8g2_font_unifont_t_chinese2);
+        textWidth = g_u8g2.getUTF8Width(text.c_str());
+    }
+#endif
     int textHeight = tft.fontHeight() * size;
     
     // Очищаем только область текста (с небольшим запасом)
     tft.fillRect(x, y, textWidth + 10, textHeight + 5, _currentThemeColors->background_dark);
     
     // Рисуем новый текст
-    tft.setTextColor(_currentThemeColors->text_primary, _currentThemeColors->background_dark);
-    tft.drawString(text, x, y);
+    drawUtf8TopLeft(tft, text, x, y, _currentThemeColors->text_primary, _currentThemeColors->background_dark);
     
     tft.setTextDatum(MC_DATUM);
 }

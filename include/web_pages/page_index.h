@@ -15,7 +15,7 @@ const char PAGE_INDEX[] PROGMEM = R"rawliteral(
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     background: linear-gradient(-45deg, #1a1a2e, #16213e, #0f3460, #2e4a62);
     background-size: 400% 400%;
     animation: gradient-animation 15s ease infinite;
@@ -3191,7 +3191,7 @@ class SecureClient {
                 }
 
                 // Fallback: показываем placeholder как массив
-                this.log(`⚠️ Decryption failed, showing placeholders`, 'warn');
+                this.log(`⚠️ 解密失败，显示占位内容`, 'warn');
                 return [
                     {
                         name: "🔐 Encrypted Key 1",

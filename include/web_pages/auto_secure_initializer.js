@@ -145,7 +145,7 @@
      * Generate ECDH key pair
      */
     async function generateECDHKeyPair() {
-        log('debug', 'Generating ECDH key pair (P-256)');
+        log('debug', '正在生成 ECDH 密钥对 (P-256)');
         
         try {
             const keyPair = await crypto.subtle.generateKey(
@@ -157,10 +157,10 @@
                 ['deriveKey', 'deriveBits']
             );
             
-            log('debug', 'ECDH key pair generated successfully');
+            log('debug', 'ECDH 密钥对生成成功');
             return keyPair;
         } catch (error) {
-            log('error', 'Failed to generate ECDH key pair', error);
+            log('error', '生成 ECDH 密钥对失败', error);
             throw error;
         }
     }
@@ -174,7 +174,7 @@
             const uint8Array = new Uint8Array(exported);
             return Array.from(uint8Array).map(b => b.toString(16).padStart(2, '0')).join('');
         } catch (error) {
-            log('error', 'Failed to export public key', error);
+            log('error', '导出公钥失败', error);
             throw error;
         }
     }
@@ -199,7 +199,7 @@
             
             return publicKey;
         } catch (error) {
-            log('error', 'Failed to import server public key', error);
+            log('error', '导入服务器公钥失败', error);
             throw error;
         }
     }
@@ -220,7 +220,7 @@
             
             return new Uint8Array(sharedSecret);
         } catch (error) {
-            log('error', 'Failed to derive shared secret', error);
+            log('error', '派生共享密钥失败', error);
             throw error;
         }
     }
@@ -230,7 +230,7 @@
      */
     async function encryptWithPassword(plaintext, password) {
         try {
-            log('debug', 'Encrypting data with device key');
+            log('debug', '正在使用设备密钥加密数据');
             
             // Derive key from password using PBKDF2
             const encoder = new TextEncoder();
@@ -282,7 +282,7 @@
             // Return as Base64
             return btoa(String.fromCharCode(...result));
         } catch (error) {
-            log('error', 'Encryption failed', error);
+            log('error', '加密失败', error);
             throw error;
         }
     }
@@ -292,7 +292,7 @@
      */
     async function decryptWithPassword(encryptedData, password) {
         try {
-            log('debug', 'Decrypting server response with device key');
+            log('debug', '正在使用设备密钥解密服务器响应');
             
             // Decode from Base64
             const data = new Uint8Array(atob(encryptedData).split('').map(c => c.charCodeAt(0)));
@@ -343,7 +343,7 @@
             const decoder = new TextDecoder();
             return decoder.decode(decrypted);
         } catch (error) {
-            log('error', 'Decryption failed', error);
+            log('error', '解密失败', error);
             throw error;
         }
     }
@@ -430,11 +430,11 @@
         let attempts = 0;
         while (attempts < CONFIG.MAX_RETRY_ATTEMPTS) {
             attempts++;
-            log('debug', `Handshake attempt ${attempts}/${CONFIG.MAX_RETRY_ATTEMPTS}`);
+            log('debug', `握手尝试 ${attempts}/${CONFIG.MAX_RETRY_ATTEMPTS}`);
             
             if (await performProtectedHandshake()) {
                 startActivityTracking();
-                log('info', '🔐 Protected session initialized successfully');
+                log('info', '🔐 受保护会话初始化成功');
                 return true;
             }
             
@@ -443,7 +443,7 @@
             }
         }
         
-        log('error', 'Failed to initialize protected session after all attempts');
+        log('error', '多次尝试后仍无法初始化受保护会话');
         return false;
     }
     
@@ -451,7 +451,7 @@
      * Start activity tracking
      */
     function startActivityTracking() {
-        log('debug', 'Starting activity tracking');
+        log('debug', '开始活动跟踪');
         
         // Track user interactions
         const events = ['click', 'keydown', 'mousemove', 'scroll', 'focus'];
