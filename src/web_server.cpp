@@ -2550,7 +2550,7 @@ void WebServerManager::start() {
                 
                 // Валидация
                 if (durationStr.length() == 0) {
-                    return request->send(400, "text/plain", "Duration parameter missing.");
+                    return request->send(400, "text/plain", "缺少会话时长参数。");
                 }
                 
                 int durationValue = durationStr.toInt();
@@ -2565,7 +2565,7 @@ void WebServerManager::start() {
                     // Формирование JSON ответа
                     JsonDocument doc;
                     doc["success"] = true;
-                    doc["message"] = "Session duration updated successfully!";
+                    doc["message"] = "会话时长更新成功！";
                     String response;
                     serializeJson(doc, response);
                     
@@ -2582,7 +2582,7 @@ void WebServerManager::start() {
                     // Fallback
                     request->send(200, "application/json", response);
                 } else {
-                    request->send(400, "text/plain", "Invalid session duration value.");
+                    request->send(400, "text/plain", "会话时长参数无效。");
                 }
             }
         });
@@ -2810,7 +2810,7 @@ void WebServerManager::start() {
                 // Формируем JSON ответ с ошибкой
                 JsonDocument errorDoc;
                 errorDoc["status"] = "error";
-                errorDoc["message"] = "Failed to process keys after decryption.";
+                errorDoc["message"] = "解密后处理密钥失败。";
                 String errorResponse;
                 serializeJson(errorDoc, errorResponse);
                 
@@ -2988,20 +2988,20 @@ void WebServerManager::start() {
             if (enabledForDevice || enabledForBle) {
                 if (newPin.length() > 0) {
                     if (newPin != confirmPin) {
-                        message = "PINs do not match.";
+                        message = "两次 PIN 输入不一致。";
                         statusCode = 400;
                         success = false;
                     } else {
                         pinManager.setPin(newPin);
                         pinManager.saveConfig();
-                        message = "PIN settings updated successfully!";
+                        message = "PIN 设置更新成功！";
                         statusCode = 200;
                         success = true;
                         LOG_INFO("WebServer", "PIN settings updated successfully");
                     }
                 } else {
                     pinManager.saveConfig();
-                    message = "PIN settings updated successfully!";
+                    message = "PIN 设置更新成功！";
                     statusCode = 200;
                     success = true;
                 }
@@ -3010,12 +3010,12 @@ void WebServerManager::start() {
                     pinManager.setPinEnabledForDevice(false);
                     pinManager.setPinEnabledForBle(false);
                     pinManager.saveConfig();
-                    message = "Cannot enable PIN protection without setting a PIN first.";
+                    message = "未设置 PIN 前无法启用 PIN 保护。";
                     statusCode = 400;
                     success = false;
                 } else {
                     pinManager.saveConfig();
-                    message = "PIN settings updated successfully!";
+                    message = "PIN 设置更新成功！";
                     statusCode = 200;
                     success = true;
                 }
@@ -3127,7 +3127,7 @@ void WebServerManager::start() {
             
             // Validate PIN format (6 digits)
             if (blePinStr.length() != 6) {
-                message = "BLE PIN must be exactly 6 digits";
+                message = "BLE PIN 必须为 6 位数字。";
                 statusCode = 400;
                 success = false;
             } else {
@@ -3140,7 +3140,7 @@ void WebServerManager::start() {
                 }
                 
                 if (!validDigits) {
-                    message = "BLE PIN must contain only digits";
+                    message = "BLE PIN 只能包含数字。";
                     statusCode = 400;
                     success = false;
                 } else {
@@ -3156,12 +3156,12 @@ void WebServerManager::start() {
                             LOG_INFO("WebServer", "BLE bonding keys cleared due to PIN change");
                         }
                         
-                        message = "BLE PIN updated successfully! All BLE clients cleared.";
+                        message = "BLE PIN 更新成功！已清除所有 BLE 客户端。";
                         statusCode = 200;
                         success = true;
                     } else {
-                        LOG_ERROR("WebServer", "Failed to save BLE PIN");
-                        message = "Failed to save BLE PIN";
+                        LOG_ERROR("WebServer", "保存 BLE PIN 失败。");
+                        message = "保存 BLE PIN 失败。";
                         statusCode = 500;
                         success = false;
                     }
@@ -3300,13 +3300,13 @@ void WebServerManager::start() {
                 JsonDocument doc;
                 if (configManager.saveDisplayTimeout(timeout)) {
                     doc["success"] = true;
-                    doc["message"] = "Display timeout saved successfully!";
+                    doc["message"] = "屏幕超时保存成功！";
                     doc["timeout"] = timeout;
                     statusCode = 200;
                     LOG_INFO("WebServer", "Display timeout changed to: " + String(timeout) + " seconds");
                 } else {
                     doc["success"] = false;
-                    doc["message"] = "Failed to save display timeout!";
+                    doc["message"] = "屏幕超时保存失败！";
                     statusCode = 500;
                     LOG_ERROR("WebServer", "Failed to save display timeout");
                 }
@@ -3496,7 +3496,7 @@ void WebServerManager::start() {
                 // Формируем JSON ответ
                 JsonDocument doc;
                 doc["success"] = true;
-                doc["message"] = "Theme updated successfully!";
+                doc["message"] = "主题更新成功！";
                 doc["theme"] = theme;
                 String response;
                 serializeJson(doc, response);
@@ -3607,7 +3607,7 @@ void WebServerManager::start() {
                 // Формирование JSON ответа
                 JsonDocument doc;
                 doc["success"] = true;
-                doc["message"] = "BLE device name updated successfully!";
+                doc["message"] = "BLE 设备名更新成功！";
                 String response;
                 serializeJson(doc, response);
                 
@@ -3717,7 +3717,7 @@ void WebServerManager::start() {
                 // Формирование JSON ответа
                 JsonDocument doc;
                 doc["success"] = true;
-                doc["message"] = "mDNS hostname updated successfully!";
+                doc["message"] = "mDNS 主机名更新成功！";
                 String response;
                 serializeJson(doc, response);
                 
@@ -3814,10 +3814,10 @@ void WebServerManager::start() {
                 
                 // Валидация mode
                 if (mode.length() == 0) {
-                    return request->send(400, "text/plain", "Missing mode parameter.");
+                    return request->send(400, "text/plain", "缺少启动模式参数。");
                 }
                 if (mode != "totp" && mode != "password") {
-                    return request->send(400, "text/plain", "Invalid startup mode. Must be 'totp' or 'password'.");
+                    return request->send(400, "text/plain", "启动模式无效，必须为 'totp' 或 'password'。");
                 }
                 
                 // Сохранение
@@ -3827,11 +3827,11 @@ void WebServerManager::start() {
                 
                 if (success) {
                     LogManager::getInstance().logInfo("WebServer", "Startup mode changed to: " + mode);
-                    message = "Startup mode saved successfully!";
+                    message = "启动模式保存成功！";
                     statusCode = 200;
                 } else {
                     LogManager::getInstance().logError("WebServer", "Failed to save startup mode: " + mode);
-                    message = "Failed to save startup mode.";
+                    message = "启动模式保存失败。";
                     statusCode = 500;
                 }
                 
@@ -4413,7 +4413,7 @@ void WebServerManager::start() {
                         LOG_ERROR("WebServer", "🚇 TUNNELED import failed: Failed to process keys");
                         
                         // 🛡️ Ручное формирование JSON
-                        String errorResponse = "{\"status\":\"error\",\"message\":\"Failed to process keys after decryption.\"}";
+                        String errorResponse = "{\"status\":\"error\",\"message\":\"解密后处理密钥失败。\"}";
                         
                         WebServerSecureIntegration::sendSecureResponse(request, 500, "application/json", errorResponse, secureLayer);
                         return;
@@ -4742,7 +4742,7 @@ void WebServerManager::start() {
                     
                     JsonDocument doc;
                     doc["success"] = true;
-                    doc["message"] = "Theme updated successfully!";
+                    doc["message"] = "主题更新成功！";
                     doc["theme"] = theme;
                     String response;
                     serializeJson(doc, response);
@@ -4807,13 +4807,13 @@ void WebServerManager::start() {
                     
                     if (configManager.saveDisplayTimeout(timeout)) {
                         doc["success"] = true;
-                        doc["message"] = "Display timeout saved successfully!";
+                        doc["message"] = "屏幕超时保存成功！";
                         doc["timeout"] = timeout;
                         statusCode = 200;
                         LOG_INFO("WebServer", "🚇 TUNNELED display timeout changed to: " + String(timeout) + " seconds");
                     } else {
                         doc["success"] = false;
-                        doc["message"] = "Failed to save display timeout!";
+                        doc["message"] = "屏幕超时保存失败！";
                         statusCode = 500;
                         LOG_ERROR("WebServer", "🚇 TUNNELED Failed to save display timeout");
                     }
@@ -4876,20 +4876,20 @@ void WebServerManager::start() {
                     if (enabledForDevice || enabledForBle) {
                         if (newPin.length() > 0) {
                             if (newPin != confirmPin) {
-                                message = "PINs do not match.";
+                                message = "两次 PIN 输入不一致。";
                                 statusCode = 400;
                                 success = false;
                             } else {
                                 pinManager.setPin(newPin);
                                 pinManager.saveConfig();
-                                message = "PIN settings updated successfully!";
+                                message = "PIN 设置更新成功！";
                                 statusCode = 200;
                                 success = true;
                                 LOG_INFO("WebServer", "🚇 TUNNELED PIN settings updated successfully");
                             }
                         } else {
                             pinManager.saveConfig();
-                            message = "PIN settings updated successfully!";
+                            message = "PIN 设置更新成功！";
                             statusCode = 200;
                             success = true;
                         }
@@ -4898,12 +4898,12 @@ void WebServerManager::start() {
                             pinManager.setPinEnabledForDevice(false);
                             pinManager.setPinEnabledForBle(false);
                             pinManager.saveConfig();
-                            message = "Cannot enable PIN protection without setting a PIN first.";
+                            message = "未设置 PIN 前无法启用 PIN 保护。";
                             statusCode = 400;
                             success = false;
                         } else {
                             pinManager.saveConfig();
-                            message = "PIN settings updated successfully!";
+                            message = "PIN 设置更新成功！";
                             statusCode = 200;
                             success = true;
                         }
@@ -4932,7 +4932,7 @@ void WebServerManager::start() {
                     
                     // Validate PIN format (6 digits)
                     if (blePinStr.length() != 6) {
-                        message = "BLE PIN must be exactly 6 digits";
+                        message = "BLE PIN 必须为 6 位数字。";
                         statusCode = 400;
                         success = false;
                     } else {
@@ -4945,7 +4945,7 @@ void WebServerManager::start() {
                         }
                         
                         if (!validDigits) {
-                            message = "BLE PIN must contain only digits";
+                            message = "BLE PIN 只能包含数字。";
                             statusCode = 400;
                             success = false;
                         } else {
@@ -4961,12 +4961,12 @@ void WebServerManager::start() {
                                     LOG_INFO("WebServer", "🚇 TUNNELED BLE bonding keys cleared");
                                 }
                                 
-                                message = "BLE PIN updated successfully! All BLE clients cleared.";
+                                message = "BLE PIN 更新成功！已清除所有 BLE 客户端。";
                                 statusCode = 200;
                                 success = true;
                             } else {
-                                LOG_ERROR("WebServer", "🚇 TUNNELED Failed to save BLE PIN");
-                                message = "Failed to save BLE PIN";
+                                LOG_ERROR("WebServer", "🚇 TUNNELED 保存 BLE PIN 失败。");
+                                message = "保存 BLE PIN 失败。";
                                 statusCode = 500;
                                 success = false;
                             }
@@ -5016,14 +5016,14 @@ void WebServerManager::start() {
                     String mode = targetData["mode"].as<String>();
                     
                     if (mode.length() == 0) {
-                        return request->send(400, "text/plain", "Missing mode parameter.");
+                        return request->send(400, "text/plain", "缺少启动模式参数。");
                     }
                     if (mode != "totp" && mode != "password") {
-                        return request->send(400, "text/plain", "Invalid startup mode. Must be 'totp' or 'password'.");
+                        return request->send(400, "text/plain", "启动模式无效，必须为 'totp' 或 'password'。");
                     }
                     
                     bool success = configManager.saveStartupMode(mode);
-                    String message = success ? "Startup mode saved successfully!" : "Failed to save startup mode.";
+                    String message = success ? "启动模式保存成功！" : "启动模式保存失败。";
                     String output;
                     output.reserve(50 + message.length());
                     output = "{\"success\":";
@@ -5103,7 +5103,7 @@ void WebServerManager::start() {
                         bleKeyboardManager->setDeviceName(deviceName);
                     }
                     
-                    String output = "{\"success\":true,\"message\":\"BLE device name updated successfully!\"}";
+                    String output = "{\"success\":true,\"message\":\"BLE 设备名更新成功！\"}";
                     
                     WebServerSecureIntegration::sendSecureResponse(request, 200, "application/json", output, secureLayer);
                     return;
@@ -5138,7 +5138,7 @@ void WebServerManager::start() {
                         wifiManager->updateMdnsHostname();
                     }
                     
-                    String output = "{\"success\":true,\"message\":\"mDNS hostname updated successfully!\"}";
+                    String output = "{\"success\":true,\"message\":\"mDNS 主机名更新成功！\"}";
                     
                     WebServerSecureIntegration::sendSecureResponse(request, 200, "application/json", output, secureLayer);
                     return;
@@ -5163,7 +5163,7 @@ void WebServerManager::start() {
                     String durationStr = targetData["duration"].as<String>();
                     
                     if (durationStr.length() == 0) {
-                        return request->send(400, "text/plain", "Duration parameter missing.");
+                        return request->send(400, "text/plain", "缺少会话时长参数。");
                     }
                     
                     int durationValue = durationStr.toInt();
@@ -5174,12 +5174,12 @@ void WebServerManager::start() {
                         ConfigManager::SessionDuration duration = static_cast<ConfigManager::SessionDuration>(durationValue);
                         configManager.setSessionDuration(duration);
                         
-                        String output = "{\"success\":true,\"message\":\"Session duration updated successfully!\"}";
+                        String output = "{\"success\":true,\"message\":\"会话时长更新成功！\"}";
                         
                         WebServerSecureIntegration::sendSecureResponse(request, 200, "application/json", output, secureLayer);
                         return;
                     } else {
-                        return request->send(400, "text/plain", "Invalid session duration value.");
+                        return request->send(400, "text/plain", "会话时长参数无效。");
                     }
                 }
                 
@@ -5677,7 +5677,7 @@ void WebServerManager::start() {
                         if (bleKeyboardManager) {
                             bleKeyboardManager->setDeviceName(deviceName);
                         }
-                        String output = "{\"success\":true,\"message\":\"BLE device name updated successfully!\"}";
+                        String output = "{\"success\":true,\"message\":\"BLE 设备名更新成功！\"}";
                         WebServerSecureIntegration::sendSecureResponse(request, 200, "application/json", output, secureLayer);
                         if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
                         return;
@@ -5698,7 +5698,7 @@ void WebServerManager::start() {
                         if (wifiManager) {
                             wifiManager->updateMdnsHostname();
                         }
-                        String output = "{\"success\":true,\"message\":\"mDNS hostname updated successfully!\"}";
+                        String output = "{\"success\":true,\"message\":\"mDNS 主机名更新成功！\"}";
                         WebServerSecureIntegration::sendSecureResponse(request, 200, "application/json", output, secureLayer);
                         if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
                         return;
@@ -5709,20 +5709,20 @@ void WebServerManager::start() {
                         String durationStr = targetData["duration"].as<String>();
                         if (durationStr.length() == 0) {
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(400, "text/plain", "Duration parameter missing.");
+                            return request->send(400, "text/plain", "缺少会话时长参数。");
                         }
                         int durationValue = durationStr.toInt();
                         if (durationValue == 0 || durationValue == 1 || durationValue == 6 || 
                             durationValue == 24 || durationValue == 72) {
                             ConfigManager::SessionDuration duration = static_cast<ConfigManager::SessionDuration>(durationValue);
                             configManager.setSessionDuration(duration);
-                            String output = "{\"success\":true,\"message\":\"Session duration updated successfully!\"}";
+                            String output = "{\"success\":true,\"message\":\"会话时长更新成功！\"}";
                             WebServerSecureIntegration::sendSecureResponse(request, 200, "application/json", output, secureLayer);
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
                             return;
                         } else {
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(400, "text/plain", "Invalid session duration value.");
+                            return request->send(400, "text/plain", "会话时长参数无效。");
                         }
                     }
                     
@@ -5731,14 +5731,14 @@ void WebServerManager::start() {
                         String mode = targetData["mode"].as<String>();
                         if (mode.length() == 0) {
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(400, "text/plain", "Missing mode parameter.");
+                            return request->send(400, "text/plain", "缺少启动模式参数。");
                         }
                         if (mode != "totp" && mode != "password") {
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(400, "text/plain", "Invalid startup mode. Must be 'totp' or 'password'.");
+                            return request->send(400, "text/plain", "启动模式无效，必须为 'totp' 或 'password'。");
                         }
                         bool success = configManager.saveStartupMode(mode);
-                        String message = success ? "Startup mode saved successfully!" : "Failed to save startup mode.";
+                        String message = success ? "启动模式保存成功！" : "启动模式保存失败。";
                         String output;
                         output.reserve(50 + message.length());
                         output = "{\"success\":";
@@ -5808,7 +5808,7 @@ void WebServerManager::start() {
                         
                         JsonDocument doc;
                         doc["success"] = true;
-                        doc["message"] = "Theme updated successfully!";
+                        doc["message"] = "主题更新成功！";
                         doc["theme"] = theme;
                         String response;
                         serializeJson(doc, response);
@@ -5935,13 +5935,13 @@ void WebServerManager::start() {
                         
                         if (configManager.saveDisplayTimeout(timeout)) {
                             doc["success"] = true;
-                            doc["message"] = "Display timeout saved successfully!";
+                            doc["message"] = "屏幕超时保存成功！";
                             doc["timeout"] = timeout;
                             statusCode = 200;
                             LOG_INFO("WebServer", "🔗 Obfuscated display timeout changed to: " + String(timeout) + " seconds");
                         } else {
                             doc["success"] = false;
-                            doc["message"] = "Failed to save display timeout!";
+                            doc["message"] = "屏幕超时保存失败！";
                             statusCode = 500;
                             LOG_ERROR("WebServer", "🔗 Obfuscated Failed to save display timeout");
                         }
@@ -5984,20 +5984,20 @@ void WebServerManager::start() {
                         if (enabledForDevice || enabledForBle) {
                             if (newPin.length() > 0) {
                                 if (newPin != confirmPin) {
-                                    message = "PINs do not match.";
+                                    message = "两次 PIN 输入不一致。";
                                     statusCode = 400;
                                     success = false;
                                 } else {
                                     pinManager.setPin(newPin);
                                     pinManager.saveConfig();
-                                    message = "PIN settings updated successfully!";
+                                    message = "PIN 设置更新成功！";
                                     statusCode = 200;
                                     success = true;
                                     LOG_INFO("WebServer", "🔗 Obfuscated PIN settings updated successfully");
                                 }
                             } else {
                                 pinManager.saveConfig();
-                                message = "PIN settings updated successfully!";
+                                message = "PIN 设置更新成功！";
                                 statusCode = 200;
                                 success = true;
                             }
@@ -6006,12 +6006,12 @@ void WebServerManager::start() {
                                 pinManager.setPinEnabledForDevice(false);
                                 pinManager.setPinEnabledForBle(false);
                                 pinManager.saveConfig();
-                                message = "Cannot enable PIN protection without setting a PIN first.";
+                                message = "未设置 PIN 前无法启用 PIN 保护。";
                                 statusCode = 400;
                                 success = false;
                             } else {
                                 pinManager.saveConfig();
-                                message = "PIN settings updated successfully!";
+                                message = "PIN 设置更新成功！";
                                 statusCode = 200;
                                 success = true;
                             }
@@ -6041,7 +6041,7 @@ void WebServerManager::start() {
                         
                         // Validate PIN format (6 digits)
                         if (blePinStr.length() != 6) {
-                            message = "BLE PIN must be exactly 6 digits";
+                            message = "BLE PIN 必须为 6 位数字。";
                             statusCode = 400;
                             success = false;
                         } else {
@@ -6054,7 +6054,7 @@ void WebServerManager::start() {
                             }
                             
                             if (!validDigits) {
-                                message = "BLE PIN must contain only digits";
+                                message = "BLE PIN 只能包含数字。";
                                 statusCode = 400;
                                 success = false;
                             } else {
@@ -6070,12 +6070,12 @@ void WebServerManager::start() {
                                         LOG_INFO("WebServer", "🔗 Obfuscated BLE bonding keys cleared");
                                     }
                                     
-                                    message = "BLE PIN updated successfully! All BLE clients cleared.";
+                                    message = "BLE PIN 更新成功！已清除所有 BLE 客户端。";
                                     statusCode = 200;
                                     success = true;
                                 } else {
-                                    LOG_ERROR("WebServer", "🔗 Obfuscated Failed to save BLE PIN");
-                                    message = "Failed to save BLE PIN";
+                                    LOG_ERROR("WebServer", "🔗 Obfuscated 保存 BLE PIN 失败。");
+                                    message = "保存 BLE PIN 失败。";
                                     statusCode = 500;
                                     success = false;
                                 }
@@ -6571,7 +6571,7 @@ void WebServerManager::start() {
                         } else {
                             LOG_ERROR("WebServer", "🔗 Obfuscated import failed: Failed to process keys");
                             
-                            String errorResponse = "{\"status\":\"error\",\"message\":\"Failed to process keys after decryption.\"}";
+                            String errorResponse = "{\"status\":\"error\",\"message\":\"解密后处理密钥失败。\"}";
                             WebServerSecureIntegration::sendSecureResponse(request, 500, "application/json", errorResponse, secureLayer);
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
                             return;
