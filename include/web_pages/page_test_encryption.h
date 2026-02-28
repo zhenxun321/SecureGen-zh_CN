@@ -3,11 +3,11 @@
 
 const char page_test_encryption_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ESP32 Security Test v3.0 - Header Obfuscation</title>
+    <title>ESP32 安全测试 v3.0 - 请求头混淆</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -32,66 +32,66 @@ const char page_test_encryption_html[] PROGMEM = R"rawliteral(
 </head>
 <body>
     <div class="container">
-        <h1>🔐 ESP32 Security Integration Test v3.0</h1>
-        <p>Comprehensive testing for SecureLayerManager, Method Tunneling, URL Obfuscation, and Traffic Padding</p>
+        <h1>🔐 ESP32 安全集成测试 v3.0</h1>
+        <p>用于验证 SecureLayerManager、方法隧道、URL 混淆和流量填充的综合测试页面。</p>
         <div style="background: #e3f2fd; padding: 10px; border-radius: 5px; margin: 10px 0; border-left: 4px solid #2196f3;">
-            <strong>🏷️ NEW: HTTP Headers Obfuscation v3.0</strong> - Маскировка заголовков, внедрение ложных заголовков, и скрытие данных в User-Agent
+            <strong>🏷️ 新功能：HTTP 请求头混淆 v3.0</strong> - 对请求头进行伪装、注入伪造头并在 User-Agent 中隐藏数据
         </div>
 
         <div class="test-section info">
-            <h3>📋 Тестовые эндпоинты:</h3>
+            <h3>📋 测试端点：</h3>
             <ul>
-                <li><strong>/api/passwords/get</strong> - Получение расшифрованных паролей (КРИТИЧЕСКИ ЧУВСТВИТЕЛЬНЫЙ)</li>
-                <li><strong>/api/keys</strong> - Получение TOTP кодов и секретов (ВЫСОКО ЧУВСТВИТЕЛЬНЫЙ)</li>
+                <li><strong>/api/passwords/get</strong> - 获取解密后的密码（极高敏感）</li>
+                <li><strong>/api/keys</strong> - 获取 TOTP 代码与密钥（高敏感）</li>
             </ul>
         </div>
 
         <div class="test-section">
-            <h3>🔑 Secure Connection Setup</h3>
-            <button onclick="initializeSecureClient()">Initialize Secure Client</button>
-            <button onclick="testKeyExchange()">Test Key Exchange</button>
-            <div id="connectionStatus">Status: Not initialized</div>
+            <h3>🔑 安全连接初始化</h3>
+            <button onclick="initializeSecureClient()">初始化安全客户端</button>
+            <button onclick="testKeyExchange()">测试密钥交换</button>
+            <div id="connectionStatus">状态：未初始化</div>
         </div>
 
         <div class="test-section">
-            <h3>🚇 Method Tunneling Controls</h3>
-            <button onclick="enableMethodTunneling()">Enable Method Tunneling</button>
-            <button onclick="disableMethodTunneling()">Disable Method Tunneling</button>
-            <button onclick="showTunnelingStats()">Show Tunneling Statistics</button>
-            <div id="tunnelingStatus">Status: Method Tunneling Disabled</div>
+            <h3>🚇 方法隧道控制</h3>
+            <button onclick="enableMethodTunneling()">启用方法隧道</button>
+            <button onclick="disableMethodTunneling()">禁用方法隧道</button>
+            <button onclick="showTunnelingStats()">查看隧道统计</button>
+            <div id="tunnelingStatus">状态：方法隧道已禁用</div>
         </div>
 
         <div class="test-section">
-            <h3>🏷️ HTTP Headers Obfuscation Controls</h3>
-            <button onclick="enableHeaderObfuscation()">Enable Header Obfuscation</button>
-            <button onclick="disableHeaderObfuscation()">Disable Header Obfuscation</button>
-            <button onclick="showHeaderObfuscationStats()">Show Header Stats</button>
-            <button onclick="demonstrateHeaderMasking()">Demo Header Masking</button>
-            <div id="headerObfuscationStatus">Status: Header Obfuscation Disabled</div>
+            <h3>🏷️ HTTP 请求头混淆控制</h3>
+            <button onclick="enableHeaderObfuscation()">启用请求头混淆</button>
+            <button onclick="disableHeaderObfuscation()">禁用请求头混淆</button>
+            <button onclick="showHeaderObfuscationStats()">查看请求头统计</button>
+            <button onclick="demonstrateHeaderMasking()">演示请求头伪装</button>
+            <div id="headerObfuscationStatus">状态：请求头混淆已禁用</div>
         </div>
 
         <div class="test-section">
-            <h3>🧪 API Encryption Tests</h3>
-            <button onclick="testPasswordsAPI()">Test /api/passwords/get (Encrypted)</button>
-            <button onclick="testKeysAPI()">Test /api/keys (Encrypted)</button>
-            <button onclick="testPlaintextMode()">Test Plaintext Mode (Fallback)</button>
+            <h3>🧪 API 加密测试</h3>
+            <button onclick="testPasswordsAPI()">测试 /api/passwords/get（加密）</button>
+            <button onclick="testKeysAPI()">测试 /api/keys（加密）</button>
+            <button onclick="testPlaintextMode()">测试明文模式（回退）</button>
         </div>
 
         <div class="test-section">
-            <h3>🚇 Method Tunneling Tests</h3>
-            <button onclick="testTunneledPasswordsAPI()">Test Tunneled Passwords API</button>
-            <button onclick="testTunneledKeysAPI()">Test Tunneled Keys API</button>
-            <button onclick="testMixedRequests()">Test Mixed Standard/Tunneled Requests</button>
+            <h3>🚇 方法隧道测试</h3>
+            <button onclick="testTunneledPasswordsAPI()">测试隧道密码 API</button>
+            <button onclick="testTunneledKeysAPI()">测试隧道密钥 API</button>
+            <button onclick="testMixedRequests()">测试标准/隧道混合请求</button>
         </div>
 
         <div class="test-section">
-            <h3>📊 Test Results</h3>
+            <h3>📊 测试结果</h3>
             <div id="testResults"></div>
         </div>
 
         <div class="test-section">
-            <h3>📝 Debug Logs</h3>
-            <button onclick="clearLogs()">Clear Logs</button>
+            <h3>📝 调试日志</h3>
+            <button onclick="clearLogs()">清空日志</button>
             <div id="debugLogs"></div>
         </div>
     </div>
@@ -398,8 +398,8 @@ const char page_test_encryption_html[] PROGMEM = R"rawliteral(
                                 return { success: true, data, encrypted: false };
                             }
                         } catch (parseError) {
-                            this.log(`❌ Failed to parse JSON response: ${parseError.message}`, 'error');
-                            return { success: false, error: 'JSON parse error', encrypted: false };
+                            this.log(`❌ 解析 JSON 响应失败：${parseError.message}`, 'error');
+                            return { success: false, error: 'JSON 解析错误', encrypted: false };
                         }
                     } else {
                         this.log(`❌ ${endpoint} failed: ${response.status} - ${responseText}`, 'error');
@@ -539,7 +539,7 @@ const char page_test_encryption_html[] PROGMEM = R"rawliteral(
         // UI Functions
         function updateConnectionStatus(message, type = 'info') {
             const statusDiv = document.getElementById('connectionStatus');
-            statusDiv.innerHTML = `Status: ${message}`;
+            statusDiv.innerHTML = `状态：${message}`;
             statusDiv.className = type;
         }
 
@@ -564,13 +564,13 @@ const char page_test_encryption_html[] PROGMEM = R"rawliteral(
 
         function updateTunnelingStatus(message, type = 'info') {
             const statusDiv = document.getElementById('tunnelingStatus');
-            statusDiv.innerHTML = `Status: ${message}`;
+            statusDiv.innerHTML = `状态：${message}`;
             statusDiv.className = type;
         }
 
         function updateHeaderObfuscationStatus(message, type = 'info') {
             const statusDiv = document.getElementById('headerObfuscationStatus');
-            statusDiv.innerHTML = `Status: ${message}`;
+            statusDiv.innerHTML = `状态：${message}`;
             statusDiv.className = type;
         }
 

@@ -296,7 +296,7 @@ void WebServerManager::start() {
                 return request->redirect("/login");
             }
         }
-        request->send(404, "text/plain", "Not found");
+        request->send(404, "text/plain", "未找到");
     });
 
     // --- Регистрация ---
@@ -326,12 +326,12 @@ void WebServerManager::start() {
                     LOG_INFO("WebServer", "🔐 Register with encrypted body for user: [HIDDEN]");
                 } else {
                     LOG_ERROR("WebServer", "🔐 Register: decrypted body missing fields");
-                    request->send(400, "text/plain", "Invalid encrypted body");
+                    request->send(400, "text/plain", "加密请求体无效");
                     return;
                 }
             } else {
                 LOG_ERROR("WebServer", "🔐 Register: encrypted body not processed");
-                request->send(400, "text/plain", "Encrypted body processing failed");
+                request->send(400, "text/plain", "加密请求体处理失败");
                 return;
             }
         } else if (request->hasParam("username", true) && request->hasParam("password", true)) {
@@ -445,12 +445,12 @@ void WebServerManager::start() {
                     LOG_INFO("WebServer", "🔐 Login with encrypted body for user: [HIDDEN]");
                 } else {
                     LOG_ERROR("WebServer", "🔐 Login: decrypted body missing fields");
-                    request->send(400, "text/plain", "Invalid encrypted body");
+                    request->send(400, "text/plain", "加密请求体无效");
                     return;
                 }
             } else {
                 LOG_ERROR("WebServer", "🔐 Login: encrypted body not processed");
-                request->send(400, "text/plain", "Encrypted body processing failed");
+                request->send(400, "text/plain", "加密请求体处理失败");
                 return;
             }
         } else if (request->hasParam("username", true) && request->hasParam("password", true)) {
@@ -460,7 +460,7 @@ void WebServerManager::start() {
             LOG_INFO("WebServer", "Login with plain body for user: [HIDDEN]");
         } else {
             LOG_ERROR("WebServer", "Login: no credentials provided");
-            request->send(400, "text/plain", "No credentials provided");
+            request->send(400, "text/plain", "未提供凭据");
             return;
         }
 
@@ -605,12 +605,12 @@ void WebServerManager::start() {
                         LOG_INFO("WebServer", "🔐 Login (obfuscated) with encrypted body for user: [HIDDEN]");
                     } else {
                         LOG_ERROR("WebServer", "🔐 Login (obfuscated): decrypted body missing fields");
-                        request->send(400, "text/plain", "Invalid encrypted body");
+                        request->send(400, "text/plain", "加密请求体无效");
                         return;
                     }
                 } else {
                     LOG_ERROR("WebServer", "🔐 Login (obfuscated): encrypted body not processed");
-                    request->send(400, "text/plain", "Encrypted body processing failed");
+                    request->send(400, "text/plain", "加密请求体处理失败");
                     return;
                 }
             } else if (request->hasParam("username", true) && request->hasParam("password", true)) {
@@ -619,7 +619,7 @@ void WebServerManager::start() {
                 LOG_INFO("WebServer", "Login (obfuscated) with plain body for user: [HIDDEN]");
             } else {
                 LOG_ERROR("WebServer", "Login (obfuscated): no credentials provided");
-                request->send(400, "text/plain", "No credentials provided");
+                request->send(400, "text/plain", "未提供凭据");
                 return;
             }
 
@@ -768,17 +768,17 @@ void WebServerManager::start() {
         [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
             if (!data || len == 0) {
                 LOG_ERROR("WebServer", "🔐 LOGOUT: Invalid data");
-                return request->send(400, "text/plain", "Invalid request data");
+                return request->send(400, "text/plain", "请求数据无效");
             }
             
             LOG_INFO("WebServer", "🔐 LOGOUT: onBody called - len=" + String(len));
             
             if (index + len == total) {
                 if (!isAuthenticated(request)) {
-                    return request->send(401, "text/plain", "Unauthorized");
+                    return request->send(401, "text/plain", "未授权");
                 }
                 if (!verifyCsrfToken(request)) {
-                    return request->send(403, "text/plain", "CSRF token mismatch");
+                    return request->send(403, "text/plain", "CSRF 令牌不匹配");
                 }
                 
 #ifdef SECURE_LAYER_ENABLED
@@ -806,7 +806,7 @@ void WebServerManager::start() {
                     if (secureLayer.encryptResponse(clientId, response, encryptedResponse)) {
                         request->send(200, "application/json", encryptedResponse);
                     } else {
-                        request->send(500, "text/plain", "Encryption failed");
+                        request->send(500, "text/plain", "加密失败");
                     }
                     return;
                 }
@@ -1050,8 +1050,8 @@ void WebServerManager::start() {
         DeserializationError error = deserializeJson(doc, body);
         
         if (error) {
-            LOG_ERROR("WebServer", "Invalid JSON in protected handshake");
-            request->send(400, "application/json", "{\"status\":\"error\",\"message\":\"Invalid JSON\"}");
+            LOG_ERROR("WebServer", "JSON 无效 in protected handshake");
+            request->send(400, "application/json", "{\"status\":\"error\",\"message\":\"JSON 无效\"}");
             return;
         }
         
@@ -1185,7 +1185,7 @@ void WebServerManager::start() {
         // onBody callback - обрабатывает тело запроса для расшифровки
         if (index + len == total) {
             if (!isAuthenticated(request)) return request->send(401);
-            if (!verifyCsrfToken(request)) return request->send(403, "text/plain", "CSRF token mismatch");
+            if (!verifyCsrfToken(request)) return request->send(403, "text/plain", "CSRF 令牌不匹配");
             
             String name, secret;
             
@@ -1228,11 +1228,11 @@ void WebServerManager::start() {
                         
                         LOG_DEBUG("WebServer", "🔐 Parsed: name=" + name + ", secret=" + secret.substring(0, 8) + "...");
                     } else {
-                        return request->send(400, "text/plain", "Invalid decrypted data format");
+                        return request->send(400, "text/plain", "解密后的数据格式无效");
                     }
                 } else {
                     LOG_ERROR("WebServer", "🔐 Failed to decrypt request body");
-                    return request->send(400, "text/plain", "Decryption failed");
+                    return request->send(400, "text/plain", "解密失败");
                 }
             } else 
 #endif
@@ -1242,12 +1242,12 @@ void WebServerManager::start() {
                     name = request->getParam("name", true)->value();
                     secret = request->getParam("secret", true)->value();
                 } else {
-                    return request->send(400, "text/plain", "Missing required parameters");
+                    return request->send(400, "text/plain", "缺少必需参数");
                 }
             }
             
             if (name.isEmpty() || secret.isEmpty()) {
-                return request->send(400, "text/plain", "Name and secret cannot be empty");
+                return request->send(400, "text/plain", "名称和密钥不能为空");
             }
             
             LOG_INFO("WebServer", "Key add requested: " + name);
@@ -1255,7 +1255,7 @@ void WebServerManager::start() {
             
             JsonDocument doc;
             doc["status"] = "success";
-            doc["message"] = "Key added successfully";
+            doc["message"] = "密钥添加成功";
             doc["name"] = name;
             String output;
             serializeJson(doc, output);
@@ -1322,7 +1322,7 @@ void WebServerManager::start() {
     server.on("/api/activity", HTTP_POST, [this](AsyncWebServerRequest *request){
         if (!isAuthenticated(request)) return request->send(401);
         resetActivityTimer();
-        request->send(200, "text/plain", "Activity timer reset");
+        request->send(200, "text/plain", "活动计时器已重置");
     });
 
     server.on("/api/remove", HTTP_POST, [this](AsyncWebServerRequest *request){
@@ -1331,7 +1331,7 @@ void WebServerManager::start() {
         // onBody callback - обрабатывает тело запроса для расшифровки
         if (index + len == total) {
             if (!isAuthenticated(request)) return request->send(401);
-            if (!verifyCsrfToken(request)) return request->send(403, "text/plain", "CSRF token mismatch");
+            if (!verifyCsrfToken(request)) return request->send(403, "text/plain", "CSRF 令牌不匹配");
             
             int keyIndex = -1;
             
@@ -1360,11 +1360,11 @@ void WebServerManager::start() {
                         
                         LOG_DEBUG("WebServer", "🔐 Parsed key index: " + String(keyIndex));
                     } else {
-                        return request->send(400, "text/plain", "Invalid decrypted key remove format");
+                        return request->send(400, "text/plain", "解密后的密钥删除数据格式无效");
                     }
                 } else {
                     LOG_ERROR("WebServer", "🔐 Failed to decrypt key remove request body");
-                    return request->send(400, "text/plain", "Key remove decryption failed");
+                    return request->send(400, "text/plain", "密钥删除请求解密失败");
                 }
             } else 
 #endif
@@ -1373,12 +1373,12 @@ void WebServerManager::start() {
                 if (request->hasParam("index", true)) {
                     keyIndex = request->getParam("index", true)->value().toInt();
                 } else {
-                    return request->send(400, "text/plain", "Missing index parameter");
+                    return request->send(400, "text/plain", "缺少索引参数");
                 }
             }
             
             if (keyIndex < 0) {
-                return request->send(400, "text/plain", "Invalid key index");
+                return request->send(400, "text/plain", "密钥索引无效");
             }
             
             keyManager.removeKey(keyIndex);
@@ -1386,7 +1386,7 @@ void WebServerManager::start() {
             // Формируем JSON ответ с подтверждением
             JsonDocument doc;
             doc["status"] = "success";
-            doc["message"] = "Key removed successfully";
+            doc["message"] = "密钥删除成功";
             String response;
             serializeJson(doc, response);
             
@@ -1413,7 +1413,7 @@ void WebServerManager::start() {
     auto keysReorderBodyHandler = [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total){
         if (index + len == total) {
             if (!isAuthenticated(request)) return request->send(401);
-            if (!verifyCsrfToken(request)) return request->send(403, "text/plain", "CSRF token mismatch");
+            if (!verifyCsrfToken(request)) return request->send(403, "text/plain", "CSRF 令牌不匹配");
             
             String body;
             
@@ -1439,7 +1439,7 @@ void WebServerManager::start() {
                     body = decryptedBody;
                 } else {
                     LOG_ERROR("WebServer", "🔐 Failed to decrypt request body");
-                    return request->send(400, "text/plain", "Decryption failed");
+                    return request->send(400, "text/plain", "解密失败");
                 }
             } else 
 #endif
@@ -1452,11 +1452,11 @@ void WebServerManager::start() {
             DeserializationError error = deserializeJson(doc, body);
             
             if (error) {
-                return request->send(400, "text/plain", "Invalid JSON");
+                return request->send(400, "text/plain", "JSON 无效");
             }
             
             if (!doc["order"].is<JsonArray>()) {
-                return request->send(400, "text/plain", "Missing or invalid 'order' field");
+                return request->send(400, "text/plain", "缺少或无效的 'order' 字段");
             }
             
             std::vector<std::pair<String, int>> newOrder;
@@ -1571,7 +1571,7 @@ void WebServerManager::start() {
     auto passwordAddBodyHandler = [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
         if (index + len == total) {
             if (!isAuthenticated(request)) return request->send(401);
-            if (!verifyCsrfToken(request)) return request->send(403, "text/plain", "CSRF token mismatch");
+            if (!verifyCsrfToken(request)) return request->send(403, "text/plain", "CSRF 令牌不匹配");
             
             String name, password;
             
@@ -1610,11 +1610,11 @@ void WebServerManager::start() {
                         
                         LOG_DEBUG("WebServer", "🔐 Parsed: name=" + name + ", password=" + password.substring(0, 4) + "...");
                     } else {
-                        return request->send(400, "text/plain", "Invalid decrypted password add format");
+                        return request->send(400, "text/plain", "解密后的密码新增数据格式无效");
                     }
                 } else {
                     LOG_ERROR("WebServer", "🔐 Failed to decrypt password add request body");
-                    return request->send(400, "text/plain", "Password add decryption failed");
+                    return request->send(400, "text/plain", "密码新增请求解密失败");
                 }
             } else 
 #endif
@@ -1624,12 +1624,12 @@ void WebServerManager::start() {
                     name = request->getParam("name", true)->value();
                     password = request->getParam("password", true)->value();
                 } else {
-                    return request->send(400, "text/plain", "Missing required parameters");
+                    return request->send(400, "text/plain", "缺少必需参数");
                 }
             }
             
             if (name.isEmpty() || password.isEmpty()) {
-                return request->send(400, "text/plain", "Name and password cannot be empty");
+                return request->send(400, "text/plain", "名称和密码不能为空");
             }
             
             passwordManager.addPassword(name, password);
@@ -1664,7 +1664,7 @@ void WebServerManager::start() {
     auto passwordDeleteBodyHandler = [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
         if (index + len == total) {
             if (!isAuthenticated(request)) return request->send(401);
-            if (!verifyCsrfToken(request)) return request->send(403, "text/plain", "CSRF token mismatch");
+            if (!verifyCsrfToken(request)) return request->send(403, "text/plain", "CSRF 令牌不匹配");
             
             int passwordIndex = -1;
             
@@ -1693,11 +1693,11 @@ void WebServerManager::start() {
                         
                         LOG_DEBUG("WebServer", "🔐 Parsed password index: " + String(passwordIndex));
                     } else {
-                        return request->send(400, "text/plain", "Invalid decrypted password delete format");
+                        return request->send(400, "text/plain", "解密后的密码删除数据格式无效");
                     }
                 } else {
                     LOG_ERROR("WebServer", "🔐 Failed to decrypt password delete request body");
-                    return request->send(400, "text/plain", "Password delete decryption failed");
+                    return request->send(400, "text/plain", "密码删除请求解密失败");
                 }
             } else 
 #endif
@@ -1706,12 +1706,12 @@ void WebServerManager::start() {
                 if (request->hasParam("index", true)) {
                     passwordIndex = request->getParam("index", true)->value().toInt();
                 } else {
-                    return request->send(400, "text/plain", "Missing index parameter");
+                    return request->send(400, "text/plain", "缺少索引参数");
                 }
             }
             
             if (passwordIndex < 0) {
-                return request->send(400, "text/plain", "Invalid password index");
+                return request->send(400, "text/plain", "密码索引无效");
             }
             
             passwordManager.deletePassword(passwordIndex);
@@ -1766,7 +1766,7 @@ void WebServerManager::start() {
                 index = 0;
             } else {
                 LOG_WARNING("WebServer", "Password get failed: missing index parameter");
-                request->send(400, "text/plain", "Index parameter required");
+                request->send(400, "text/plain", "必须提供索引参数");
                 return;
             }
             
@@ -1798,7 +1798,7 @@ void WebServerManager::start() {
                     request->send(200, "application/json", output);
             } else {
                 LOG_WARNING("WebServer", "Password get failed: invalid index " + String(index));
-                request->send(404, "text/plain", "Password not found");
+                request->send(404, "text/plain", "未找到密码");
             }
         }, urlObfuscation);
 
@@ -1810,7 +1810,7 @@ void WebServerManager::start() {
     auto passwordUpdateBodyHandler = [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
         if (index + len == total) {
             if (!isAuthenticated(request)) return request->send(401);
-            if (!verifyCsrfToken(request)) return request->send(403, "text/plain", "CSRF token mismatch");
+            if (!verifyCsrfToken(request)) return request->send(403, "text/plain", "CSRF 令牌不匹配");
             
             int indexVal;
             String name, password;
@@ -1857,11 +1857,11 @@ void WebServerManager::start() {
                         
                         LOG_DEBUG("WebServer", "🔐 Parsed: index=" + String(indexVal) + ", name=" + name + ", password=" + password.substring(0, 8) + "...");
                     } else {
-                        return request->send(400, "text/plain", "Invalid decrypted password data format");
+                        return request->send(400, "text/plain", "解密后的密码数据格式无效");
                     }
                 } else {
                     LOG_ERROR("WebServer", "🔐 Failed to decrypt password update request body");
-                    return request->send(400, "text/plain", "Password data decryption failed");
+                    return request->send(400, "text/plain", "密码数据解密失败");
                 }
             } else 
 #endif
@@ -1872,7 +1872,7 @@ void WebServerManager::start() {
                     name = request->getParam("name", true)->value();
                     password = request->getParam("password", true)->value();
                 } else {
-                    return request->send(400, "text/plain", "Missing required parameters");
+                    return request->send(400, "text/plain", "缺少必需参数");
                 }
             }
             
@@ -1915,7 +1915,7 @@ void WebServerManager::start() {
     URLObfuscationIntegration::registerDualEndpointWithBody(server, "/api/passwords/reorder", HTTP_POST, 
         [this](AsyncWebServerRequest *request){
             if (!isAuthenticated(request)) return request->send(401);
-            if (!verifyCsrfToken(request)) return request->send(403, "text/plain", "CSRF token mismatch");
+            if (!verifyCsrfToken(request)) return request->send(403, "text/plain", "CSRF 令牌不匹配");
             
             String response = "Passwords reordered successfully!";
             
@@ -1942,12 +1942,12 @@ void WebServerManager::start() {
             DeserializationError error = deserializeJson(doc, body);
             
             if (error) {
-                request->send(400, "text/plain", "Invalid JSON");
+                request->send(400, "text/plain", "JSON 无效");
                 return;
             }
             
             if (!doc["order"].is<JsonArray>()) {
-                request->send(400, "text/plain", "Missing or invalid 'order' field");
+                request->send(400, "text/plain", "缺少或无效的 'order' 字段");
                 return;
             }
             
@@ -1987,10 +1987,10 @@ void WebServerManager::start() {
     auto passwordExportBodyHandler = [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
         if (index + len == total) {
             if (!isAuthenticated(request)) return request->send(401);
-            if (!verifyCsrfToken(request)) return request->send(403, "text/plain", "CSRF token mismatch");
+            if (!verifyCsrfToken(request)) return request->send(403, "text/plain", "CSRF 令牌不匹配");
             if (!WebAdminManager::getInstance().isApiEnabled()) {
                 LOG_WARNING("WebServer", "Blocked unauthorized attempt to export passwords (API disabled).");
-                return request->send(403, "text/plain", "API access for import/export is disabled.");
+                return request->send(403, "text/plain", "导入/导出 API 访问已禁用。");
             }
             
             String password;
@@ -2052,29 +2052,29 @@ void WebServerManager::start() {
                         
                         LOG_DEBUG("WebServer", "🔐 Parsed and URL-decoded admin password for password export");
                     } else {
-                        return request->send(400, "text/plain", "Invalid decrypted password export format");
+                        return request->send(400, "text/plain", "解密后的密码导出数据格式无效");
                     }
                 } else {
                     LOG_ERROR("WebServer", "🔐 Failed to decrypt password export request body");
-                    return request->send(400, "text/plain", "Password export decryption failed");
+                    return request->send(400, "text/plain", "密码导出请求解密失败");
                 }
             } else 
 #endif
             {
                 // Обычный незашифрованный запрос - читаем параметры
                 if (!request->hasParam("password", true)) {
-                    return request->send(400, "text/plain", "Password is required for export.");
+                    return request->send(400, "text/plain", "导出需要提供密码。");
                 }
                 password = request->getParam("password", true)->value();
             }
             
             if (password.isEmpty()) {
-                return request->send(400, "text/plain", "Password cannot be empty");
+                return request->send(400, "text/plain", "密码不能为空");
             }
             
             if (!WebAdminManager::getInstance().verifyCredentials(WebAdminManager::getInstance().getUsername(), password)) {
                 LOG_WARNING("WebServer", "Password export failed: Invalid admin password provided.");
-                return request->send(401, "text/plain", "Invalid admin password.");
+                return request->send(401, "text/plain", "管理员密码无效。");
             }
 
             LOG_INFO("WebServer", "Password verified. Starting password export process.");
@@ -2119,7 +2119,7 @@ void WebServerManager::start() {
             if (!WebAdminManager::getInstance().isApiEnabled()) {
                 if (index == 0) {
                     LOG_WARNING("WebServer", "Blocked unauthorized attempt to import passwords (API disabled).");
-                    request->send(403, "text/plain", "API access for import/export is disabled.");
+                    request->send(403, "text/plain", "导入/导出 API 访问已禁用。");
                 }
                 return;
             }
@@ -2149,7 +2149,7 @@ void WebServerManager::start() {
                         finalBody = decryptedBody;
                     } else {
                         LOG_ERROR("WebServer", "🔐 Failed to XOR decrypt passwords import request body");
-                        request->send(400, "text/plain", "Passwords import XOR decryption failed");
+                        request->send(400, "text/plain", "密码导入 XOR 解密失败");
                         return;
                     }
                 }
@@ -2157,7 +2157,7 @@ void WebServerManager::start() {
                 
                 JsonDocument doc;
                 if (deserializeJson(doc, finalBody) != DeserializationError::Ok) {
-                    request->send(400, "text/plain", "Invalid JSON body.");
+                    request->send(400, "text/plain", "JSON 无效 body.");
                     return;
                 }
 
@@ -2165,7 +2165,7 @@ void WebServerManager::start() {
                 String fileContent = doc["data"];
 
                 if (password.isEmpty() || fileContent.isEmpty()) {
-                    request->send(400, "text/plain", "Missing password or file data.");
+                    request->send(400, "text/plain", "缺少密码或文件数据。");
                     return;
                 }
 
@@ -2221,9 +2221,9 @@ void WebServerManager::start() {
     // --- API для управления доступом к импорту/экспорту ---
     server.on("/api/enable_import_export", HTTP_POST, [this](AsyncWebServerRequest *request){
         if (!isAuthenticated(request)) return request->send(401);
-        if (!verifyCsrfToken(request)) return request->send(403, "text/plain", "CSRF token mismatch");
+        if (!verifyCsrfToken(request)) return request->send(403, "text/plain", "CSRF 令牌不匹配");
         WebAdminManager::getInstance().enableApi();
-        request->send(200, "text/plain", "API enabled for 5 minutes.");
+        request->send(200, "text/plain", "API 已启用 5 分钟。");
     });
 
     server.on("/api/import_export_status", HTTP_GET, [this](AsyncWebServerRequest *request){
@@ -2296,17 +2296,17 @@ void WebServerManager::start() {
             // Защита от краша
             if (!data || len == 0) {
                 LOG_ERROR("WebServer", "🔐 CHANGE_PASSWORD: Invalid data pointer or length");
-                return request->send(400, "text/plain", "Invalid request data");
+                return request->send(400, "text/plain", "请求数据无效");
             }
             
             LOG_INFO("WebServer", "🔐 CHANGE_PASSWORD: onBody called - index=" + String(index) + " len=" + String(len) + " total=" + String(total));
             
             if (index + len == total) {
                 if (!isAuthenticated(request)) {
-                    return request->send(401, "text/plain", "Unauthorized");
+                    return request->send(401, "text/plain", "未授权");
                 }
                 if (!verifyCsrfToken(request)) {
-                    return request->send(403, "text/plain", "CSRF token mismatch");
+                    return request->send(403, "text/plain", "CSRF 令牌不匹配");
                 }
                 
                 String newPassword;
@@ -2339,7 +2339,7 @@ void WebServerManager::start() {
                             LOG_DEBUG("WebServer", "🔐 Decoded password length: " + String(newPassword.length()));
                         }
                     } else {
-                        return request->send(400, "text/plain", "Decryption failed");
+                        return request->send(400, "text/plain", "解密失败");
                     }
                 } else
 #endif
@@ -2352,10 +2352,10 @@ void WebServerManager::start() {
                 
                 // Валидация пароля
                 if (newPassword.length() == 0) {
-                    return request->send(400, "text/plain", "Password parameter missing.");
+                    return request->send(400, "text/plain", "缺少密码参数。");
                 }
                 if (newPassword.length() < 4) {
-                    return request->send(400, "text/plain", "Password must be at least 4 characters long.");
+                    return request->send(400, "text/plain", "密码长度至少为 4 个字符。");
                 }
                 
                 // Смена пароля
@@ -2363,7 +2363,7 @@ void WebServerManager::start() {
                 if (WebAdminManager::getInstance().changePassword(newPassword)) {
                     response = "Password changed successfully!";
                 } else {
-                    return request->send(500, "text/plain", "Failed to save new password.");
+                    return request->send(500, "text/plain", "保存新密码失败。");
                 }
                 
                 // Отправка зашифрованного ответа
@@ -2392,17 +2392,17 @@ void WebServerManager::start() {
             // Защита от краша
             if (!data || len == 0) {
                 LOG_ERROR("WebServer", "🔐 CHANGE_AP_PASSWORD: Invalid data pointer or length");
-                return request->send(400, "text/plain", "Invalid request data");
+                return request->send(400, "text/plain", "请求数据无效");
             }
             
             LOG_INFO("WebServer", "🔐 CHANGE_AP_PASSWORD: onBody called - index=" + String(index) + " len=" + String(len) + " total=" + String(total));
             
             if (index + len == total) {
                 if (!isAuthenticated(request)) {
-                    return request->send(401, "text/plain", "Unauthorized");
+                    return request->send(401, "text/plain", "未授权");
                 }
                 if (!verifyCsrfToken(request)) {
-                    return request->send(403, "text/plain", "CSRF token mismatch");
+                    return request->send(403, "text/plain", "CSRF 令牌不匹配");
                 }
                 
                 String newPassword;
@@ -2435,7 +2435,7 @@ void WebServerManager::start() {
                             LOG_DEBUG("WebServer", "🔐 Decoded password length: " + String(newPassword.length()));
                         }
                     } else {
-                        return request->send(400, "text/plain", "Decryption failed");
+                        return request->send(400, "text/plain", "解密失败");
                     }
                 } else
 #endif
@@ -2448,10 +2448,10 @@ void WebServerManager::start() {
                 
                 // Валидация пароля
                 if (newPassword.length() == 0) {
-                    return request->send(400, "text/plain", "Password parameter missing.");
+                    return request->send(400, "text/plain", "缺少密码参数。");
                 }
                 if (newPassword.length() < 8) {
-                    return request->send(400, "text/plain", "WiFi password must be at least 8 characters long.");
+                    return request->send(400, "text/plain", "WiFi 密码长度至少为 8 个字符。");
                 }
                 
                 // Смена AP пароля
@@ -2459,7 +2459,7 @@ void WebServerManager::start() {
                 if (configManager.saveApPassword(newPassword)) {
                     response = "WiFi AP password changed successfully!";
                 } else {
-                    return request->send(500, "text/plain", "Failed to save new AP password.");
+                    return request->send(500, "text/plain", "保存新的 AP 密码失败。");
                 }
                 
                 // Отправка зашифрованного ответа
@@ -2508,10 +2508,10 @@ void WebServerManager::start() {
         [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
             if (index + len == total) {
                 if (!isAuthenticated(request)) {
-                    return request->send(401, "text/plain", "Unauthorized");
+                    return request->send(401, "text/plain", "未授权");
                 }
                 if (!verifyCsrfToken(request)) {
-                    return request->send(403, "text/plain", "CSRF token mismatch");
+                    return request->send(403, "text/plain", "CSRF 令牌不匹配");
                 }
                 
                 String durationStr;
@@ -2537,7 +2537,7 @@ void WebServerManager::start() {
                             durationStr = decryptedBody.substring(durationStart + 9, durationEnd);
                         }
                     } else {
-                        return request->send(400, "text/plain", "Decryption failed");
+                        return request->send(400, "text/plain", "解密失败");
                     }
                 } else
 #endif
@@ -2550,7 +2550,7 @@ void WebServerManager::start() {
                 
                 // Валидация
                 if (durationStr.length() == 0) {
-                    return request->send(400, "text/plain", "Duration parameter missing.");
+                    return request->send(400, "text/plain", "缺少会话时长参数。");
                 }
                 
                 int durationValue = durationStr.toInt();
@@ -2565,7 +2565,7 @@ void WebServerManager::start() {
                     // Формирование JSON ответа
                     JsonDocument doc;
                     doc["success"] = true;
-                    doc["message"] = "Session duration updated successfully!";
+                    doc["message"] = "会话时长更新成功！";
                     String response;
                     serializeJson(doc, response);
                     
@@ -2582,7 +2582,7 @@ void WebServerManager::start() {
                     // Fallback
                     request->send(200, "application/json", response);
                 } else {
-                    request->send(400, "text/plain", "Invalid session duration value.");
+                    request->send(400, "text/plain", "会话时长参数无效。");
                 }
             }
         });
@@ -2596,10 +2596,10 @@ void WebServerManager::start() {
         // onBody callback - обрабатывает тело запроса для расшифровки пароля
         if (index + len == total) {
             if (!isAuthenticated(request)) return request->send(401);
-            if (!verifyCsrfToken(request)) return request->send(403, "text/plain", "CSRF token mismatch");
+            if (!verifyCsrfToken(request)) return request->send(403, "text/plain", "CSRF 令牌不匹配");
             if (!WebAdminManager::getInstance().isApiEnabled()) {
                 LOG_WARNING("WebServer", "Blocked unauthorized attempt to export TOTP keys (API disabled).");
-                return request->send(403, "text/plain", "API access for import/export is disabled.");
+                return request->send(403, "text/plain", "导入/导出 API 访问已禁用。");
             }
             
             String password;
@@ -2661,29 +2661,29 @@ void WebServerManager::start() {
                         
                         LOG_DEBUG("WebServer", "🔐 Parsed and URL-decoded admin password for TOTP export");
                     } else {
-                        return request->send(400, "text/plain", "Invalid decrypted export format");
+                        return request->send(400, "text/plain", "解密后的导出数据格式无效");
                     }
                 } else {
                     LOG_ERROR("WebServer", "🔐 Failed to decrypt export request body");
-                    return request->send(400, "text/plain", "Export decryption failed");
+                    return request->send(400, "text/plain", "导出请求解密失败");
                 }
             } else 
 #endif
             {
                 // Обычный незашифрованный запрос - читаем параметры
                 if (!request->hasParam("password", true)) {
-                    return request->send(400, "text/plain", "Password is required for export.");
+                    return request->send(400, "text/plain", "导出需要提供密码。");
                 }
                 password = request->getParam("password", true)->value();
             }
             
             if (password.isEmpty()) {
-                return request->send(400, "text/plain", "Password cannot be empty");
+                return request->send(400, "text/plain", "密码不能为空");
             }
             
             if (!WebAdminManager::getInstance().verifyCredentials(WebAdminManager::getInstance().getUsername(), password)) {
                 LOG_WARNING("WebServer", "Export failed: Invalid admin password provided.");
-                return request->send(401, "text/plain", "Invalid admin password.");
+                return request->send(401, "text/plain", "管理员密码无效。");
             }
 
             LOG_INFO("WebServer", "Password verified. Starting TOTP keys export process.");
@@ -2720,7 +2720,7 @@ void WebServerManager::start() {
         if (!WebAdminManager::getInstance().isApiEnabled()) {
             if (index == 0) {
                 LOG_WARNING("WebServer", "Blocked unauthorized attempt to import TOTP keys (API disabled).");
-                request->send(403, "text/plain", "API access for import/export is disabled.");
+                request->send(403, "text/plain", "导入/导出 API 访问已禁用。");
             }
             return;
         }
@@ -2749,7 +2749,7 @@ void WebServerManager::start() {
                     finalBody = decryptedBody;
                 } else {
                     LOG_ERROR("WebServer", "🔐 Failed to XOR decrypt import request body");
-                    request->send(400, "text/plain", "Import XOR decryption failed");
+                    request->send(400, "text/plain", "导入请求 XOR 解密失败");
                     return;
                 }
             }
@@ -2757,7 +2757,7 @@ void WebServerManager::start() {
             
             JsonDocument doc;
             if (deserializeJson(doc, finalBody) != DeserializationError::Ok) {
-                request->send(400, "text/plain", "Invalid JSON body.");
+                request->send(400, "text/plain", "JSON 无效 body.");
                 return;
             }
 
@@ -2765,7 +2765,7 @@ void WebServerManager::start() {
             String fileContent = doc["data"];
 
             if (password.isEmpty() || fileContent.isEmpty()) {
-                request->send(400, "text/plain", "Missing password or file data.");
+                request->send(400, "text/plain", "缺少密码或文件数据。");
                 return;
             }
 
@@ -2810,7 +2810,7 @@ void WebServerManager::start() {
                 // Формируем JSON ответ с ошибкой
                 JsonDocument errorDoc;
                 errorDoc["status"] = "error";
-                errorDoc["message"] = "Failed to process keys after decryption.";
+                errorDoc["message"] = "解密后处理密钥失败。";
                 String errorResponse;
                 serializeJson(errorDoc, errorResponse);
                 
@@ -2889,7 +2889,7 @@ void WebServerManager::start() {
         if (index + len == total) {
             LOG_INFO("WebServer", "🔐 PIN SETTINGS: Processing complete body, size=" + String(total));
             if (!isAuthenticated(request)) return request->send(401);
-            if (!verifyCsrfToken(request)) return request->send(403, "text/plain", "CSRF token mismatch");
+            if (!verifyCsrfToken(request)) return request->send(403, "text/plain", "CSRF 令牌不匹配");
             
             // 🔐 ОБРАБОТКА ЗАШИФРОВАННЫХ И ОБЫЧНЫХ ПАРАМЕТРОВ
             bool enabledForDevice = false;
@@ -2988,20 +2988,20 @@ void WebServerManager::start() {
             if (enabledForDevice || enabledForBle) {
                 if (newPin.length() > 0) {
                     if (newPin != confirmPin) {
-                        message = "PINs do not match.";
+                        message = "两次 PIN 输入不一致。";
                         statusCode = 400;
                         success = false;
                     } else {
                         pinManager.setPin(newPin);
                         pinManager.saveConfig();
-                        message = "PIN settings updated successfully!";
+                        message = "PIN 设置更新成功！";
                         statusCode = 200;
                         success = true;
                         LOG_INFO("WebServer", "PIN settings updated successfully");
                     }
                 } else {
                     pinManager.saveConfig();
-                    message = "PIN settings updated successfully!";
+                    message = "PIN 设置更新成功！";
                     statusCode = 200;
                     success = true;
                 }
@@ -3010,12 +3010,12 @@ void WebServerManager::start() {
                     pinManager.setPinEnabledForDevice(false);
                     pinManager.setPinEnabledForBle(false);
                     pinManager.saveConfig();
-                    message = "Cannot enable PIN protection without setting a PIN first.";
+                    message = "未设置 PIN 前无法启用 PIN 保护。";
                     statusCode = 400;
                     success = false;
                 } else {
                     pinManager.saveConfig();
-                    message = "PIN settings updated successfully!";
+                    message = "PIN 设置更新成功！";
                     statusCode = 200;
                     success = true;
                 }
@@ -3067,7 +3067,7 @@ void WebServerManager::start() {
         if (index + len == total) {
             LOG_INFO("WebServer", "🔐 BLE PIN UPDATE: Processing complete body, size=" + String(total));
             if (!isAuthenticated(request)) return request->send(401);
-            if (!verifyCsrfToken(request)) return request->send(403, "text/plain", "CSRF token mismatch");
+            if (!verifyCsrfToken(request)) return request->send(403, "text/plain", "CSRF 令牌不匹配");
             
             // 🔐 ОБРАБОТКА ЗАШИФРОВАННЫХ И ОБЫЧНЫХ ПАРАМЕТРОВ
             String blePinStr = "";
@@ -3115,7 +3115,7 @@ void WebServerManager::start() {
             // Fallback: обработка обычных параметров если расшифровка не удалась
             if (!isEncrypted) {
                 if (!request->hasParam("ble_pin", true)) {
-                    return request->send(400, "text/plain", "BLE PIN parameter is required");
+                    return request->send(400, "text/plain", "必须提供 BLE PIN 参数");
                 }
                 blePinStr = request->getParam("ble_pin", true)->value();
                 LOG_INFO("WebServer", "🔐 BLE PIN FALLBACK: Using unencrypted parameter");
@@ -3127,7 +3127,7 @@ void WebServerManager::start() {
             
             // Validate PIN format (6 digits)
             if (blePinStr.length() != 6) {
-                message = "BLE PIN must be exactly 6 digits";
+                message = "BLE PIN 必须为 6 位数字。";
                 statusCode = 400;
                 success = false;
             } else {
@@ -3140,7 +3140,7 @@ void WebServerManager::start() {
                 }
                 
                 if (!validDigits) {
-                    message = "BLE PIN must contain only digits";
+                    message = "BLE PIN 只能包含数字。";
                     statusCode = 400;
                     success = false;
                 } else {
@@ -3156,12 +3156,12 @@ void WebServerManager::start() {
                             LOG_INFO("WebServer", "BLE bonding keys cleared due to PIN change");
                         }
                         
-                        message = "BLE PIN updated successfully! All BLE clients cleared.";
+                        message = "BLE PIN 更新成功！已清除所有 BLE 客户端。";
                         statusCode = 200;
                         success = true;
                     } else {
-                        LOG_ERROR("WebServer", "Failed to save BLE PIN");
-                        message = "Failed to save BLE PIN";
+                        LOG_ERROR("WebServer", "保存 BLE PIN 失败。");
+                        message = "保存 BLE PIN 失败。";
                         statusCode = 500;
                         success = false;
                     }
@@ -3229,12 +3229,12 @@ void WebServerManager::start() {
             if (index + len == total) {
                 // Проверка аутентификации
                 if (!isAuthenticated(request)) {
-                    return request->send(401, "text/plain", "Unauthorized");
+                    return request->send(401, "text/plain", "未授权");
                 }
                 
                 // Проверка CSRF токена
                 if (!verifyCsrfToken(request)) {
-                    return request->send(403, "text/plain", "CSRF token mismatch");
+                    return request->send(403, "text/plain", "CSRF 令牌不匹配");
                 }
                 
                 String timeoutStr;
@@ -3268,8 +3268,8 @@ void WebServerManager::start() {
                             LOG_DEBUG("WebServer", "🔐 DISPLAY_SETTINGS: Parsed timeout=" + timeoutStr);
                         }
                     } else {
-                        LOG_ERROR("WebServer", "🔐 DISPLAY_SETTINGS: Decryption failed");
-                        return request->send(400, "text/plain", "Decryption failed");
+                        LOG_ERROR("WebServer", "🔐 DISPLAY_SETTINGS: 解密失败");
+                        return request->send(400, "text/plain", "解密失败");
                     }
                 } else
 #endif
@@ -3282,7 +3282,7 @@ void WebServerManager::start() {
                 
                 // Валидация display_timeout
                 if (timeoutStr.length() == 0) {
-                    return request->send(400, "text/plain", "Missing display_timeout parameter!");
+                    return request->send(400, "text/plain", "缺少 display_timeout 参数！");
                 }
                 
                 uint16_t timeout = timeoutStr.toInt();
@@ -3290,7 +3290,7 @@ void WebServerManager::start() {
                 // Validate timeout values
                 if (timeout != 0 && timeout != 15 && timeout != 30 && timeout != 60 && 
                     timeout != 300 && timeout != 1800) {
-                    return request->send(400, "text/plain", "Invalid timeout value!");
+                    return request->send(400, "text/plain", "超时值无效！");
                 }
                 
                 // Сохранение таймаута
@@ -3300,13 +3300,13 @@ void WebServerManager::start() {
                 JsonDocument doc;
                 if (configManager.saveDisplayTimeout(timeout)) {
                     doc["success"] = true;
-                    doc["message"] = "Display timeout saved successfully!";
+                    doc["message"] = "屏幕超时保存成功！";
                     doc["timeout"] = timeout;
                     statusCode = 200;
                     LOG_INFO("WebServer", "Display timeout changed to: " + String(timeout) + " seconds");
                 } else {
                     doc["success"] = false;
-                    doc["message"] = "Failed to save display timeout!";
+                    doc["message"] = "屏幕超时保存失败！";
                     statusCode = 500;
                     LOG_ERROR("WebServer", "Failed to save display timeout");
                 }
@@ -3337,17 +3337,17 @@ void WebServerManager::start() {
         [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
             if (!data || len == 0) {
                 LOG_ERROR("WebServer", "🔐 CLEAR_BLE: Invalid data");
-                return request->send(400, "text/plain", "Invalid request data");
+                return request->send(400, "text/plain", "请求数据无效");
             }
             
             LOG_INFO("WebServer", "🔐 CLEAR_BLE: onBody called - len=" + String(len));
             
             if (index + len == total) {
                 if (!isAuthenticated(request)) {
-                    return request->send(401, "text/plain", "Unauthorized");
+                    return request->send(401, "text/plain", "未授权");
                 }
                 if (!verifyCsrfToken(request)) {
-                    return request->send(403, "text/plain", "CSRF token mismatch");
+                    return request->send(403, "text/plain", "CSRF 令牌不匹配");
                 }
                 
 #ifdef SECURE_LAYER_ENABLED
@@ -3370,7 +3370,7 @@ void WebServerManager::start() {
                         responseMsg = "{\"success\":true,\"message\":\"BLE clients cleared\"}";
                         success = true;
                     } else {
-                        LOG_ERROR("WebServer", "BLE Keyboard Manager not available");
+                        LOG_ERROR("WebServer", "BLE 键盘管理器不可用");
                         responseMsg = "{\"success\":false,\"message\":\"BLE Manager not available\"}";
                     }
                     
@@ -3379,7 +3379,7 @@ void WebServerManager::start() {
                     if (secureLayer.encryptResponse(clientId, responseMsg, encryptedResponse)) {
                         request->send(success ? 200 : 500, "application/json", encryptedResponse);
                     } else {
-                        request->send(500, "text/plain", "Encryption failed");
+                        request->send(500, "text/plain", "加密失败");
                     }
                     return;
                 }
@@ -3389,10 +3389,10 @@ void WebServerManager::start() {
                 if (bleKeyboardManager) {
                     bleKeyboardManager->clearBondingKeys();
                     LOG_INFO("WebServer", "BLE bonding keys cleared manually");
-                    request->send(200, "text/plain", "BLE clients cleared successfully!");
+                    request->send(200, "text/plain", "BLE 客户端清除成功！");
                 } else {
-                    LOG_ERROR("WebServer", "BLE Keyboard Manager not available");
-                    request->send(500, "text/plain", "BLE Keyboard Manager not available");
+                    LOG_ERROR("WebServer", "BLE 键盘管理器不可用");
+                    request->send(500, "text/plain", "BLE 键盘管理器不可用");
                 }
             }
         });
@@ -3427,12 +3427,12 @@ void WebServerManager::start() {
             if (index + len == total) {
                 // Проверка аутентификации
                 if (!isAuthenticated(request)) {
-                    return request->send(401, "text/plain", "Unauthorized");
+                    return request->send(401, "text/plain", "未授权");
                 }
                 
                 // Проверка CSRF токена
                 if (!verifyCsrfToken(request)) {
-                    return request->send(403, "text/plain", "CSRF token mismatch");
+                    return request->send(403, "text/plain", "CSRF 令牌不匹配");
                 }
                 
                 String theme;
@@ -3466,8 +3466,8 @@ void WebServerManager::start() {
                             LOG_DEBUG("WebServer", "🔐 THEME: Parsed theme=" + theme);
                         }
                     } else {
-                        LOG_ERROR("WebServer", "🔐 THEME: Decryption failed");
-                        return request->send(400, "text/plain", "Decryption failed");
+                        LOG_ERROR("WebServer", "🔐 THEME: 解密失败");
+                        return request->send(400, "text/plain", "解密失败");
                     }
                 } else
 #endif
@@ -3480,10 +3480,10 @@ void WebServerManager::start() {
                 
                 // Валидация theme
                 if (theme.length() == 0) {
-                    return request->send(400, "text/plain", "Theme parameter missing.");
+                    return request->send(400, "text/plain", "缺少主题参数。");
                 }
                 if (theme != "light" && theme != "dark") {
-                    return request->send(400, "text/plain", "Invalid theme. Must be 'light' or 'dark'.");
+                    return request->send(400, "text/plain", "主题无效，必须为 'light' 或 'dark'。");
                 }
                 
                 // Применение темы
@@ -3496,7 +3496,7 @@ void WebServerManager::start() {
                 // Формируем JSON ответ
                 JsonDocument doc;
                 doc["success"] = true;
-                doc["message"] = "Theme updated successfully!";
+                doc["message"] = "主题更新成功！";
                 doc["theme"] = theme;
                 String response;
                 serializeJson(doc, response);
@@ -3545,12 +3545,12 @@ void WebServerManager::start() {
             if (index + len == total) {
                 // Проверка аутентификации
                 if (!isAuthenticated(request)) {
-                    return request->send(401, "text/plain", "Unauthorized");
+                    return request->send(401, "text/plain", "未授权");
                 }
                 
                 // Проверка CSRF токена
                 if (!verifyCsrfToken(request)) {
-                    return request->send(403, "text/plain", "CSRF token mismatch");
+                    return request->send(403, "text/plain", "CSRF 令牌不匹配");
                 }
                 
                 String deviceName;
@@ -3579,7 +3579,7 @@ void WebServerManager::start() {
                             deviceName = urlDecode(deviceName);
                         }
                     } else {
-                        return request->send(400, "text/plain", "Decryption failed");
+                        return request->send(400, "text/plain", "解密失败");
                     }
                 } else
 #endif
@@ -3592,10 +3592,10 @@ void WebServerManager::start() {
                 
                 // Валидация device name
                 if (deviceName.length() == 0) {
-                    return request->send(400, "text/plain", "Device name parameter missing.");
+                    return request->send(400, "text/plain", "缺少设备名称参数。");
                 }
                 if (deviceName.length() > 15) {
-                    return request->send(400, "text/plain", "Device name too long (max 15 characters)");
+                    return request->send(400, "text/plain", "设备名称过长（最多 15 个字符）");
                 }
                 
                 // Сохранение и применение
@@ -3607,7 +3607,7 @@ void WebServerManager::start() {
                 // Формирование JSON ответа
                 JsonDocument doc;
                 doc["success"] = true;
-                doc["message"] = "BLE device name updated successfully!";
+                doc["message"] = "BLE 设备名更新成功！";
                 String response;
                 serializeJson(doc, response);
                 
@@ -3655,12 +3655,12 @@ void WebServerManager::start() {
             if (index + len == total) {
                 // Проверка аутентификации
                 if (!isAuthenticated(request)) {
-                    return request->send(401, "text/plain", "Unauthorized");
+                    return request->send(401, "text/plain", "未授权");
                 }
                 
                 // Проверка CSRF токена
                 if (!verifyCsrfToken(request)) {
-                    return request->send(403, "text/plain", "CSRF token mismatch");
+                    return request->send(403, "text/plain", "CSRF 令牌不匹配");
                 }
                 
                 String hostname;
@@ -3689,7 +3689,7 @@ void WebServerManager::start() {
                             hostname = urlDecode(hostname);
                         }
                     } else {
-                        return request->send(400, "text/plain", "Decryption failed");
+                        return request->send(400, "text/plain", "解密失败");
                     }
                 } else
 #endif
@@ -3702,10 +3702,10 @@ void WebServerManager::start() {
                 
                 // Валидация hostname
                 if (hostname.length() == 0) {
-                    return request->send(400, "text/plain", "Hostname parameter missing.");
+                    return request->send(400, "text/plain", "缺少主机名参数。");
                 }
                 if (hostname.length() > 63) {
-                    return request->send(400, "text/plain", "Invalid hostname length (1-63 characters)");
+                    return request->send(400, "text/plain", "主机名长度无效（1-63 个字符）");
                 }
                 
                 // Сохранение и применение
@@ -3717,7 +3717,7 @@ void WebServerManager::start() {
                 // Формирование JSON ответа
                 JsonDocument doc;
                 doc["success"] = true;
-                doc["message"] = "mDNS hostname updated successfully!";
+                doc["message"] = "mDNS 主机名更新成功！";
                 String response;
                 serializeJson(doc, response);
                 
@@ -3767,12 +3767,12 @@ void WebServerManager::start() {
             if (index + len == total) {
                 // Проверка аутентификации
                 if (!isAuthenticated(request)) {
-                    return request->send(401, "text/plain", "Unauthorized");
+                    return request->send(401, "text/plain", "未授权");
                 }
                 
                 // Проверка CSRF токена
                 if (!verifyCsrfToken(request)) {
-                    return request->send(403, "text/plain", "CSRF token mismatch");
+                    return request->send(403, "text/plain", "CSRF 令牌不匹配");
                 }
                 
                 String mode;
@@ -3801,7 +3801,7 @@ void WebServerManager::start() {
                             mode = urlDecode(mode);
                         }
                     } else {
-                        return request->send(400, "text/plain", "Decryption failed");
+                        return request->send(400, "text/plain", "解密失败");
                     }
                 } else
 #endif
@@ -3814,10 +3814,10 @@ void WebServerManager::start() {
                 
                 // Валидация mode
                 if (mode.length() == 0) {
-                    return request->send(400, "text/plain", "Missing mode parameter.");
+                    return request->send(400, "text/plain", "缺少启动模式参数。");
                 }
                 if (mode != "totp" && mode != "password") {
-                    return request->send(400, "text/plain", "Invalid startup mode. Must be 'totp' or 'password'.");
+                    return request->send(400, "text/plain", "启动模式无效，必须为 'totp' 或 'password'。");
                 }
                 
                 // Сохранение
@@ -3827,11 +3827,11 @@ void WebServerManager::start() {
                 
                 if (success) {
                     LogManager::getInstance().logInfo("WebServer", "Startup mode changed to: " + mode);
-                    message = "Startup mode saved successfully!";
+                    message = "启动模式保存成功！";
                     statusCode = 200;
                 } else {
                     LogManager::getInstance().logError("WebServer", "Failed to save startup mode: " + mode);
-                    message = "Failed to save startup mode.";
+                    message = "启动模式保存失败。";
                     statusCode = 500;
                 }
                 
@@ -3866,15 +3866,15 @@ void WebServerManager::start() {
         [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
             if (!data || len == 0) {
                 LOG_ERROR("WebServer", "🔐 REBOOT: Invalid data");
-                return request->send(400, "text/plain", "Invalid request data");
+                return request->send(400, "text/plain", "请求数据无效");
             }
             
             if (index + len == total) {
                 if (!isAuthenticated(request)) {
-                    return request->send(401, "text/plain", "Unauthorized");
+                    return request->send(401, "text/plain", "未授权");
                 }
                 if (!verifyCsrfToken(request)) {
-                    return request->send(403, "text/plain", "CSRF token mismatch");
+                    return request->send(403, "text/plain", "CSRF 令牌不匹配");
                 }
                 
 #ifdef SECURE_LAYER_ENABLED
@@ -3896,7 +3896,7 @@ void WebServerManager::start() {
                         delay(1000);
                         ESP.restart();
                     } else {
-                        request->send(500, "text/plain", "Encryption failed");
+                        request->send(500, "text/plain", "加密失败");
                     }
                     return;
                 }
@@ -3904,7 +3904,7 @@ void WebServerManager::start() {
                 
                 // Fallback
                 LOG_INFO("WebServer", "System reboot requested");
-                request->send(200, "text/plain", "Rebooting...");
+                request->send(200, "text/plain", "正在重启...");
                 delay(1000);
                 ESP.restart();
             }
@@ -3919,15 +3919,15 @@ void WebServerManager::start() {
         [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
             if (!data || len == 0) {
                 LOG_ERROR("WebServer", "🔐 REBOOT_WEB: Invalid data");
-                return request->send(400, "text/plain", "Invalid request data");
+                return request->send(400, "text/plain", "请求数据无效");
             }
             
             if (index + len == total) {
                 if (!isAuthenticated(request)) {
-                    return request->send(401, "text/plain", "Unauthorized");
+                    return request->send(401, "text/plain", "未授权");
                 }
                 if (!verifyCsrfToken(request)) {
-                    return request->send(403, "text/plain", "CSRF token mismatch");
+                    return request->send(403, "text/plain", "CSRF 令牌不匹配");
                 }
                 
 #ifdef SECURE_LAYER_ENABLED
@@ -3953,7 +3953,7 @@ void WebServerManager::start() {
                         delay(1000);
                         ESP.restart();
                     } else {
-                        request->send(500, "text/plain", "Encryption failed");
+                        request->send(500, "text/plain", "加密失败");
                     }
                     return;
                 }
@@ -3962,7 +3962,7 @@ void WebServerManager::start() {
                 // Fallback
                 LOG_INFO("WebServer", "System reboot with web server auto-start requested");
                 configManager.setWebServerAutoStart(true);
-                request->send(200, "text/plain", "Rebooting with web server enabled...");
+                request->send(200, "text/plain", "正在重启（Web 服务已启用）...");
                 LOG_INFO("WebServer", "Web server auto-start flag set successfully");
                 delay(1000);
                 ESP.restart();
@@ -4007,12 +4007,12 @@ void WebServerManager::start() {
             if (index + len == total) {
                 // Проверка аутентификации
                 if (!isAuthenticated(request)) {
-                    return request->send(401, "text/plain", "Unauthorized");
+                    return request->send(401, "text/plain", "未授权");
                 }
                 
                 // Проверка CSRF токена
                 if (!verifyCsrfToken(request)) {
-                    return request->send(403, "text/plain", "CSRF token mismatch");
+                    return request->send(403, "text/plain", "CSRF 令牌不匹配");
                 }
                 
                 String timeoutStr;
@@ -4038,7 +4038,7 @@ void WebServerManager::start() {
                             timeoutStr = decryptedBody.substring(timeoutStart + 19, timeoutEnd);
                         }
                     } else {
-                        return request->send(400, "text/plain", "Decryption failed");
+                        return request->send(400, "text/plain", "解密失败");
                     }
                 } else
 #endif
@@ -4053,7 +4053,7 @@ void WebServerManager::start() {
                 if (timeoutStr.length() == 0) {
                     JsonDocument doc;
                     doc["success"] = false;
-                    doc["message"] = "Missing parameters.";
+                    doc["message"] = "缺少参数。";
                     String response;
                     serializeJson(doc, response);
                     return request->send(400, "application/json", response);
@@ -4066,7 +4066,7 @@ void WebServerManager::start() {
                 // Формирование JSON ответа
                 JsonDocument doc;
                 doc["success"] = true;
-                doc["message"] = "Settings updated successfully! Device will restart...";
+                doc["message"] = "设置更新成功！设备将重启...";
                 String response;
                 serializeJson(doc, response);
                 
@@ -4109,7 +4109,7 @@ void WebServerManager::start() {
         if (!isAuthenticated(request)) return request->send(401);
         
         if (!request->hasHeader("X-Real-Method")) {
-            request->send(400, "text/plain", "Missing X-Real-Method header");
+            request->send(400, "text/plain", "缺少 X-Real-Method 请求头");
             return;
         }
         
@@ -4118,7 +4118,7 @@ void WebServerManager::start() {
         String realMethod = methodTunneling.decryptMethodHeader(encryptedMethod, clientId);
         
         if (realMethod.isEmpty()) {
-            request->send(400, "text/plain", "Failed to decrypt method header");
+            request->send(400, "text/plain", "方法请求头解密失败");
             return;
         }
         
@@ -4160,7 +4160,7 @@ void WebServerManager::start() {
                     delete bufferPtr;
                     request->_tempObject = nullptr;
                 }
-                request->send(400, "text/plain", "Missing X-Real-Method header");
+                request->send(400, "text/plain", "缺少 X-Real-Method 请求头");
                 return;
             }
             
@@ -4173,7 +4173,7 @@ void WebServerManager::start() {
                     delete bufferPtr;
                     request->_tempObject = nullptr;
                 }
-                request->send(400, "text/plain", "Failed to decrypt method header");
+                request->send(400, "text/plain", "方法请求头解密失败");
                 return;
             }
             
@@ -4184,7 +4184,7 @@ void WebServerManager::start() {
             // 🔐 РАСШИФРОВЫВАЕМ ТЕЛО TUNNEL ЗАПРОСА
             if (!bufferPtr) {
                 LOG_ERROR("WebServer", "❌ Tunnel buffer is null!");
-                return request->send(500, "text/plain", "Internal server error");
+                return request->send(500, "text/plain", "服务器内部错误");
             }
             
             String encryptedBody = *bufferPtr;  // ✅ Используем накопленные данные!
@@ -4204,7 +4204,7 @@ void WebServerManager::start() {
                 
                 if (error) {
                     LOG_ERROR("WebServer", "🚇 Failed to parse tunnel JSON: " + String(error.c_str()));
-                    return request->send(400, "text/plain", "Invalid tunnel body JSON");
+                    return request->send(400, "text/plain", "隧道请求体 JSON 无效");
                 }
                 
                 String targetEndpoint = tunnelDoc["endpoint"].as<String>();
@@ -4255,14 +4255,14 @@ void WebServerManager::start() {
                     String secret = targetData["secret"].as<String>();
                     
                     if (name.isEmpty() || secret.isEmpty()) {
-                        return request->send(400, "text/plain", "Name and secret cannot be empty");
+                        return request->send(400, "text/plain", "名称和密钥不能为空");
                     }
                     
                     LOG_INFO("WebServer", "🚇 TUNNELED Key add: " + name);
                     keyManager.addKey(name, secret);
                     
                     // 🛡️ Ручное формирование JSON для экономии памяти
-                    String output = "{\"status\":\"success\",\"message\":\"Key added successfully\",\"name\":\"" + name + "\"}";
+                    String output = "{\"status\":\"success\",\"message\":\"密钥添加成功\",\"name\":\"" + name + "\"}";
                     
                     
                     LOG_INFO("WebServer", "🔐 KEY ADD ENCRYPTION: Securing tunneled response");
@@ -4278,7 +4278,7 @@ void WebServerManager::start() {
                     keyManager.removeKey(index);
                     
                     // 🛡️ Ручное формирование JSON
-                    String output = "{\"status\":\"success\",\"message\":\"Key removed successfully\"}";
+                    String output = "{\"status\":\"success\",\"message\":\"密钥删除成功\"}";
                     
                     
                     LOG_INFO("WebServer", "🔐 KEY REMOVE ENCRYPTION: Securing tunneled response");
@@ -4290,7 +4290,7 @@ void WebServerManager::start() {
                 if (targetEndpoint == "/api/keys/reorder" && targetMethod == "POST") {
                     // Парсим order массив
                     if (!targetData["order"].is<JsonArray>()) {
-                        return request->send(400, "text/plain", "Missing or invalid 'order' field");
+                        return request->send(400, "text/plain", "缺少或无效的 'order' 字段");
                     }
                     
                     std::vector<std::pair<String, int>> newOrder;
@@ -4327,19 +4327,19 @@ void WebServerManager::start() {
                     // Проверка API доступа
                     if (!WebAdminManager::getInstance().isApiEnabled()) {
                         LOG_WARNING("WebServer", "🚇 TUNNELED export blocked: API disabled");
-                        return request->send(403, "text/plain", "API access for import/export is disabled.");
+                        return request->send(403, "text/plain", "导入/导出 API 访问已禁用。");
                     }
                     
                     String password = targetData["password"].as<String>();
                     
                     if (password.isEmpty()) {
-                        return request->send(400, "text/plain", "Password cannot be empty");
+                        return request->send(400, "text/plain", "密码不能为空");
                     }
                     
                     // Проверка admin пароля
                     if (!WebAdminManager::getInstance().verifyCredentials(WebAdminManager::getInstance().getUsername(), password)) {
                         LOG_WARNING("WebServer", "🚇 TUNNELED export failed: Invalid admin password");
-                        return request->send(401, "text/plain", "Invalid admin password.");
+                        return request->send(401, "text/plain", "管理员密码无效。");
                     }
                     
                     LOG_INFO("WebServer", "🚇 TUNNELED TOTP export: Password verified");
@@ -4381,7 +4381,7 @@ void WebServerManager::start() {
                     // Проверка API доступа
                     if (!WebAdminManager::getInstance().isApiEnabled()) {
                         LOG_WARNING("WebServer", "🚇 TUNNELED import blocked: API disabled");
-                        return request->send(403, "text/plain", "API access for import/export is disabled.");
+                        return request->send(403, "text/plain", "导入/导出 API 访问已禁用。");
                     }
                     
                     String password = targetData["password"].as<String>();
@@ -4389,14 +4389,14 @@ void WebServerManager::start() {
                     
                     if (password.isEmpty() || fileContent.isEmpty()) {
                         LOG_ERROR("WebServer", "❌ TUNNELED import: Missing data (pwd:" + String(password.length()) + ", file:" + String(fileContent.length()) + ")");
-                        return request->send(400, "text/plain", "Missing password or file data.");
+                        return request->send(400, "text/plain", "缺少密码或文件数据。");
                     }
                     
                     LOG_INFO("WebServer", "🚇 TUNNELED TOTP import: Decrypting file content");
                     String decryptedContent = CryptoManager::getInstance().decryptWithPassword(fileContent, password);
                     
                     if (decryptedContent.isEmpty()) {
-                        LOG_WARNING("WebServer", "🚇 TUNNELED import failed: Decryption failed");
+                        LOG_WARNING("WebServer", "🚇 TUNNELED import failed: 解密失败");
                         return request->send(400, "text/plain", "解密失败：密码错误或文件已损坏。");
                     }
                     
@@ -4413,7 +4413,7 @@ void WebServerManager::start() {
                         LOG_ERROR("WebServer", "🚇 TUNNELED import failed: Failed to process keys");
                         
                         // 🛡️ Ручное формирование JSON
-                        String errorResponse = "{\"status\":\"error\",\"message\":\"Failed to process keys after decryption.\"}";
+                        String errorResponse = "{\"status\":\"error\",\"message\":\"解密后处理密钥失败。\"}";
                         
                         WebServerSecureIntegration::sendSecureResponse(request, 500, "application/json", errorResponse, secureLayer);
                         return;
@@ -4451,19 +4451,19 @@ void WebServerManager::start() {
                     // Проверка API доступа
                     if (!WebAdminManager::getInstance().isApiEnabled()) {
                         LOG_WARNING("WebServer", "🚇 TUNNELED passwords export blocked: API disabled");
-                        return request->send(403, "text/plain", "API access for import/export is disabled.");
+                        return request->send(403, "text/plain", "导入/导出 API 访问已禁用。");
                     }
                     
                     String password = targetData["password"].as<String>();
                     
                     if (password.isEmpty()) {
-                        return request->send(400, "text/plain", "Password cannot be empty");
+                        return request->send(400, "text/plain", "密码不能为空");
                     }
                     
                     // Проверка admin пароля
                     if (!WebAdminManager::getInstance().verifyCredentials(WebAdminManager::getInstance().getUsername(), password)) {
                         LOG_WARNING("WebServer", "🚇 TUNNELED passwords export failed: Invalid admin password");
-                        return request->send(401, "text/plain", "Invalid admin password.");
+                        return request->send(401, "text/plain", "管理员密码无效。");
                     }
                     
                     LOG_INFO("WebServer", "🚇 TUNNELED passwords export: Password verified");
@@ -4502,7 +4502,7 @@ void WebServerManager::start() {
                     // Проверка API доступа
                     if (!WebAdminManager::getInstance().isApiEnabled()) {
                         LOG_WARNING("WebServer", "🚇 TUNNELED passwords import blocked: API disabled");
-                        return request->send(403, "text/plain", "API access for import/export is disabled.");
+                        return request->send(403, "text/plain", "导入/导出 API 访问已禁用。");
                     }
                     
                     String password = targetData["password"].as<String>();
@@ -4510,14 +4510,14 @@ void WebServerManager::start() {
                     
                     if (password.isEmpty() || fileContent.isEmpty()) {
                         LOG_ERROR("WebServer", "❌ TUNNELED passwords import: Missing data (pwd:" + String(password.length()) + ", file:" + String(fileContent.length()) + ")");
-                        return request->send(400, "text/plain", "Missing password or file data.");
+                        return request->send(400, "text/plain", "缺少密码或文件数据。");
                     }
                     
                     LOG_INFO("WebServer", "🚇 TUNNELED passwords import: Decrypting file content");
                     String decryptedContent = CryptoManager::getInstance().decryptWithPassword(fileContent, password);
                     
                     if (decryptedContent.isEmpty()) {
-                        LOG_WARNING("WebServer", "🚇 TUNNELED passwords import failed: Decryption failed");
+                        LOG_WARNING("WebServer", "🚇 TUNNELED passwords import failed: 解密失败");
                         return request->send(400, "text/plain", "解密失败：密码错误或文件已损坏。");
                     }
                     
@@ -4642,7 +4642,7 @@ void WebServerManager::start() {
                     } else {
                         JsonDocument errorDoc;
                         errorDoc["status"] = "error";
-                        errorDoc["message"] = "Password not found";
+                        errorDoc["message"] = "未找到密码";
                         String errorResponse;
                         serializeJson(errorDoc, errorResponse);
                         
@@ -4717,7 +4717,7 @@ void WebServerManager::start() {
                     if (theme.length() == 0) {
                         JsonDocument errorDoc;
                         errorDoc["success"] = false;
-                        errorDoc["message"] = "Theme parameter missing.";
+                        errorDoc["message"] = "缺少主题参数。";
                         String errorResponse;
                         serializeJson(errorDoc, errorResponse);
                         WebServerSecureIntegration::sendSecureResponse(request, 400, "application/json", errorResponse, secureLayer);
@@ -4727,7 +4727,7 @@ void WebServerManager::start() {
                     if (theme != "light" && theme != "dark") {
                         JsonDocument errorDoc;
                         errorDoc["success"] = false;
-                        errorDoc["message"] = "Invalid theme. Must be 'light' or 'dark'.";
+                        errorDoc["message"] = "主题无效，必须为 'light' 或 'dark'。";
                         String errorResponse;
                         serializeJson(errorDoc, errorResponse);
                         WebServerSecureIntegration::sendSecureResponse(request, 400, "application/json", errorResponse, secureLayer);
@@ -4742,7 +4742,7 @@ void WebServerManager::start() {
                     
                     JsonDocument doc;
                     doc["success"] = true;
-                    doc["message"] = "Theme updated successfully!";
+                    doc["message"] = "主题更新成功！";
                     doc["theme"] = theme;
                     String response;
                     serializeJson(doc, response);
@@ -4781,7 +4781,7 @@ void WebServerManager::start() {
                     if (timeoutStr.length() == 0) {
                         JsonDocument errorDoc;
                         errorDoc["success"] = false;
-                        errorDoc["message"] = "Missing display_timeout parameter!";
+                        errorDoc["message"] = "缺少 display_timeout 参数！";
                         String errorResponse;
                         serializeJson(errorDoc, errorResponse);
                         WebServerSecureIntegration::sendSecureResponse(request, 400, "application/json", errorResponse, secureLayer);
@@ -4795,7 +4795,7 @@ void WebServerManager::start() {
                         timeout != 300 && timeout != 1800) {
                         JsonDocument errorDoc;
                         errorDoc["success"] = false;
-                        errorDoc["message"] = "Invalid timeout value!";
+                        errorDoc["message"] = "超时值无效！";
                         String errorResponse;
                         serializeJson(errorDoc, errorResponse);
                         WebServerSecureIntegration::sendSecureResponse(request, 400, "application/json", errorResponse, secureLayer);
@@ -4807,13 +4807,13 @@ void WebServerManager::start() {
                     
                     if (configManager.saveDisplayTimeout(timeout)) {
                         doc["success"] = true;
-                        doc["message"] = "Display timeout saved successfully!";
+                        doc["message"] = "屏幕超时保存成功！";
                         doc["timeout"] = timeout;
                         statusCode = 200;
                         LOG_INFO("WebServer", "🚇 TUNNELED display timeout changed to: " + String(timeout) + " seconds");
                     } else {
                         doc["success"] = false;
-                        doc["message"] = "Failed to save display timeout!";
+                        doc["message"] = "屏幕超时保存失败！";
                         statusCode = 500;
                         LOG_ERROR("WebServer", "🚇 TUNNELED Failed to save display timeout");
                     }
@@ -4876,20 +4876,20 @@ void WebServerManager::start() {
                     if (enabledForDevice || enabledForBle) {
                         if (newPin.length() > 0) {
                             if (newPin != confirmPin) {
-                                message = "PINs do not match.";
+                                message = "两次 PIN 输入不一致。";
                                 statusCode = 400;
                                 success = false;
                             } else {
                                 pinManager.setPin(newPin);
                                 pinManager.saveConfig();
-                                message = "PIN settings updated successfully!";
+                                message = "PIN 设置更新成功！";
                                 statusCode = 200;
                                 success = true;
                                 LOG_INFO("WebServer", "🚇 TUNNELED PIN settings updated successfully");
                             }
                         } else {
                             pinManager.saveConfig();
-                            message = "PIN settings updated successfully!";
+                            message = "PIN 设置更新成功！";
                             statusCode = 200;
                             success = true;
                         }
@@ -4898,12 +4898,12 @@ void WebServerManager::start() {
                             pinManager.setPinEnabledForDevice(false);
                             pinManager.setPinEnabledForBle(false);
                             pinManager.saveConfig();
-                            message = "Cannot enable PIN protection without setting a PIN first.";
+                            message = "未设置 PIN 前无法启用 PIN 保护。";
                             statusCode = 400;
                             success = false;
                         } else {
                             pinManager.saveConfig();
-                            message = "PIN settings updated successfully!";
+                            message = "PIN 设置更新成功！";
                             statusCode = 200;
                             success = true;
                         }
@@ -4932,7 +4932,7 @@ void WebServerManager::start() {
                     
                     // Validate PIN format (6 digits)
                     if (blePinStr.length() != 6) {
-                        message = "BLE PIN must be exactly 6 digits";
+                        message = "BLE PIN 必须为 6 位数字。";
                         statusCode = 400;
                         success = false;
                     } else {
@@ -4945,7 +4945,7 @@ void WebServerManager::start() {
                         }
                         
                         if (!validDigits) {
-                            message = "BLE PIN must contain only digits";
+                            message = "BLE PIN 只能包含数字。";
                             statusCode = 400;
                             success = false;
                         } else {
@@ -4961,12 +4961,12 @@ void WebServerManager::start() {
                                     LOG_INFO("WebServer", "🚇 TUNNELED BLE bonding keys cleared");
                                 }
                                 
-                                message = "BLE PIN updated successfully! All BLE clients cleared.";
+                                message = "BLE PIN 更新成功！已清除所有 BLE 客户端。";
                                 statusCode = 200;
                                 success = true;
                             } else {
-                                LOG_ERROR("WebServer", "🚇 TUNNELED Failed to save BLE PIN");
-                                message = "Failed to save BLE PIN";
+                                LOG_ERROR("WebServer", "🚇 TUNNELED 保存 BLE PIN 失败。");
+                                message = "保存 BLE PIN 失败。";
                                 statusCode = 500;
                                 success = false;
                             }
@@ -5016,14 +5016,14 @@ void WebServerManager::start() {
                     String mode = targetData["mode"].as<String>();
                     
                     if (mode.length() == 0) {
-                        return request->send(400, "text/plain", "Missing mode parameter.");
+                        return request->send(400, "text/plain", "缺少启动模式参数。");
                     }
                     if (mode != "totp" && mode != "password") {
-                        return request->send(400, "text/plain", "Invalid startup mode. Must be 'totp' or 'password'.");
+                        return request->send(400, "text/plain", "启动模式无效，必须为 'totp' 或 'password'。");
                     }
                     
                     bool success = configManager.saveStartupMode(mode);
-                    String message = success ? "Startup mode saved successfully!" : "Failed to save startup mode.";
+                    String message = success ? "启动模式保存成功！" : "启动模式保存失败。";
                     String output;
                     output.reserve(50 + message.length());
                     output = "{\"success\":";
@@ -5057,14 +5057,14 @@ void WebServerManager::start() {
                     String timeoutStr = targetData["web_server_timeout"].as<String>();
                     
                     if (timeoutStr.length() == 0) {
-                        return request->send(400, "application/json", "{\"success\":false,\"message\":\"Missing parameters.\"}");
+                        return request->send(400, "application/json", "{\"success\":false,\"message\":\"缺少参数。\"}");
                     }
                     
                     uint16_t timeout = timeoutStr.toInt();
                     configManager.setWebServerTimeout(timeout);
                     _timeoutMinutes = timeout;
                     
-                    String output = "{\"success\":true,\"message\":\"Settings updated successfully! Device will restart...\"}";
+                    String output = "{\"success\":true,\"message\":\"设置更新成功！设备将重启...\"}";
                     
                     WebServerSecureIntegration::sendSecureResponse(request, 200, "application/json", output, secureLayer);
                     
@@ -5092,10 +5092,10 @@ void WebServerManager::start() {
                     String deviceName = targetData["device_name"].as<String>();
                     
                     if (deviceName.length() == 0) {
-                        return request->send(400, "text/plain", "Device name parameter missing.");
+                        return request->send(400, "text/plain", "缺少设备名称参数。");
                     }
                     if (deviceName.length() > 15) {
-                        return request->send(400, "text/plain", "Device name too long (max 15 characters)");
+                        return request->send(400, "text/plain", "设备名称过长（最多 15 个字符）");
                     }
                     
                     configManager.saveBleDeviceName(deviceName);
@@ -5103,7 +5103,7 @@ void WebServerManager::start() {
                         bleKeyboardManager->setDeviceName(deviceName);
                     }
                     
-                    String output = "{\"success\":true,\"message\":\"BLE device name updated successfully!\"}";
+                    String output = "{\"success\":true,\"message\":\"BLE 设备名更新成功！\"}";
                     
                     WebServerSecureIntegration::sendSecureResponse(request, 200, "application/json", output, secureLayer);
                     return;
@@ -5127,10 +5127,10 @@ void WebServerManager::start() {
                     String hostname = targetData["hostname"].as<String>();
                     
                     if (hostname.length() == 0) {
-                        return request->send(400, "text/plain", "Hostname parameter missing.");
+                        return request->send(400, "text/plain", "缺少主机名参数。");
                     }
                     if (hostname.length() > 63) {
-                        return request->send(400, "text/plain", "Invalid hostname length (1-63 characters)");
+                        return request->send(400, "text/plain", "主机名长度无效（1-63 个字符）");
                     }
                     
                     configManager.saveMdnsHostname(hostname);
@@ -5138,7 +5138,7 @@ void WebServerManager::start() {
                         wifiManager->updateMdnsHostname();
                     }
                     
-                    String output = "{\"success\":true,\"message\":\"mDNS hostname updated successfully!\"}";
+                    String output = "{\"success\":true,\"message\":\"mDNS 主机名更新成功！\"}";
                     
                     WebServerSecureIntegration::sendSecureResponse(request, 200, "application/json", output, secureLayer);
                     return;
@@ -5163,7 +5163,7 @@ void WebServerManager::start() {
                     String durationStr = targetData["duration"].as<String>();
                     
                     if (durationStr.length() == 0) {
-                        return request->send(400, "text/plain", "Duration parameter missing.");
+                        return request->send(400, "text/plain", "缺少会话时长参数。");
                     }
                     
                     int durationValue = durationStr.toInt();
@@ -5174,12 +5174,12 @@ void WebServerManager::start() {
                         ConfigManager::SessionDuration duration = static_cast<ConfigManager::SessionDuration>(durationValue);
                         configManager.setSessionDuration(duration);
                         
-                        String output = "{\"success\":true,\"message\":\"Session duration updated successfully!\"}";
+                        String output = "{\"success\":true,\"message\":\"会话时长更新成功！\"}";
                         
                         WebServerSecureIntegration::sendSecureResponse(request, 200, "application/json", output, secureLayer);
                         return;
                     } else {
-                        return request->send(400, "text/plain", "Invalid session duration value.");
+                        return request->send(400, "text/plain", "会话时长参数无效。");
                     }
                 }
                 
@@ -5206,10 +5206,10 @@ void WebServerManager::start() {
                     String newPassword = targetData["password"].as<String>();
                     
                     if (newPassword.length() == 0) {
-                        return request->send(400, "text/plain", "Password parameter missing.");
+                        return request->send(400, "text/plain", "缺少密码参数。");
                     }
                     if (newPassword.length() < 4) {
-                        return request->send(400, "text/plain", "Password must be at least 4 characters long.");
+                        return request->send(400, "text/plain", "密码长度至少为 4 个字符。");
                     }
                     
                     String output;
@@ -5217,7 +5217,7 @@ void WebServerManager::start() {
                         output = "Password changed successfully!";
                         WebServerSecureIntegration::sendSecureResponse(request, 200, "text/plain", output, secureLayer);
                     } else {
-                        return request->send(500, "text/plain", "Failed to save new password.");
+                        return request->send(500, "text/plain", "保存新密码失败。");
                     }
                     return;
                 }
@@ -5229,10 +5229,10 @@ void WebServerManager::start() {
                     String newPassword = targetData["password"].as<String>();
                     
                     if (newPassword.length() == 0) {
-                        return request->send(400, "text/plain", "Password parameter missing.");
+                        return request->send(400, "text/plain", "缺少密码参数。");
                     }
                     if (newPassword.length() < 8) {
-                        return request->send(400, "text/plain", "WiFi password must be at least 8 characters long.");
+                        return request->send(400, "text/plain", "WiFi 密码长度至少为 8 个字符。");
                     }
                     
                     String output;
@@ -5241,7 +5241,7 @@ void WebServerManager::start() {
                         LOG_INFO("WebServer", "AP password changed successfully");
                         WebServerSecureIntegration::sendSecureResponse(request, 200, "text/plain", output, secureLayer);
                     } else {
-                        return request->send(500, "text/plain", "Failed to save new AP password.");
+                        return request->send(500, "text/plain", "保存新的 AP 密码失败。");
                     }
                     return;
                 }
@@ -5296,7 +5296,7 @@ void WebServerManager::start() {
                     request->_tempObject = nullptr;
                 }
                 
-                return request->send(400, "text/plain", "Decryption failed or invalid session");
+                return request->send(400, "text/plain", "解密失败或会话无效");
             }
 #else
             // Без SECURE_LAYER_ENABLED
@@ -5304,7 +5304,7 @@ void WebServerManager::start() {
                 delete bufferPtr;
                 request->_tempObject = nullptr;
             }
-            request->send(500, "text/plain", "Tunneling requires SECURE_LAYER_ENABLED");
+            request->send(500, "text/plain", "隧道功能需要启用 SECURE_LAYER_ENABLED");
 #endif
             // 🗑️ Очистка памяти перед завершением
             if (bufferPtr) {
@@ -5323,14 +5323,14 @@ void WebServerManager::start() {
         server.on(obfuscatedTunnelPath.c_str(), HTTP_POST, [this, &methodTunneling](AsyncWebServerRequest *request) {
             if (!isAuthenticated(request)) return request->send(401);
             if (!request->hasHeader("X-Real-Method")) {
-                request->send(400, "text/plain", "Missing X-Real-Method header");
+                request->send(400, "text/plain", "缺少 X-Real-Method 请求头");
                 return;
             }
             String encryptedMethod = request->getHeader("X-Real-Method")->value();
             String clientId = WebServerSecureIntegration::getClientId(request);
             String realMethod = methodTunneling.decryptMethodHeader(encryptedMethod, clientId);
             if (realMethod.isEmpty()) {
-                request->send(400, "text/plain", "Failed to decrypt method header");
+                request->send(400, "text/plain", "方法请求头解密失败");
                 return;
             }
         }, NULL, [this, &methodTunneling](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
@@ -5359,7 +5359,7 @@ void WebServerManager::start() {
                         delete bufferPtr;
                         request->_tempObject = nullptr;
                     }
-                    return request->send(400, "text/plain", "Missing X-Real-Method header");
+                    return request->send(400, "text/plain", "缺少 X-Real-Method 请求头");
                 }
                 String encryptedMethod = request->getHeader("X-Real-Method")->value();
                 String clientId = WebServerSecureIntegration::getClientId(request);
@@ -5369,7 +5369,7 @@ void WebServerManager::start() {
                         delete bufferPtr;
                         request->_tempObject = nullptr;
                     }
-                    request->send(400, "text/plain", "Failed to decrypt method header");
+                    request->send(400, "text/plain", "方法请求头解密失败");
                     return;
                 }
                 LOG_INFO("WebServer", "🔗 Obfuscated tunnel: " + realMethod + " [Client:" + 
@@ -5386,7 +5386,7 @@ void WebServerManager::start() {
                     
                     if (error) {
                         if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                        return request->send(400, "text/plain", "Invalid tunnel body JSON");
+                        return request->send(400, "text/plain", "隧道请求体 JSON 无效");
                     }
                     
                     String targetEndpoint = tunnelDoc["endpoint"].as<String>();
@@ -5430,7 +5430,7 @@ void WebServerManager::start() {
                         // Парсим order массив
                         if (!targetData["order"].is<JsonArray>()) {
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(400, "text/plain", "Missing or invalid 'order' field");
+                            return request->send(400, "text/plain", "缺少或无效的 'order' 字段");
                         }
                         
                         std::vector<std::pair<String, int>> newOrder;
@@ -5471,8 +5471,8 @@ void WebServerManager::start() {
                         LOG_INFO("WebServer", "🚇 OBFUSCATED Key add: " + name);
                         
                         if (keyManager.addKey(name, secret)) {
-                            LOG_INFO("WebServer", "🚇 OBFUSCATED Key added successfully: " + name);
-                            String output = "{\"status\":\"success\",\"message\":\"Key added successfully\"}";
+                            LOG_INFO("WebServer", "🚇 OBFUSCATED 密钥添加成功: " + name);
+                            String output = "{\"status\":\"success\",\"message\":\"密钥添加成功\"}";
                             WebServerSecureIntegration::sendSecureResponse(request, 200, "application/json", output, secureLayer);
                         } else {
                             LOG_ERROR("WebServer", "🚇 OBFUSCATED Failed to add key: " + name);
@@ -5491,7 +5491,7 @@ void WebServerManager::start() {
                         keyManager.removeKey(index);
                         
                         // 🛡️ Ручное формирование JSON
-                        String output = "{\"status\":\"success\",\"message\":\"Key removed successfully\"}";
+                        String output = "{\"status\":\"success\",\"message\":\"密钥删除成功\"}";
                         
                         LOG_INFO("WebServer", "🔐 OBFUSCATED KEY REMOVE: Securing tunneled response");
                         WebServerSecureIntegration::sendSecureResponse(request, 200, "application/json", output, secureLayer);
@@ -5667,17 +5667,17 @@ void WebServerManager::start() {
                         String deviceName = targetData["device_name"].as<String>();
                         if (deviceName.length() == 0) {
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(400, "text/plain", "Device name parameter missing.");
+                            return request->send(400, "text/plain", "缺少设备名称参数。");
                         }
                         if (deviceName.length() > 15) {
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(400, "text/plain", "Device name too long (max 15 characters)");
+                            return request->send(400, "text/plain", "设备名称过长（最多 15 个字符）");
                         }
                         configManager.saveBleDeviceName(deviceName);
                         if (bleKeyboardManager) {
                             bleKeyboardManager->setDeviceName(deviceName);
                         }
-                        String output = "{\"success\":true,\"message\":\"BLE device name updated successfully!\"}";
+                        String output = "{\"success\":true,\"message\":\"BLE 设备名更新成功！\"}";
                         WebServerSecureIntegration::sendSecureResponse(request, 200, "application/json", output, secureLayer);
                         if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
                         return;
@@ -5688,17 +5688,17 @@ void WebServerManager::start() {
                         String hostname = targetData["hostname"].as<String>();
                         if (hostname.length() == 0) {
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(400, "text/plain", "Hostname parameter missing.");
+                            return request->send(400, "text/plain", "缺少主机名参数。");
                         }
                         if (hostname.length() > 63) {
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(400, "text/plain", "Invalid hostname length (1-63 characters)");
+                            return request->send(400, "text/plain", "主机名长度无效（1-63 个字符）");
                         }
                         configManager.saveMdnsHostname(hostname);
                         if (wifiManager) {
                             wifiManager->updateMdnsHostname();
                         }
-                        String output = "{\"success\":true,\"message\":\"mDNS hostname updated successfully!\"}";
+                        String output = "{\"success\":true,\"message\":\"mDNS 主机名更新成功！\"}";
                         WebServerSecureIntegration::sendSecureResponse(request, 200, "application/json", output, secureLayer);
                         if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
                         return;
@@ -5709,20 +5709,20 @@ void WebServerManager::start() {
                         String durationStr = targetData["duration"].as<String>();
                         if (durationStr.length() == 0) {
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(400, "text/plain", "Duration parameter missing.");
+                            return request->send(400, "text/plain", "缺少会话时长参数。");
                         }
                         int durationValue = durationStr.toInt();
                         if (durationValue == 0 || durationValue == 1 || durationValue == 6 || 
                             durationValue == 24 || durationValue == 72) {
                             ConfigManager::SessionDuration duration = static_cast<ConfigManager::SessionDuration>(durationValue);
                             configManager.setSessionDuration(duration);
-                            String output = "{\"success\":true,\"message\":\"Session duration updated successfully!\"}";
+                            String output = "{\"success\":true,\"message\":\"会话时长更新成功！\"}";
                             WebServerSecureIntegration::sendSecureResponse(request, 200, "application/json", output, secureLayer);
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
                             return;
                         } else {
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(400, "text/plain", "Invalid session duration value.");
+                            return request->send(400, "text/plain", "会话时长参数无效。");
                         }
                     }
                     
@@ -5731,14 +5731,14 @@ void WebServerManager::start() {
                         String mode = targetData["mode"].as<String>();
                         if (mode.length() == 0) {
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(400, "text/plain", "Missing mode parameter.");
+                            return request->send(400, "text/plain", "缺少启动模式参数。");
                         }
                         if (mode != "totp" && mode != "password") {
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(400, "text/plain", "Invalid startup mode. Must be 'totp' or 'password'.");
+                            return request->send(400, "text/plain", "启动模式无效，必须为 'totp' 或 'password'。");
                         }
                         bool success = configManager.saveStartupMode(mode);
-                        String message = success ? "Startup mode saved successfully!" : "Failed to save startup mode.";
+                        String message = success ? "启动模式保存成功！" : "启动模式保存失败。";
                         String output;
                         output.reserve(50 + message.length());
                         output = "{\"success\":";
@@ -5756,12 +5756,12 @@ void WebServerManager::start() {
                         String timeoutStr = targetData["web_server_timeout"].as<String>();
                         if (timeoutStr.length() == 0) {
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(400, "application/json", "{\"success\":false,\"message\":\"Missing parameters.\"}");
+                            return request->send(400, "application/json", "{\"success\":false,\"message\":\"缺少参数。\"}");
                         }
                         uint16_t timeout = timeoutStr.toInt();
                         configManager.setWebServerTimeout(timeout);
                         _timeoutMinutes = timeout;
-                        String output = "{\"success\":true,\"message\":\"Settings updated successfully! Device will restart...\"}";
+                        String output = "{\"success\":true,\"message\":\"设置更新成功！设备将重启...\"}";
                         WebServerSecureIntegration::sendSecureResponse(request, 200, "application/json", output, secureLayer);
                         // Schedule restart
                         extern bool shouldRestart;
@@ -5781,7 +5781,7 @@ void WebServerManager::start() {
                         if (theme.length() == 0) {
                             JsonDocument errorDoc;
                             errorDoc["success"] = false;
-                            errorDoc["message"] = "Theme parameter missing.";
+                            errorDoc["message"] = "缺少主题参数。";
                             String errorResponse;
                             serializeJson(errorDoc, errorResponse);
                             WebServerSecureIntegration::sendSecureResponse(request, 400, "application/json", errorResponse, secureLayer);
@@ -5792,7 +5792,7 @@ void WebServerManager::start() {
                         if (theme != "light" && theme != "dark") {
                             JsonDocument errorDoc;
                             errorDoc["success"] = false;
-                            errorDoc["message"] = "Invalid theme. Must be 'light' or 'dark'.";
+                            errorDoc["message"] = "主题无效，必须为 'light' 或 'dark'。";
                             String errorResponse;
                             serializeJson(errorDoc, errorResponse);
                             WebServerSecureIntegration::sendSecureResponse(request, 400, "application/json", errorResponse, secureLayer);
@@ -5808,7 +5808,7 @@ void WebServerManager::start() {
                         
                         JsonDocument doc;
                         doc["success"] = true;
-                        doc["message"] = "Theme updated successfully!";
+                        doc["message"] = "主题更新成功！";
                         doc["theme"] = theme;
                         String response;
                         serializeJson(doc, response);
@@ -5851,7 +5851,7 @@ void WebServerManager::start() {
                         if (mode.length() == 0) {
                             JsonDocument errorDoc;
                             errorDoc["success"] = false;
-                            errorDoc["message"] = "Mode parameter missing.";
+                            errorDoc["message"] = "缺少模式参数。";
                             String errorResponse;
                             serializeJson(errorDoc, errorResponse);
                             WebServerSecureIntegration::sendSecureResponse(request, 400, "application/json", errorResponse, secureLayer);
@@ -5862,7 +5862,7 @@ void WebServerManager::start() {
                         if (mode != "bladerunner" && mode != "combs" && mode != "securegen" && mode != "disabled") {
                             JsonDocument errorDoc;
                             errorDoc["success"] = false;
-                            errorDoc["message"] = "Invalid mode. Must be 'bladerunner', 'combs', 'securegen' or 'disabled'.";
+                            errorDoc["message"] = "模式无效，必须是 'bladerunner'、'combs'、'securegen' 或 'disabled'。";
                             String errorResponse;
                             serializeJson(errorDoc, errorResponse);
                             WebServerSecureIntegration::sendSecureResponse(request, 400, "application/json", errorResponse, secureLayer);
@@ -5875,7 +5875,7 @@ void WebServerManager::start() {
                             
                             JsonDocument doc;
                             doc["success"] = true;
-                            doc["message"] = "Splash mode saved successfully!";
+                            doc["message"] = "启动图模式保存成功！";
                             doc["mode"] = mode;
                             String response;
                             serializeJson(doc, response);
@@ -5887,7 +5887,7 @@ void WebServerManager::start() {
                         } else {
                             JsonDocument errorDoc;
                             errorDoc["success"] = false;
-                            errorDoc["message"] = "Invalid splash mode";
+                            errorDoc["message"] = "启动图模式无效";
                             String errorResponse;
                             serializeJson(errorDoc, errorResponse);
                             WebServerSecureIntegration::sendSecureResponse(request, 400, "application/json", errorResponse, secureLayer);
@@ -5907,7 +5907,7 @@ void WebServerManager::start() {
                         if (timeoutStr.length() == 0) {
                             JsonDocument errorDoc;
                             errorDoc["success"] = false;
-                            errorDoc["message"] = "Missing display_timeout parameter!";
+                            errorDoc["message"] = "缺少 display_timeout 参数！";
                             String errorResponse;
                             serializeJson(errorDoc, errorResponse);
                             WebServerSecureIntegration::sendSecureResponse(request, 400, "application/json", errorResponse, secureLayer);
@@ -5922,7 +5922,7 @@ void WebServerManager::start() {
                             timeout != 300 && timeout != 1800) {
                             JsonDocument errorDoc;
                             errorDoc["success"] = false;
-                            errorDoc["message"] = "Invalid timeout value!";
+                            errorDoc["message"] = "超时值无效！";
                             String errorResponse;
                             serializeJson(errorDoc, errorResponse);
                             WebServerSecureIntegration::sendSecureResponse(request, 400, "application/json", errorResponse, secureLayer);
@@ -5935,13 +5935,13 @@ void WebServerManager::start() {
                         
                         if (configManager.saveDisplayTimeout(timeout)) {
                             doc["success"] = true;
-                            doc["message"] = "Display timeout saved successfully!";
+                            doc["message"] = "屏幕超时保存成功！";
                             doc["timeout"] = timeout;
                             statusCode = 200;
                             LOG_INFO("WebServer", "🔗 Obfuscated display timeout changed to: " + String(timeout) + " seconds");
                         } else {
                             doc["success"] = false;
-                            doc["message"] = "Failed to save display timeout!";
+                            doc["message"] = "屏幕超时保存失败！";
                             statusCode = 500;
                             LOG_ERROR("WebServer", "🔗 Obfuscated Failed to save display timeout");
                         }
@@ -5984,20 +5984,20 @@ void WebServerManager::start() {
                         if (enabledForDevice || enabledForBle) {
                             if (newPin.length() > 0) {
                                 if (newPin != confirmPin) {
-                                    message = "PINs do not match.";
+                                    message = "两次 PIN 输入不一致。";
                                     statusCode = 400;
                                     success = false;
                                 } else {
                                     pinManager.setPin(newPin);
                                     pinManager.saveConfig();
-                                    message = "PIN settings updated successfully!";
+                                    message = "PIN 设置更新成功！";
                                     statusCode = 200;
                                     success = true;
                                     LOG_INFO("WebServer", "🔗 Obfuscated PIN settings updated successfully");
                                 }
                             } else {
                                 pinManager.saveConfig();
-                                message = "PIN settings updated successfully!";
+                                message = "PIN 设置更新成功！";
                                 statusCode = 200;
                                 success = true;
                             }
@@ -6006,12 +6006,12 @@ void WebServerManager::start() {
                                 pinManager.setPinEnabledForDevice(false);
                                 pinManager.setPinEnabledForBle(false);
                                 pinManager.saveConfig();
-                                message = "Cannot enable PIN protection without setting a PIN first.";
+                                message = "未设置 PIN 前无法启用 PIN 保护。";
                                 statusCode = 400;
                                 success = false;
                             } else {
                                 pinManager.saveConfig();
-                                message = "PIN settings updated successfully!";
+                                message = "PIN 设置更新成功！";
                                 statusCode = 200;
                                 success = true;
                             }
@@ -6041,7 +6041,7 @@ void WebServerManager::start() {
                         
                         // Validate PIN format (6 digits)
                         if (blePinStr.length() != 6) {
-                            message = "BLE PIN must be exactly 6 digits";
+                            message = "BLE PIN 必须为 6 位数字。";
                             statusCode = 400;
                             success = false;
                         } else {
@@ -6054,7 +6054,7 @@ void WebServerManager::start() {
                             }
                             
                             if (!validDigits) {
-                                message = "BLE PIN must contain only digits";
+                                message = "BLE PIN 只能包含数字。";
                                 statusCode = 400;
                                 success = false;
                             } else {
@@ -6070,12 +6070,12 @@ void WebServerManager::start() {
                                         LOG_INFO("WebServer", "🔗 Obfuscated BLE bonding keys cleared");
                                     }
                                     
-                                    message = "BLE PIN updated successfully! All BLE clients cleared.";
+                                    message = "BLE PIN 更新成功！已清除所有 BLE 客户端。";
                                     statusCode = 200;
                                     success = true;
                                 } else {
-                                    LOG_ERROR("WebServer", "🔗 Obfuscated Failed to save BLE PIN");
-                                    message = "Failed to save BLE PIN";
+                                    LOG_ERROR("WebServer", "🔗 Obfuscated 保存 BLE PIN 失败。");
+                                    message = "保存 BLE PIN 失败。";
                                     statusCode = 500;
                                     success = false;
                                 }
@@ -6102,11 +6102,11 @@ void WebServerManager::start() {
                         
                         if (newPassword.length() == 0) {
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(400, "text/plain", "Password parameter missing.");
+                            return request->send(400, "text/plain", "缺少密码参数。");
                         }
                         if (newPassword.length() < 4) {
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(400, "text/plain", "Password must be at least 4 characters long.");
+                            return request->send(400, "text/plain", "密码长度至少为 4 个字符。");
                         }
                         
                         String output;
@@ -6116,7 +6116,7 @@ void WebServerManager::start() {
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
                         } else {
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(500, "text/plain", "Failed to save new password.");
+                            return request->send(500, "text/plain", "保存新密码失败。");
                         }
                         return;
                     }
@@ -6129,11 +6129,11 @@ void WebServerManager::start() {
                         
                         if (newPassword.length() == 0) {
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(400, "text/plain", "Password parameter missing.");
+                            return request->send(400, "text/plain", "缺少密码参数。");
                         }
                         if (newPassword.length() < 8) {
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(400, "text/plain", "WiFi password must be at least 8 characters long.");
+                            return request->send(400, "text/plain", "WiFi 密码长度至少为 8 个字符。");
                         }
                         
                         String output;
@@ -6144,7 +6144,7 @@ void WebServerManager::start() {
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
                         } else {
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(500, "text/plain", "Failed to save new AP password.");
+                            return request->send(500, "text/plain", "保存新的 AP 密码失败。");
                         }
                         return;
                     }
@@ -6291,7 +6291,7 @@ void WebServerManager::start() {
                         } else {
                             JsonDocument errorDoc;
                             errorDoc["status"] = "error";
-                            errorDoc["message"] = "Password not found";
+                            errorDoc["message"] = "未找到密码";
                             String errorResponse;
                             serializeJson(errorDoc, errorResponse);
                             
@@ -6344,20 +6344,20 @@ void WebServerManager::start() {
                         if (!WebAdminManager::getInstance().isApiEnabled()) {
                             LOG_WARNING("WebServer", "🔗 Obfuscated passwords export blocked: API disabled");
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(403, "text/plain", "API access for import/export is disabled.");
+                            return request->send(403, "text/plain", "导入/导出 API 访问已禁用。");
                         }
                         
                         String password = targetData["password"].as<String>();
                         
                         if (password.isEmpty()) {
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(400, "text/plain", "Password cannot be empty");
+                            return request->send(400, "text/plain", "密码不能为空");
                         }
                         
                         if (!WebAdminManager::getInstance().verifyCredentials(WebAdminManager::getInstance().getUsername(), password)) {
                             LOG_WARNING("WebServer", "🔗 Obfuscated passwords export failed: Invalid admin password");
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(401, "text/plain", "Invalid admin password.");
+                            return request->send(401, "text/plain", "管理员密码无效。");
                         }
                         
                         LOG_INFO("WebServer", "🔗 Obfuscated passwords export: Password verified");
@@ -6410,7 +6410,7 @@ void WebServerManager::start() {
                         if (!WebAdminManager::getInstance().isApiEnabled()) {
                             LOG_WARNING("WebServer", "🔗 Obfuscated passwords import blocked: API disabled");
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(403, "text/plain", "API access for import/export is disabled.");
+                            return request->send(403, "text/plain", "导入/导出 API 访问已禁用。");
                         }
                         
                         String password = targetData["password"].as<String>();
@@ -6423,14 +6423,14 @@ void WebServerManager::start() {
                         if (password.isEmpty() || fileContent.isEmpty()) {
                             LOG_ERROR("WebServer", "❌ Obfuscated passwords import: Missing data");
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(400, "text/plain", "Missing password or file data.");
+                            return request->send(400, "text/plain", "缺少密码或文件数据。");
                         }
                         
                         LOG_INFO("WebServer", "🔗 Obfuscated passwords import: Decrypting file content");
                         String decryptedContent = CryptoManager::getInstance().decryptWithPassword(fileContent, password);
                         
                         if (decryptedContent.isEmpty()) {
-                            LOG_WARNING("WebServer", "🔗 Obfuscated passwords import failed: Decryption failed");
+                            LOG_WARNING("WebServer", "🔗 Obfuscated passwords import failed: 解密失败");
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
                             return request->send(400, "text/plain", "解密失败：密码错误或文件已损坏。");
                         }
@@ -6468,20 +6468,20 @@ void WebServerManager::start() {
                         if (!WebAdminManager::getInstance().isApiEnabled()) {
                             LOG_WARNING("WebServer", "🔗 Obfuscated export blocked: API disabled");
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(403, "text/plain", "API access for import/export is disabled.");
+                            return request->send(403, "text/plain", "导入/导出 API 访问已禁用。");
                         }
                         
                         String password = targetData["password"].as<String>();
                         
                         if (password.isEmpty()) {
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(400, "text/plain", "Password cannot be empty");
+                            return request->send(400, "text/plain", "密码不能为空");
                         }
                         
                         if (!WebAdminManager::getInstance().verifyCredentials(WebAdminManager::getInstance().getUsername(), password)) {
                             LOG_WARNING("WebServer", "🔗 Obfuscated export failed: Invalid admin password");
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(401, "text/plain", "Invalid admin password.");
+                            return request->send(401, "text/plain", "管理员密码无效。");
                         }
                         
                         LOG_INFO("WebServer", "🔗 Obfuscated TOTP export: Password verified");
@@ -6534,7 +6534,7 @@ void WebServerManager::start() {
                         if (!WebAdminManager::getInstance().isApiEnabled()) {
                             LOG_WARNING("WebServer", "🔗 Obfuscated import blocked: API disabled");
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(403, "text/plain", "API access for import/export is disabled.");
+                            return request->send(403, "text/plain", "导入/导出 API 访问已禁用。");
                         }
                         
                         String password = targetData["password"].as<String>();
@@ -6547,14 +6547,14 @@ void WebServerManager::start() {
                         if (password.isEmpty() || fileContent.isEmpty()) {
                             LOG_ERROR("WebServer", "❌ Obfuscated import: Missing data");
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
-                            return request->send(400, "text/plain", "Missing password or file data.");
+                            return request->send(400, "text/plain", "缺少密码或文件数据。");
                         }
                         
                         LOG_INFO("WebServer", "🔗 Obfuscated TOTP import: Decrypting file content");
                         String decryptedContent = CryptoManager::getInstance().decryptWithPassword(fileContent, password);
                         
                         if (decryptedContent.isEmpty()) {
-                            LOG_WARNING("WebServer", "🔗 Obfuscated import failed: Decryption failed");
+                            LOG_WARNING("WebServer", "🔗 Obfuscated import failed: 解密失败");
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
                             return request->send(400, "text/plain", "解密失败：密码错误或文件已损坏。");
                         }
@@ -6571,7 +6571,7 @@ void WebServerManager::start() {
                         } else {
                             LOG_ERROR("WebServer", "🔗 Obfuscated import failed: Failed to process keys");
                             
-                            String errorResponse = "{\"status\":\"error\",\"message\":\"Failed to process keys after decryption.\"}";
+                            String errorResponse = "{\"status\":\"error\",\"message\":\"解密后处理密钥失败。\"}";
                             WebServerSecureIntegration::sendSecureResponse(request, 500, "application/json", errorResponse, secureLayer);
                             if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
                             return;
@@ -6613,10 +6613,10 @@ void WebServerManager::start() {
                     LOG_WARNING("WebServer", "⚠️ Endpoint " + targetEndpoint + " not in obfuscated handler");
                     request->send(501, "application/json", "{\"error\":\"Not implemented\"}");
                 } else {
-                    request->send(400, "text/plain", "Decryption failed");
+                    request->send(400, "text/plain", "解密失败");
                 }
 #else
-                request->send(500, "text/plain", "Requires SECURE_LAYER_ENABLED");
+                request->send(500, "text/plain", "需要启用 SECURE_LAYER_ENABLED");
 #endif
                 
                 if (bufferPtr) {
@@ -6671,12 +6671,12 @@ void WebServerManager::start() {
             if (index + len == total) {
                 // Проверка аутентификации
                 if (!isAuthenticated(request)) {
-                    return request->send(401, "text/plain", "Unauthorized");
+                    return request->send(401, "text/plain", "未授权");
                 }
                 
                 // Проверка CSRF токена
                 if (!verifyCsrfToken(request)) {
-                    return request->send(403, "text/plain", "CSRF token mismatch");
+                    return request->send(403, "text/plain", "CSRF 令牌不匹配");
                 }
                 
                 String mode;
@@ -6710,8 +6710,8 @@ void WebServerManager::start() {
                             LOG_DEBUG("WebServer", "🔐 SPLASH: Parsed mode=" + mode);
                         }
                     } else {
-                        LOG_ERROR("WebServer", "🔐 CHANGE_AP_PASSWORD: Decryption failed");
-                        return request->send(400, "text/plain", "Decryption failed. Please check your password and try again.");
+                        LOG_ERROR("WebServer", "🔐 CHANGE_AP_PASSWORD: 解密失败");
+                        return request->send(400, "text/plain", "解密失败。请检查密码后重试。");
                     }
                 } else
 #endif
@@ -6724,10 +6724,10 @@ void WebServerManager::start() {
                 
                 // Валидация mode
                 if (mode.length() == 0) {
-                    return request->send(400, "text/plain", "Mode parameter missing.");
+                    return request->send(400, "text/plain", "缺少模式参数。");
                 }
                 if (mode != "bladerunner" && mode != "combs" && mode != "securegen" && mode != "disabled") {
-                    return request->send(400, "text/plain", "Invalid mode. Must be 'bladerunner', 'combs', 'securegen' or 'disabled'.");
+                    return request->send(400, "text/plain", "模式无效，必须是 'bladerunner'、'combs'、'securegen' 或 'disabled'。");
                 }
                 
                 // Применение режима splash
@@ -6755,7 +6755,7 @@ void WebServerManager::start() {
                     request->send(200, "application/json", response);
                 } else {
                     LOG_ERROR("WebServer", "❌ Failed to save splash mode: " + mode);
-                    request->send(400, "text/plain", "Invalid splash mode");
+                    request->send(400, "text/plain", "启动图模式无效");
                 }
             }
         });
@@ -6816,19 +6816,19 @@ void WebServerManager::startConfigServer() {
                 bool saved = wifiManager->saveCredentials(ssid, password);
                 if (saved) {
                     LOG_INFO("WebServer", "WiFi credentials saved successfully (encrypted)");
-                    request->send(200, "text/plain", "Credentials saved. Rebooting...");
+                    request->send(200, "text/plain", "凭据保存成功，正在重启...");
                     delay(1000);
                     ESP.restart();
                 } else {
                     LOG_ERROR("WebServer", "Failed to save WiFi credentials");
-                    request->send(500, "text/plain", "Failed to save credentials. Please try again.");
+                    request->send(500, "text/plain", "保存凭据失败，请重试。");
                 }
             } else {
                 LOG_ERROR("WebServer", "WifiManager not initialized");
-                request->send(500, "text/plain", "Server error: WiFi manager not available.");
+                request->send(500, "text/plain", "服务器错误：WiFi 管理器不可用。");
             }
         } else {
-            request->send(400, "text/plain", "Missing SSID or password.");
+            request->send(400, "text/plain", "缺少 SSID 或密码。");
         }
     });
     server.begin();
