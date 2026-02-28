@@ -156,8 +156,11 @@ String MethodTunnelingManager::xorEncryptMethod(const String& method, const Stri
     String encrypted = "";
     
     for (size_t i = 0; i < method.length(); i++) {
-        char encryptedChar = method[i] ^ key[i % key.length()];
-        encrypted += String(encryptedChar, HEX);
+        uint8_t encryptedByte = static_cast<uint8_t>(method[i] ^ key[i % key.length()]);
+        if (encryptedByte < 0x10) {
+            encrypted += "0";
+        }
+        encrypted += String(encryptedByte, HEX);
     }
     
     return encrypted;

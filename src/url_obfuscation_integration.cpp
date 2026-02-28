@@ -99,7 +99,7 @@ void URLObfuscationIntegration::addObfuscationAPIEndpoints(AsyncWebServer& serve
         
         JsonDocument doc;
         doc["status"] = "success";
-        doc["message"] = "URL mappings regenerated";
+        doc["message"] = "URL 映射已重新生成。";
         doc["new_mappings_count"] = obfuscationManager.getActiveMappingsCount();
         
         String response;

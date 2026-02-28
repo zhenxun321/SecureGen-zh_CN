@@ -136,11 +136,11 @@ void PinManager::drawPinScreen() {
     // Рисуем заголовок
     tft->setTextSize(2);
     tft->setTextColor(TFT_WHITE, TFT_BLACK);
-    tft->drawString("Enter PIN Code", centerX, 25); // Adjusted Y for better spacing
+    tft->drawString("请输入 PIN 码", centerX, 25); // Adjusted Y for better spacing
     
     // Add cancel hint
     tft->setTextSize(1);
-    tft->drawString("Hold both buttons to cancel", centerX, tft->height() - 10);
+    tft->drawString("同时按住两个按键可取消", centerX, tft->height() - 10);
 }
 
 bool PinManager::requestPin() {
@@ -180,7 +180,7 @@ bool PinManager::requestPin() {
                     displayManager.setBrightness(255);
                     
                     displayManager.init();
-                    displayManager.showMessage("Cancelled", 10, 50, false, 2);
+                    displayManager.showMessage("已取消", 10, 50, false, 2);
                     delay(1000);
                     return false;
                 }
@@ -245,7 +245,7 @@ bool PinManager::requestPin() {
                     LOG_INFO("PinManager", "PIN verification successful");
                     tft->fillScreen(TFT_BLACK);
                     tft->setTextSize(3);
-                    tft->drawString("PIN OK", centerX, 67); // Centered vertically
+                    tft->drawString("PIN 正确", centerX, 67); // Centered vertically
                     delay(1000);
                     
                     // 🔋 Восстанавливаем полную яркость после успешного ввода
@@ -257,7 +257,7 @@ bool PinManager::requestPin() {
                     tft->fillScreen(TFT_BLACK);
                     tft->setTextSize(2);
                     tft->setTextColor(TFT_RED);
-                    tft->drawString("WRONG PIN", centerX, 67); // Centered vertically
+                    tft->drawString("PIN 错误", centerX, 67); // Centered vertically
                     delay(2000);
                     
                     // 🔋 Восстанавливаем полную яркость перед выходом
