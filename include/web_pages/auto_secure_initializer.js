@@ -430,11 +430,11 @@
         let attempts = 0;
         while (attempts < CONFIG.MAX_RETRY_ATTEMPTS) {
             attempts++;
-            log('debug', `Handshake attempt ${attempts}/${CONFIG.MAX_RETRY_ATTEMPTS}`);
+            log('debug', `握手尝试 ${attempts}/${CONFIG.MAX_RETRY_ATTEMPTS}`);
             
             if (await performProtectedHandshake()) {
                 startActivityTracking();
-                log('info', '🔐 Protected session initialized successfully');
+                log('info', '🔐 受保护会话初始化成功');
                 return true;
             }
             
@@ -451,7 +451,7 @@
      * Start activity tracking
      */
     function startActivityTracking() {
-        log('debug', 'Starting activity tracking');
+        log('debug', '开始活动跟踪');
         
         // Track user interactions
         const events = ['click', 'keydown', 'mousemove', 'scroll', 'focus'];

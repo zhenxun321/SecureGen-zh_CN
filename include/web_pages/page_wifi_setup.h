@@ -23,7 +23,7 @@ const char wifi_setup_html[] PROGMEM = R"rawliteral(
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background: linear-gradient(-45deg, #1a1a2e, #16213e, #0f3460, #2e4a62);
             background-size: 400% 400%;
             animation: gradient-animation 15s ease infinite;
