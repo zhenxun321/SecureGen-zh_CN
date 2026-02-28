@@ -1217,7 +1217,7 @@ progress::-webkit-progress-value {
             <li><strong>BLE LE 安全连接：</strong>蓝牙传输使用 LE Secure Connections，具备 MITM（中间人攻击）防护并强制 PIN 认证。配对时设备屏幕会显示 6 位 PIN 码以完成安全绑定。</li>
             <li><strong>BLE 加密：</strong>所有 BLE 特征都要求加密通信（ESP_GATT_PERM_READ_ENC_MITM）。在建立并通过认证的安全连接前，密码传输会被阻止。</li>
             <li><strong>设备绑定：</strong>受信设备会通过安全绑定被记住。你可以在设置中点击“清除 BLE 客户端”，或通过修改 BLE PIN 清除绑定设备。</li>
-            <li><strong>加密存储：</strong>所有敏感数据（TOTP 密钥、密码和配置）都会以加密方式存储在设备内部 Flash 中，采用 AES-256-CDC，密码使用 PBKDF2 哈希。</li>
+            <li><strong>加密存储：</strong>所有敏感数据（TOTP 密钥、密码和配置）都会以加密方式存储在设备内部 Flash 中，采用 AES-256-CBC，密码使用 PBKDF2 哈希。</li>
             <li><strong>Web 界面安全：</strong>Web 控制面板要求安全登录，并内置防暴力破解机制；会话会自动超时。</li>
             <li><strong>类 HTTPS 加密：</strong>Web 界面在 HTTP 之上使用增强加密，包括 ECDH 密钥交换、AES-GCM 加密、URL 混淆与方法隧道，即使在未加密连接上也能提升通信安全性。</li>
             <li><strong>导入/导出：</strong>导出密钥或密码时，备份文件会用 Web 管理员密码加密。请妥善保管该密码，恢复备份时需要使用。</li>
