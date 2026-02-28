@@ -18,9 +18,9 @@ class SecureClient {
         try {
             await this.generateKeyPair();
             await this.initiateKeyExchange();
-            this.log("SecureClient initialized", "info");
+            this.log("SecureClient 初始化完成", "info");
         } catch (error) {
-            this.log("SecureClient initialization failed: " + error.message, "error");
+            this.log("SecureClient 初始化失败：" + error.message, "error");
         }
     }
     
@@ -31,9 +31,9 @@ class SecureClient {
                 true,
                 ["deriveKey"]
             );
-            this.log("ECDH key pair generated", "debug");
+            this.log("ECDH 密钥对已生成", "debug");
         } catch (error) {
-            throw new Error("Key generation failed: " + error.message);
+            throw new Error("密钥生成失败：" + error.message);
         }
     }
     
@@ -62,19 +62,19 @@ class SecureClient {
             });
             
             if (!response.ok) {
-                throw new Error("Key exchange request failed: " + response.status);
+                throw new Error("密钥交换请求失败：" + response.status);
             }
             
             const data = await response.json();
             if (data.status === 'success') {
                 await this.completeKeyExchange(data.pubkey);
-                this.log("Key exchange completed successfully", "success");
+                this.log("密钥交换完成", "success");
             } else {
-                throw new Error("Key exchange failed: " + data.message);
+                throw new Error("密钥交换失败：" + data.message);
             }
             
         } catch (error) {
-            throw new Error("Key exchange initiation failed: " + error.message);
+            throw new Error("密钥交换初始化失败：" + error.message);
         }
     }
     
@@ -101,7 +101,7 @@ class SecureClient {
             );
             
             this.isEncrypted = true;
-            this.log("End-to-end encryption established", "success");
+            this.log("端到端加密已建立", "success");
             
             // Trigger secure ready event
             if (typeof window.onSecureReady === 'function') {
@@ -109,14 +109,14 @@ class SecureClient {
             }
             
         } catch (error) {
-            throw new Error("Key exchange completion failed: " + error.message);
+            throw new Error("密钥交换完成阶段失败：" + error.message);
         }
     }
     
     async makeSecureRequest(url, options = {}) {
         if (!this.isEncrypted) {
             // Fallback to regular request if encryption not ready
-            this.log("Encryption not ready, falling back to regular request", "warning");
+            this.log("加密尚未就绪，回退到普通请求", "warning");
             return await fetch(url, options);
         }
         
@@ -140,11 +140,11 @@ class SecureClient {
                 body: encryptedBody
             };
             
-            this.log("Sending secure request to: " + url, "debug");
+            this.log("发送加密请求至：" + url, "debug");
             const response = await fetch(url, secureOptions);
             
             if (!response.ok) {
-                throw new Error("Secure request failed: " + response.status);
+                throw new Error("加密请求失败：" + response.status);
             }
             
             // Decrypt response if it's encrypted
@@ -155,7 +155,7 @@ class SecureClient {
                 const responseData = JSON.parse(responseText);
                 if (responseData.type === 'secure') {
                     decryptedResponse = await this.decrypt(responseData);
-                    this.log("Response decrypted successfully", "debug");
+                    this.log("响应解密成功", "debug");
                 } else {
                     decryptedResponse = responseText;
                 }
@@ -174,14 +174,14 @@ class SecureClient {
             };
             
         } catch (error) {
-            this.log("Secure request failed: " + error.message, "error");
+            this.log("加密请求失败：" + error.message, "error");
             throw error;
         }
     }
     
     async encrypt(plaintext) {
         if (!this.sharedKey) {
-            throw new Error("Encryption key not available");
+            throw new Error("加密密钥不可用");
         }
         
         const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -210,7 +210,7 @@ class SecureClient {
     
     async decrypt(encryptedData) {
         if (!this.sharedKey) {
-            throw new Error("Decryption key not available");
+            throw new Error("解密密钥不可用");
         }
         
         const ciphertext = new Uint8Array(
@@ -331,7 +331,7 @@ async function secureRequest(url, options = {}) {
     if (client) {
         return await client.makeSecureRequest(url, options);
     } else {
-        throw new Error("SecureClient not initialized");
+        throw new Error("SecureClient 尚未初始化");
     }
 }
 
