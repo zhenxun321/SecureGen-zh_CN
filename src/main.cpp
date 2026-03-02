@@ -99,7 +99,7 @@ void showWebServerInfoPage() {
     // Title
     tft->setTextColor(colors->accent_primary, colors->background_dark);
     tft->setTextSize(2);
-    tft->drawString("Web 服务已启动!", tft->width() / 2, 25);
+    displayManager.drawUtf8Centered("Web 服务已启动!", tft->width() / 2, 25, colors->accent_primary, colors->background_dark, true);
     
     // IP Address
     String ip = wifiManager.getIP();
@@ -117,7 +117,7 @@ void showWebServerInfoPage() {
     // Instructions
     tft->setTextColor(colors->text_secondary, colors->background_dark);
     tft->setTextSize(1);
-    tft->drawString("可开始连接", tft->width() / 2, 105);
+    displayManager.drawUtf8Centered("可开始连接", tft->width() / 2, 105, colors->text_secondary, colors->background_dark, true);
     
     // 🌌 Плавное появление
     for (int i = 0; i <= 255; i += 15) {
@@ -868,10 +868,18 @@ void loop() {
                                     tft->setTextColor(displayManager.getCurrentThemeColors()->text_secondary, 
                                                     displayManager.getCurrentThemeColors()->background_dark);
                                     tft->setTextSize(1);
-                                    tft->drawString("⚠️ 请连接到网络", tft->width() / 2, 120);
-                                    tft->drawString("以进行时间同步", tft->width() / 2, 135);
-                                    tft->drawString("或切换到密码模式", tft->width() / 2, 150);
-                                    tft->drawString("（长按 BTN1）", tft->width() / 2, 165);
+                                    displayManager.drawUtf8Centered("⚠️ 请连接到网络", tft->width() / 2, 120,
+                                                                   displayManager.getCurrentThemeColors()->text_secondary,
+                                                                   displayManager.getCurrentThemeColors()->background_dark, true);
+                                    displayManager.drawUtf8Centered("以进行时间同步", tft->width() / 2, 135,
+                                                                   displayManager.getCurrentThemeColors()->text_secondary,
+                                                                   displayManager.getCurrentThemeColors()->background_dark, true);
+                                    displayManager.drawUtf8Centered("或切换到密码模式", tft->width() / 2, 150,
+                                                                   displayManager.getCurrentThemeColors()->text_secondary,
+                                                                   displayManager.getCurrentThemeColors()->background_dark, true);
+                                    displayManager.drawUtf8Centered("（长按 BTN1）", tft->width() / 2, 165,
+                                                                   displayManager.getCurrentThemeColors()->text_secondary,
+                                                                   displayManager.getCurrentThemeColors()->background_dark, true);
                                 }
                             }
                         } else {

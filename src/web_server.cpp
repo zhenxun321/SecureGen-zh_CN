@@ -46,6 +46,20 @@ String urlDecode(const String& str) {
 #include "header_obfuscation_integration.h"
 #endif
 
+
+
+namespace {
+constexpr const char* kHtmlUtf8ContentType = "text/html; charset=UTF-8";
+
+void sendHtmlUtf8(AsyncWebServerRequest* request, int code, const String& html) {
+    request->send(code, kHtmlUtf8ContentType, html);
+}
+
+void sendHtmlUtf8P(AsyncWebServerRequest* request, int code, const char* html) {
+    request->send_P(code, kHtmlUtf8ContentType, html);
+}
+} // namespace
+
 // WebServerManager Implementation
 
 WebServerManager::WebServerManager(KeyManager& keyManager, SplashScreenManager& splashManager, DisplayManager& displayManager, PinManager& pinManager, ConfigManager& configManager, PasswordManager& passwordManager, TOTPGenerator& totpGenerator)
@@ -304,7 +318,7 @@ void WebServerManager::start() {
         if (WebAdminManager::getInstance().isRegistered()) {
             return request->redirect("/login");
         }
-        request->send_P(200, "text/html", page_register);
+        sendHtmlUtf8P(request, 200, page_register);
     });
 
     server.on("/register", HTTP_POST, [this](AsyncWebServerRequest *request){
@@ -412,9 +426,9 @@ void WebServerManager::start() {
             
             String html = String(login_html);
             injectSecureInitScript(request, html);
-            request->send(200, "text/html", html);
+            sendHtmlUtf8(request, 200, html);
         } else {
-            request->send_P(200, "text/html", login_html);
+            sendHtmlUtf8P(request, 200, login_html);
         }
     });
 
@@ -570,9 +584,9 @@ void WebServerManager::start() {
                 
                 String html = String(login_html);
                 injectSecureInitScript(request, html);
-                request->send(200, "text/html", html);
+                sendHtmlUtf8(request, 200, html);
             } else {
-                request->send_P(200, "text/html", login_html);
+                sendHtmlUtf8P(request, 200, login_html);
             }
         });
         
@@ -710,16 +724,16 @@ void WebServerManager::start() {
             
             String html = String(PAGE_INDEX);
             injectSecureInitScript(request, html);
-            request->send(200, "text/html", html);
+            sendHtmlUtf8(request, 200, html);
         } else {
-            request->send_P(200, "text/html", PAGE_INDEX);
+            sendHtmlUtf8P(request, 200, PAGE_INDEX);
         }
     });
 
     // 🖼️ Splash Screen Management Page
     server.on("/splash", HTTP_GET, [this](AsyncWebServerRequest *request){
         if (!isAuthenticated(request)) return request->redirect("/login");
-        request->send_P(200, "text/html", page_splash_html);
+        sendHtmlUtf8P(request, 200, page_splash_html);
     });
 
     // 🔒 Favicon handler - SVG lock icon for security theme
@@ -754,7 +768,7 @@ void WebServerManager::start() {
         if (!WebAdminManager::getInstance().isRegistered()) return request->redirect("/register");
         if (!isAuthenticated(request)) return request->redirect("/login");
         resetActivityTimer();
-        request->send_P(200, "text/html", page_test_encryption_html);
+        sendHtmlUtf8P(request, 200, page_test_encryption_html);
     });
 #endif
 
@@ -6788,7 +6802,7 @@ void WebServerManager::startConfigServer() {
         String html = wifi_setup_html;
         // Вставляем mDNS имя хоста по умолчанию в HTML для редиректа
         html.replace("##MDNS_HOSTNAME##", DEFAULT_MDNS_HOSTNAME);
-        request->send(200, "text/html", html);
+        sendHtmlUtf8(request, 200, html);
     });
     server.on("/scan", HTTP_GET, [](AsyncWebServerRequest *request){
         int n = WiFi.scanNetworks();
