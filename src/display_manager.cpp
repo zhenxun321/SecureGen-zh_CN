@@ -366,17 +366,20 @@ void DisplayManager::drawTotpContainer() {
 
 void DisplayManager::drawTotpText(const String& textToDraw) {
     if (textToDraw == _lastDrawnTotpString && !_totpContainerNeedsRedraw) {
-        return; 
+        return;
     }
 
     // 1. Рисуем анимированный текст в свой спрайт
     totpSprite.fillSprite(_currentThemeColors->background_light);
     totpSprite.setTextColor(_currentThemeColors->text_primary, _currentThemeColors->background_light);
-    
+
+    const bool useUtf8Path = hasNonAscii(textToDraw);
     // Уменьшаем размер шрифта для длинного текста (например "NOT SYNCED")
     int textSize = (textToDraw.length() > 6) ? 2 : 4;
-    totpSprite.setTextSize(textSize);
-    totpSprite.drawString(textToDraw, totpSprite.width() / 2, totpSprite.height() / 2);
+    if (!useUtf8Path) {
+        totpSprite.setTextSize(textSize);
+        totpSprite.drawString(textToDraw, totpSprite.width() / 2, totpSprite.height() / 2);
+    }
 
     // 2. Накладываем спрайт с текстом внутрь рамки контейнера со смещением в 1px
     totpSprite.pushToSprite(&totpContainerSprite, 1, 1);
@@ -387,6 +390,11 @@ void DisplayManager::drawTotpText(const String& textToDraw) {
     int containerX = centerX - totpContainerSprite.width() / 2;
     int containerY = codeY - totpContainerSprite.height() / 2;
     totpContainerSprite.pushSprite(containerX, containerY);
+
+    // 4. UTF-8 文本直接绘制到主屏，避免 sprite+ASCII 字体导致乱码
+    if (useUtf8Path) {
+        drawUtf8Centered(textToDraw, centerX, codeY, _currentThemeColors->text_primary, _currentThemeColors->background_light, true);
+    }
 
     _lastDrawnTotpString = textToDraw;
 }
@@ -405,15 +413,18 @@ void DisplayManager::updateTOTPCode(const String& code, int timeRemaining) {
         _isKeySwitched = false; // Сбрасываем флаг
     }
 
+    // 中文/UTF-8 状态文本（例如“未同步”）不走打乱动画，避免多字节截断导致乱码
+    const bool shouldBypassAnimation = hasNonAscii(code) || hasNonAscii(_currentCode);
+
     // Логика запуска анимации, если код изменился и это не переключение ключа
     if (code != _currentCode && _totpState == TotpState::IDLE) {
-        if (_currentCode.length() > 0) {
+        if (_currentCode.length() > 0 && !shouldBypassAnimation) {
             _newCode = code;
             _totpState = TotpState::SCRAMBLING;
             _totpAnimStartTime = millis();
             _lastScrambleFrameTime = millis();
         } else {
-            _currentCode = code; // Первый код устанавливается без анимации
+            _currentCode = code; // Первый код/UTF-8 状态 устанавливается без анимации
         }
     }
     
