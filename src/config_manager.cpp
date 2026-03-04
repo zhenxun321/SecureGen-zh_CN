@@ -587,3 +587,54 @@ bool ConfigManager::saveApPassword(const String& password) {
         return false;
     }
 }
+
+
+unsigned long ConfigManager::getLastKnownEpoch() {
+    if (LittleFS.exists(CONFIG_FILE)) {
+        fs::File configFile = LittleFS.open(CONFIG_FILE, "r");
+        if (configFile) {
+            JsonDocument doc;
+            DeserializationError error = deserializeJson(doc, configFile);
+            configFile.close();
+            if (error == DeserializationError::Ok) {
+                return doc["last_known_epoch"] | 0UL;
+            }
+            LOG_WARNING("ConfigManager", "Failed to parse last_known_epoch: " + String(error.c_str()));
+        }
+    }
+    return 0UL;
+}
+
+bool ConfigManager::saveLastKnownEpoch(unsigned long epochSeconds) {
+    if (epochSeconds == 0UL) {
+        return false;
+    }
+
+    JsonDocument doc;
+    if (LittleFS.exists(CONFIG_FILE)) {
+        fs::File in = LittleFS.open(CONFIG_FILE, "r");
+        if (in) {
+            deserializeJson(doc, in);
+            in.close();
+        }
+    }
+
+    doc["last_known_epoch"] = epochSeconds;
+
+    fs::File out = LittleFS.open(CONFIG_FILE, "w");
+    if (!out) {
+        LOG_ERROR("ConfigManager", "Failed to open config file for last_known_epoch writing");
+        return false;
+    }
+
+    size_t bytes = serializeJson(doc, out);
+    out.close();
+
+    if (bytes == 0) {
+        LOG_ERROR("ConfigManager", "Failed to write last_known_epoch");
+        return false;
+    }
+
+    LOG_INFO("ConfigManager", "Saved last_known_epoch: " + String(epochSeconds));
+    return true;
+}

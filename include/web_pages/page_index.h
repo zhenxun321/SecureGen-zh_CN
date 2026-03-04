@@ -1121,6 +1121,15 @@ progress::-webkit-progress-value {
             <button type="submit" class="button user-activity">保存设置</button>
         </form>
     </div>
+
+    <div class="form-container">
+        <h4>时间设置（AP/离线手动校时）</h4>
+        <form id="time-settings-form">
+            <label for="manual-datetime">设备时间：</label>
+            <input type="datetime-local" id="manual-datetime" required class="user-activity">
+            <button type="submit" class="button user-activity">保存设备时间</button>
+        </form>
+    </div>
     <div class="form-container">
         <h4>自动登出计时器</h4>
         <form id="session-duration-form">
@@ -1446,6 +1455,7 @@ function openTab(evt,tabName){
                 await fetchStartupMode();
                 await new Promise(resolve => setTimeout(resolve, 150));
                 await fetchDeviceSettings();
+                await fetchTimeSettings();
                 await new Promise(resolve => setTimeout(resolve, 150));
                 await fetchSessionDurationSettings();
                 await new Promise(resolve => setTimeout(resolve, 150));
@@ -2479,6 +2489,7 @@ document.getElementById('clear-ble-clients-btn').addEventListener('click',functi
 
 async function fetchStartupMode(){try{const response=await makeEncryptedRequest('/api/startup_mode');const data=await response.json();document.getElementById('startup-mode').value=data.mode}catch(err){showStatus('获取启动模式失败。',true)}}
 async function fetchDeviceSettings(){try{const response=await makeEncryptedRequest('/api/settings');const data=await response.json();document.getElementById('web-server-timeout').value=data.web_server_timeout;if(data.admin_login){document.getElementById('current-admin-login').textContent=data.admin_login}}catch(err){showStatus('获取设备设置失败。',true)}}
+async function fetchTimeSettings(){try{const response=await makeEncryptedRequest('/api/time_settings');const data=await response.json();if(data.epoch&&data.epoch>0){const dt=new Date(data.epoch*1000);const local=new Date(dt.getTime()-dt.getTimezoneOffset()*60000).toISOString().slice(0,16);document.getElementById('manual-datetime').value=local}}catch(err){showStatus('获取时间设置失败。',true)}}
 document.getElementById('startup-mode-form').addEventListener('submit',function(e){e.preventDefault();const mode=document.getElementById('startup-mode').value;const formData=new FormData();formData.append('mode',mode);makeEncryptedRequest('/api/startup_mode',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){showStatus(data.message)}else{showStatus(data.message,true)}}).catch(err=>showStatus('保存启动模式失败：'+err,true))});
 document.getElementById('web-server-settings-form').addEventListener('submit',function(e){e.preventDefault();const timeout=document.getElementById('web-server-timeout').value;if(!confirm('修改 Web 服务器超时需要重启设备，是否继续？')){return;}showStatus('正在保存设置并重启设备...',false);const formData=new FormData();formData.append('web_server_timeout',timeout);makeEncryptedRequest('/api/settings',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){showStatus(data.message,false);}else{showStatus(data.message,true);}}).catch(err=>showStatus('保存设置失败：'+err,true))});
 // Password validation for change password form
@@ -2663,6 +2674,7 @@ document.getElementById('ble-settings-form').addEventListener('submit',function(
 
 async function fetchMdnsSettings(){try{const response=await makeEncryptedRequest('/api/mdns_settings');const data=await response.json();document.getElementById('mdns-hostname').value=data.hostname}catch(err){showStatus('获取 mDNS 设置失败。',true)}}
 document.getElementById('mdns-settings-form').addEventListener('submit',function(e){e.preventDefault();const hostname=document.getElementById('mdns-hostname').value;const formData=new FormData();formData.append('hostname',hostname);makeEncryptedRequest('/api/mdns_settings',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){showStatus(data.message);fetchMdnsSettings()}else{showStatus(data.message,true)}}).catch(err=>showStatus('保存 mDNS 设置失败：'+err,true))});
+document.getElementById('time-settings-form').addEventListener('submit',function(e){e.preventDefault();const v=document.getElementById('manual-datetime').value;if(!v){showStatus('请选择设备时间',true);return}const epoch=Math.floor(new Date(v).getTime()/1000);if(!epoch||epoch<1577836800){showStatus('时间无效，请重新选择',true);return}const formData=new FormData();formData.append('epoch',String(epoch));makeEncryptedRequest('/api/time_settings',{method:'POST',body:formData}).then(res=>res.json()).then(data=>{if(data.success){showStatus(data.message||'时间已更新');fetchTimeSettings()}else{showStatus(data.message||'时间更新失败',true)}}).catch(err=>showStatus('时间更新失败：'+err,true))});
 
 
 let keysData = [];
@@ -3146,7 +3158,8 @@ class SecureClient {
             '/api/display_settings',   // 🔐 Display timeout settings (NEW)
             '/api/splash/mode',        // 🔐 Splash screen selection (NEW)
             '/api/enable_import_export', // 🔐 API access control (security)
-            '/api/import_export_status'  // 🔐 API access status (security)
+            '/api/import_export_status',  // 🔐 API access status (security)
+            '/api/time_settings'         // 🔐 Manual time setting
         ];
         return secureEndpoints.some(endpoint => url === endpoint || url.startsWith(endpoint + '/') || url.startsWith(endpoint + '?'));
     }

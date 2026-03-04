@@ -24,6 +24,7 @@
 #include <esp_task_wdt.h>
 #include <sys/time.h>
 #include <ArduinoJson.h>
+#include <esp_sntp.h>
 
 #ifdef SECURE_LAYER_ENABLED
 #include "secure_layer_manager.h"
@@ -94,23 +95,7 @@ bool hasValidSystemTime() {
 }
 
 unsigned long loadPersistedEpochFromConfig() {
-    if (!LittleFS.exists(CONFIG_FILE)) {
-        return 0;
-    }
-
-    fs::File configFile = LittleFS.open(CONFIG_FILE, "r");
-    if (!configFile) {
-        return 0;
-    }
-
-    JsonDocument doc;
-    DeserializationError err = deserializeJson(doc, configFile);
-    configFile.close();
-    if (err != DeserializationError::Ok) {
-        return 0;
-    }
-
-    return doc["last_known_epoch"] | 0UL;
+    return configManager.getLastKnownEpoch();
 }
 
 void persistCurrentEpochToConfig() {
@@ -120,23 +105,39 @@ void persistCurrentEpochToConfig() {
         return;
     }
 
-    JsonDocument doc;
-    if (LittleFS.exists(CONFIG_FILE)) {
-        fs::File in = LittleFS.open(CONFIG_FILE, "r");
-        if (in) {
-            deserializeJson(doc, in);
-            in.close();
+    configManager.saveLastKnownEpoch(static_cast<unsigned long>(now));
+}
+
+
+bool syncTimeFromNtpServer(const char* ntpServer, struct tm* timeinfo) {
+    time_t beforeEpoch;
+    time(&beforeEpoch);
+
+    sntp_stop();
+    configTime(0, 0, ntpServer);
+
+    const int maxPolls = 20; // ~8 seconds
+    for (int i = 0; i < maxPolls; ++i) {
+        if (sntp_get_sync_status() == SNTP_SYNC_STATUS_COMPLETED) {
+            break;
         }
+        delay(400);
     }
 
-    doc["last_known_epoch"] = static_cast<unsigned long>(now);
-
-    fs::File out = LittleFS.open(CONFIG_FILE, "w");
-    if (out) {
-        serializeJson(doc, out);
-        out.close();
-        LOG_INFO("Main", "Persisted system epoch to config: " + String((unsigned long)now));
+    if (!getLocalTime(timeinfo, 2000)) {
+        return false;
     }
+
+    time_t afterEpoch;
+    time(&afterEpoch);
+
+    if (afterEpoch >= kMinValidEpoch) {
+        LOG_INFO("Main", "NTP sync applied. before=" + String((unsigned long)beforeEpoch) +
+                         ", after=" + String((unsigned long)afterEpoch));
+        return true;
+    }
+
+    return false;
 }
 
 bool restoreSystemTimeFromPersistedEpoch() {
@@ -515,12 +516,7 @@ void setup() {
             
             // ✅ Каждая попытка использует СВОЙ NTP сервер
             LOG_INFO("Main", "NTP attempt " + String(i+1) + ": " + String(ntpServers[i]));
-            configTime(0, 0, ntpServers[i]);
-            
-            // Даем время на отправку и обработку NTP запроса
-            delay(800); // Увеличено с 500ms для стабильности
-            
-            if (getLocalTime(&timeinfo, 5000)) {
+            if (syncTimeFromNtpServer(ntpServers[i], &timeinfo)) {
                 timeSynced = true;
                 LOG_INFO("Main", "Time Synced Successfully on attempt " + String(i+1) + " (" + String(ntpServers[i]) + ")!");
                 // 🔄 Обновляем только текст
