@@ -1236,10 +1236,11 @@ void WebServerManager::start() {
                         
                         name = decryptedBody.substring(nameStart + 5, nameEnd);
                         secret = decryptedBody.substring(secretStart + 7, secretEnd);
-                        
-                        name.replace("+", " ");
-                        secret.replace("+", " ");
-                        
+
+                        // Full URL decode to properly restore UTF-8 names like 中文 (%E4%...)
+                        name = urlDecode(name);
+                        secret = urlDecode(secret);
+
                         LOG_DEBUG("WebServer", "🔐 Parsed: name=" + name + ", secret=" + secret.substring(0, 8) + "...");
                     } else {
                         return request->send(400, "text/plain", "解密后的数据格式无效");
