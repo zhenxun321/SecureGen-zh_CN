@@ -22,6 +22,8 @@
 #include "web_admin_manager.h"
 #include "app_modes.h" // Используем новый общий заголовок
 #include <esp_task_wdt.h>
+#include <sys/time.h>
+#include <ArduinoJson.h>
 
 #ifdef SECURE_LAYER_ENABLED
 #include "secure_layer_manager.h"
@@ -81,6 +83,85 @@ unsigned long lastTotpUpdateTime = 0;
 const int totpUpdateInterval = 250;
 
 void wakeDisplaySafely(const char* reason);
+
+namespace {
+constexpr time_t kMinValidEpoch = 1577836800; // 2020-01-01 UTC
+
+bool hasValidSystemTime() {
+    time_t now;
+    time(&now);
+    return now >= kMinValidEpoch;
+}
+
+unsigned long loadPersistedEpochFromConfig() {
+    if (!LittleFS.exists(CONFIG_FILE)) {
+        return 0;
+    }
+
+    fs::File configFile = LittleFS.open(CONFIG_FILE, "r");
+    if (!configFile) {
+        return 0;
+    }
+
+    JsonDocument doc;
+    DeserializationError err = deserializeJson(doc, configFile);
+    configFile.close();
+    if (err != DeserializationError::Ok) {
+        return 0;
+    }
+
+    return doc["last_known_epoch"] | 0UL;
+}
+
+void persistCurrentEpochToConfig() {
+    time_t now;
+    time(&now);
+    if (now < kMinValidEpoch) {
+        return;
+    }
+
+    JsonDocument doc;
+    if (LittleFS.exists(CONFIG_FILE)) {
+        fs::File in = LittleFS.open(CONFIG_FILE, "r");
+        if (in) {
+            deserializeJson(doc, in);
+            in.close();
+        }
+    }
+
+    doc["last_known_epoch"] = static_cast<unsigned long>(now);
+
+    fs::File out = LittleFS.open(CONFIG_FILE, "w");
+    if (out) {
+        serializeJson(doc, out);
+        out.close();
+        LOG_INFO("Main", "Persisted system epoch to config: " + String((unsigned long)now));
+    }
+}
+
+bool restoreSystemTimeFromPersistedEpoch() {
+    if (hasValidSystemTime()) {
+        return true;
+    }
+
+    unsigned long persistedEpoch = loadPersistedEpochFromConfig();
+    if (persistedEpoch < static_cast<unsigned long>(kMinValidEpoch)) {
+        return false;
+    }
+
+    timeval tv = {};
+    tv.tv_sec = static_cast<time_t>(persistedEpoch);
+    tv.tv_usec = 0;
+
+    if (settimeofday(&tv, nullptr) == 0) {
+        LOG_INFO("Main", "System time restored from persisted epoch: " + String(persistedEpoch));
+        return true;
+    }
+
+    LOG_ERROR("Main", "Failed to restore system time from persisted epoch");
+    return false;
+}
+} // namespace
 
 void showWebServerInfoPage() {
     // 🔄 Не вызываем init() - избегаем мигания!
@@ -319,7 +400,8 @@ void setup() {
     
     // Переменная для отслеживания синхронизации времени
     struct tm timeinfo;
-    bool timeSynced = false;
+    bool timeSynced = restoreSystemTimeFromPersistedEpoch();
+    LOG_INFO("Main", String("Initial time state: ") + (timeSynced ? "valid/restored" : "not synced"));
     
     if (selectedMode == StartupMode::AP_MODE) {
         // 📡 AP MODE
@@ -365,7 +447,7 @@ void setup() {
         
         // ❗ ПРОПУСКАЕМ WiFi подключение и синхронизацию времени
         // TOTP коды будут показывать "TIME 未同步"
-        timeSynced = false;
+        timeSynced = hasValidSystemTime();
         
     } else if (selectedMode == StartupMode::OFFLINE_MODE) {
         // 🔌 OFFLINE MODE
@@ -379,15 +461,16 @@ void setup() {
         displayManager.showMessage("离线模式", 10, 20, false, 2);
         displayManager.showMessage("无 WiFi 连接", 10, 40, false, 1);
         displayManager.showMessage("BLE 与密码功能可用", 10, 55, false, 1);
-        displayManager.showMessage("TOTP：未同步", 10, 70, false, 1);
+        timeSynced = hasValidSystemTime();
+        displayManager.showMessage(timeSynced ? "TOTP：已使用本地时钟" : "TOTP：未同步", 10, 70, false, 1);
         delay(3000);
         
         // Очистка экрана
         displayManager.clearMessageArea(0, 0, 240, 135);
         
-        // ❗ ПРОПУСКАЕМ: WiFi, веб-сервер, синхронизацию времени
-        // Работают только: TOTP (несинхронизированный), пароли, BLE
-        timeSynced = false;
+        // ❗ ПРОПУСКАЕМ: WiFi, веб-сервер,主动 NTP 同步
+        // 继续使用当前系统时钟（若之前已同步则可持续走时）
+        timeSynced = hasValidSystemTime();
         
     } else {
         // 🌐 WIFI MODE (по умолчанию)
@@ -442,6 +525,7 @@ void setup() {
                 LOG_INFO("Main", "Time Synced Successfully on attempt " + String(i+1) + " (" + String(ntpServers[i]) + ")!");
                 // 🔄 Обновляем только текст
                 displayManager.updateMessage("时间同步完成！", 10, 10, 2);
+                persistCurrentEpochToConfig();
                 delay(1000);
                 break;
             }
@@ -468,8 +552,8 @@ void setup() {
             displayManager.showMessage("继续运行...", 10, 95, false, 1);
             delay(3000);
             
-            // Устанавливаем timeSynced = false для offline режима
-            timeSynced = false;
+            // 保留已有系统时钟（若此前已同步或已从持久化恢复）
+            timeSynced = hasValidSystemTime();
         }
 
         // Отключаем WiFi для экономии батареи (независимо от статуса синхронизации)
