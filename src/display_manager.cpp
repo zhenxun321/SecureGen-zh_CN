@@ -536,11 +536,11 @@ void DisplayManager::drawUtf8Centered(const String& text, int x, int y, uint16_t
     g_u8g2.setBackgroundColor(bg);
 
     int textWidth = g_u8g2.getUTF8Width(text.c_str());
-    int baselineY = y + ((g_u8g2.getFontAscent() - g_u8g2.getFontDescent()) / 2);
+    int baselineY = y + ((g_u8g2.getFontAscent() + g_u8g2.getFontDescent()) / 2);
     int drawX = x - textWidth / 2;
 
     if (compact) {
-        baselineY -= 2;
+        baselineY -= 1;
     }
 
     g_u8g2.setCursor(drawX, baselineY);
@@ -584,7 +584,7 @@ bool DisplayManager::promptWebServerSelection() {
         }
         drawUtf8Centered("是", yesX + btnWidth / 2, btnY + btnHeight / 2,
                          currentSelection ? _currentThemeColors->background_dark : _currentThemeColors->text_primary,
-                         currentSelection ? _currentThemeColors->accent_primary : _currentThemeColors->background_dark, true);
+                         currentSelection ? _currentThemeColors->accent_primary : _currentThemeColors->background_dark, false);
 
         // Draw "No" button
         if (!currentSelection) {
@@ -597,7 +597,7 @@ bool DisplayManager::promptWebServerSelection() {
         }
         drawUtf8Centered("否", noX + btnWidth / 2, btnY + btnHeight / 2,
                          !currentSelection ? _currentThemeColors->background_dark : _currentThemeColors->text_primary,
-                         !currentSelection ? _currentThemeColors->accent_primary : _currentThemeColors->background_dark, true);
+                         !currentSelection ? _currentThemeColors->accent_primary : _currentThemeColors->background_dark, false);
         
         // Reset text color to default for other text elements
         tft.setTextColor(_currentThemeColors->text_primary);
@@ -689,7 +689,7 @@ StartupMode DisplayManager::promptModeSelection() {
         tft.setTextSize(1);
         drawUtf8Centered("离线", offlineX + btnWidth/2, btnY + btnHeight/2,
                          !currentSelection ? _currentThemeColors->background_dark : _currentThemeColors->text_secondary,
-                         !currentSelection ? _currentThemeColors->accent_primary : _currentThemeColors->background_dark, true);
+                         !currentSelection ? _currentThemeColors->accent_primary : _currentThemeColors->background_dark, false);
         
         // Сброс цвета текста
         tft.setTextColor(_currentThemeColors->text_primary);
