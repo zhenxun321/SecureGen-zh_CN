@@ -518,6 +518,7 @@ void setup() {
             LOG_INFO("Main", "NTP attempt " + String(i+1) + ": " + String(ntpServers[i]));
             if (syncTimeFromNtpServer(ntpServers[i], &timeinfo)) {
                 timeSynced = true;
+                totpGenerator.markTimeSynchronized();
                 LOG_INFO("Main", "Time Synced Successfully on attempt " + String(i+1) + " (" + String(ntpServers[i]) + ")!");
                 // 🔄 Обновляем только текст
                 displayManager.updateMessage("时间同步完成！", 10, 10, 2);
