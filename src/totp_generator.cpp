@@ -2,6 +2,7 @@
 #include "config.h"
 #include <mbedtls/md.h>
 #include <time.h>
+#include <esp_sntp.h>
 
 String TOTPGenerator::generateTOTP(const String& base32Secret) {
     uint8_t key[64];
@@ -43,9 +44,18 @@ int TOTPGenerator::getTimeRemaining() {
 bool TOTPGenerator::isTimeSynced() {
     time_t now;
     time(&now);
-    // Проверяем что время >= 1 января 2020 года (1577836800 Unix timestamp)
-    // Если время меньше - значит NTP ещё не синхронизирован
-    return now >= 1577836800;
+
+    // Базовая проверка валидности epoch (>= 2020-01-01 UTC).
+    if (now < 1577836800) {
+        return false;
+    }
+
+    // КРИТИЧНО: только валидного epoch недостаточно.
+    // После перезагрузки устройство может восстановить last_known_epoch,
+    // но без RTC такое время может быть устаревшим и давать неверный TOTP.
+    // Поэтому считаем время "синхронизированным" только после
+    // успешной SNTP синхронизации в текущем запуске.
+    return sntp_get_sync_status() == SNTP_SYNC_STATUS_COMPLETED;
 }
 
 void TOTPGenerator::hmacSha1(const uint8_t* key, size_t keyLen, const uint8_t* data, size_t dataLen, uint8_t* output) {
