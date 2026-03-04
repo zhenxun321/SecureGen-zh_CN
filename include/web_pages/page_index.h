@@ -710,24 +710,17 @@ progress::-webkit-progress-value {
     }
 
     #keys-table .button-delete {
-        width: 24px;
-        height: 24px;
-        padding: 0;
+        width: auto;
+        height: auto;
+        padding: 8px 10px;
         border-radius: 4px;
-        display: flex;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
         margin: 0 auto;
-        font-size: 0;
-        min-width: 24px;
-        min-height: 24px;
-    }
-
-    #keys-table .button-delete::before {
-        content: "Rm";
-        font-size: 0.9rem;
-        font-weight: bold;
-        line-height: 1;
+        font-size: 0.85rem;
+        min-width: 48px;
+        min-height: 32px;
     }
 
     /* Passwords table mobile optimization */
@@ -776,12 +769,6 @@ progress::-webkit-progress-value {
         justify-content: center;
     }
 
-    #passwords-table .button-action::before {
-        content: "Edit";
-        font-size: 0.75rem;
-        font-weight: bold;
-    }
-
     #passwords-table .button-delete {
         width: 40px !important; /* Same size as Copy/Edit buttons */
         padding: 6px 4px;
@@ -794,16 +781,10 @@ progress::-webkit-progress-value {
         justify-content: center;
     }
 
-    #passwords-table .button-delete::before {
-        content: "Rm";
-        font-size: 0.75rem;
-        font-weight: bold;
-    }
-
-    /* Hide button text on mobile, show abbreviations only */
+    /* Keep button text visible on mobile */
     #passwords-table .button-action,
     #passwords-table .button-delete {
-        font-size: 0;
+        font-size: 0.75rem;
     }
 }
 
