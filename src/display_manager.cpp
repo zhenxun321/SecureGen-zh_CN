@@ -294,7 +294,10 @@ void DisplayManager::updateHeader() {
 
     headerSprite.setTextColor(_currentThemeColors->text_primary, _currentThemeColors->background_dark);
     headerSprite.setTextSize(2);
-    headerSprite.drawString(_currentServiceName, headerSprite.width() / 2, (int)titleY);
+    const bool titleHasUtf8 = hasNonAscii(_currentServiceName);
+    if (!titleHasUtf8) {
+        headerSprite.drawString(_currentServiceName, headerSprite.width() / 2, (int)titleY);
+    }
 
     // Draw WiFi Icon
     if (_isWebServerOn) {
@@ -314,6 +317,11 @@ void DisplayManager::updateHeader() {
     }
 
     headerSprite.pushSprite(0, 0);
+
+    // UTF-8 标题直接绘制到主屏，避免 sprite ASCII 字体导致中文缺字/错位
+    if (titleHasUtf8) {
+        drawUtf8Centered(_currentServiceName, tft.width() / 2, (int)titleY, _currentThemeColors->text_primary, _currentThemeColors->background_dark, true);
+    }
 }
 
 void DisplayManager::drawBatteryOnSprite(int percentage, bool isCharging, int chargingValue) {
@@ -493,24 +501,21 @@ void DisplayManager::setBrightness(uint8_t brightness) { ledcWrite(0, brightness
 void DisplayManager::updateMessage(const String& text, int x, int y, int size) {
     tft.setTextSize(size);
     tft.setTextDatum(TL_DATUM);
-    
-    // Рассчитываем размер области текста
-    int textWidth = tft.textWidth(text);
+
+    // 清空从 x 到屏幕右侧的一整行区域，避免中英文切换时残影/截断
+    int textHeight = tft.fontHeight() * size;
 #if SECUREGEN_HAS_U8G2
     if (hasNonAscii(text)) {
         ensureU8g2Ready(tft);
         g_u8g2.setFont(u8g2_font_unifont_t_chinese2);
-        textWidth = g_u8g2.getUTF8Width(text.c_str());
+        textHeight = g_u8g2.getMaxCharHeight() + 4;
     }
 #endif
-    int textHeight = tft.fontHeight() * size;
-    
-    // Очищаем только область текста (с небольшим запасом)
-    tft.fillRect(x, y, textWidth + 10, textHeight + 5, _currentThemeColors->background_dark);
-    
+    tft.fillRect(x, y, tft.width() - x, textHeight + 6, _currentThemeColors->background_dark);
+
     // Рисуем новый текст
     drawUtf8TopLeft(tft, text, x, y, _currentThemeColors->text_primary, _currentThemeColors->background_dark);
-    
+
     tft.setTextDatum(MC_DATUM);
 }
 
@@ -542,6 +547,7 @@ void DisplayManager::drawUtf8Centered(const String& text, int x, int y, uint16_t
 #else
     (void)compact;
     tft.setTextColor(fg, bg);
+    tft.setTextDatum(MC_DATUM);
     tft.drawString(text, x, y);
 #endif
 }
@@ -849,10 +855,10 @@ void DisplayManager::drawBleAdvertisingPage(const String& deviceName, const Stri
     tft.setTextSize(1);
     drawUtf8Centered("设备名称:", tft.width() / 2, 50, _currentThemeColors->text_primary, _currentThemeColors->background_dark, true);
     tft.setTextSize(2);
-    tft.drawString(deviceName, tft.width() / 2, 70);
-    
+    drawUtf8Centered(deviceName, tft.width() / 2, 70, _currentThemeColors->text_primary, _currentThemeColors->background_dark, true);
+
     tft.setTextSize(1);
-    tft.drawString(status, tft.width() / 2, 100);
+    drawUtf8Centered(status, tft.width() / 2, 100, _currentThemeColors->text_primary, _currentThemeColors->background_dark, true);
 
     // Button labels
     tft.setTextSize(1);
@@ -868,10 +874,10 @@ void DisplayManager::drawBleConfirmPage(const String& passwordName, const String
     tft.setTextSize(1);
     tft.setTextColor(_currentThemeColors->text_secondary);
     String displayName = passwordName;
-    if (displayName.length() > 20) {
+    if (!hasNonAscii(displayName) && displayName.length() > 20) {
         displayName = displayName.substring(0, 20) + "...";
     }
-    tft.drawString(displayName, tft.width() / 2, 15);
+    drawUtf8Centered(displayName, tft.width() / 2, 15, _currentThemeColors->text_secondary, _currentThemeColors->background_dark, true);
     
     // Замаскированный пароль в центре
     tft.setTextSize(2);
@@ -893,12 +899,17 @@ void DisplayManager::drawBleConfirmPage(const String& passwordName, const String
     // Кнопки внизу
     tft.setTextSize(1);
     tft.setTextColor(_currentThemeColors->text_secondary);
-    tft.setTextDatum(TL_DATUM);
-    drawUtf8Centered("返回", 20, tft.height() - 10, _currentThemeColors->text_secondary, _currentThemeColors->background_dark, true);
-    
-    tft.setTextDatum(TR_DATUM);
-    drawUtf8Centered("发送", tft.width() - 20, tft.height() - 10, _currentThemeColors->text_secondary, _currentThemeColors->background_dark, true);
-    
+    drawUtf8TopLeft(tft, "返回", 8, tft.height() - 20, _currentThemeColors->text_secondary, _currentThemeColors->background_dark);
+
+    int sendTextWidth = tft.textWidth("发送");
+#if SECUREGEN_HAS_U8G2
+    ensureU8g2Ready(tft);
+    g_u8g2.setFont(u8g2_font_unifont_t_chinese2);
+    sendTextWidth = g_u8g2.getUTF8Width("发送");
+#endif
+    int sendX = tft.width() - sendTextWidth - 8;
+    drawUtf8TopLeft(tft, "发送", sendX, tft.height() - 20, _currentThemeColors->text_secondary, _currentThemeColors->background_dark);
+
     // Восстанавливаем центральное выравнивание
     tft.setTextDatum(MC_DATUM);
 }
