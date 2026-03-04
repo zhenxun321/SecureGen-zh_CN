@@ -584,7 +584,7 @@ bool DisplayManager::promptWebServerSelection() {
         }
         drawUtf8Centered("是", yesX + btnWidth / 2, btnY + btnHeight / 2,
                          currentSelection ? _currentThemeColors->background_dark : _currentThemeColors->text_primary,
-                         _currentThemeColors->background_dark, true);
+                         currentSelection ? _currentThemeColors->accent_primary : _currentThemeColors->background_dark, true);
 
         // Draw "No" button
         if (!currentSelection) {
@@ -597,7 +597,7 @@ bool DisplayManager::promptWebServerSelection() {
         }
         drawUtf8Centered("否", noX + btnWidth / 2, btnY + btnHeight / 2,
                          !currentSelection ? _currentThemeColors->background_dark : _currentThemeColors->text_primary,
-                         _currentThemeColors->background_dark, true);
+                         !currentSelection ? _currentThemeColors->accent_primary : _currentThemeColors->background_dark, true);
         
         // Reset text color to default for other text elements
         tft.setTextColor(_currentThemeColors->text_primary);
@@ -606,7 +606,7 @@ bool DisplayManager::promptWebServerSelection() {
     drawButtons(selection);
 
     unsigned long startTime = millis();
-    const unsigned long timeout = 2000; // 2 секунды таймаут
+    const unsigned long timeout = 8000; // 8 秒，便于用户看清并操作
 
     while (millis() - startTime < timeout) {
         // Button 1 (top, GPIO 35) to toggle
@@ -689,7 +689,7 @@ StartupMode DisplayManager::promptModeSelection() {
         tft.setTextSize(1);
         drawUtf8Centered("离线", offlineX + btnWidth/2, btnY + btnHeight/2,
                          !currentSelection ? _currentThemeColors->background_dark : _currentThemeColors->text_secondary,
-                         _currentThemeColors->background_dark, true);
+                         !currentSelection ? _currentThemeColors->accent_primary : _currentThemeColors->background_dark, true);
         
         // Сброс цвета текста
         tft.setTextColor(_currentThemeColors->text_primary);
@@ -698,7 +698,7 @@ StartupMode DisplayManager::promptModeSelection() {
     drawButtons(selection);
 
     unsigned long startTime = millis();
-    const unsigned long timeout = 2000; // 2 секунды таймаут
+    const unsigned long timeout = 8000; // 8 秒，便于用户看清并操作
 
     while (millis() - startTime < timeout) {
         // Button 1 (GPIO 35) - переключение между AP/Offline
