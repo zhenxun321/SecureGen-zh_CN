@@ -28,14 +28,30 @@ void BatteryManager::begin() {
 uint32_t BatteryManager::getVoltageMv() {
     digitalWrite(_powerPin, HIGH);
     delay(10);
-    
-    uint32_t adcRaw = adc1_get_raw(ADC1_CHANNEL_6);
-    if (adcRaw == 0) {
-        LOG_WARNING("BatteryManager", "ADC reading returned 0");
+
+    // 多次采样取平均，降低瞬时压降/ADC抖动对电量判断的影响
+    constexpr int sampleCount = 8;
+    uint32_t rawSum = 0;
+    int validSamples = 0;
+
+    for (int i = 0; i < sampleCount; ++i) {
+        uint32_t adcRaw = adc1_get_raw(ADC1_CHANNEL_6);
+        if (adcRaw > 0) {
+            rawSum += adcRaw;
+            validSamples++;
+        }
+        delay(2);
     }
-    
-    uint32_t voltage_mv = esp_adc_cal_raw_to_voltage(adcRaw, &_adc_chars);
+
     digitalWrite(_powerPin, LOW);
+
+    if (validSamples == 0) {
+        LOG_WARNING("BatteryManager", "ADC reading returned 0 for all samples");
+        return 0;
+    }
+
+    uint32_t adcRawAvg = rawSum / validSamples;
+    uint32_t voltage_mv = esp_adc_cal_raw_to_voltage(adcRawAvg, &_adc_chars);
 
     // ⚡ Integer math: (voltage_mv * 1826) / 1000 вместо float деления!
     // 1.826 = 1826/1000, делитель напряжения

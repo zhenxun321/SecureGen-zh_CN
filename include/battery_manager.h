@@ -19,12 +19,13 @@ private:
     int _adcPin;
     int _powerPin;
     // ⚡ OPTIMIZED: Калибровка в милливольтах (integer math)
-    const uint32_t _maxVoltageMv = 3800;  // 3.8V = 3800mV
-    const uint32_t _minVoltageMv = 3200;  // 3.2V = 3200mV
+    // 使用更接近锂电池真实工作区间的映射，避免“看起来还有一半电”但实际已偏低
+    const uint32_t _maxVoltageMv = 4200;  // 4.2V = 100%
+    const uint32_t _minVoltageMv = 3000;  // 3.0V = 0%
     
     // Deprecated float версии (для совместимости)
-    const float _maxVoltage = 3.8;
-    const float _minVoltage = 3.2;
+    const float _maxVoltage = 4.2;
+    const float _minVoltage = 3.0;
 
     esp_adc_cal_characteristics_t _adc_chars; // ADC calibration characteristics
 

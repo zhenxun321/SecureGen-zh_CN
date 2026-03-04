@@ -80,6 +80,7 @@ static int lastBatteryPercentage = -1;
 unsigned long lastTotpUpdateTime = 0;
 const int totpUpdateInterval = 250;
 
+void wakeDisplaySafely(const char* reason);
 
 void showWebServerInfoPage() {
     // 🔄 Не вызываем init() - избегаем мигания!
@@ -99,7 +100,7 @@ void showWebServerInfoPage() {
     // Title
     tft->setTextColor(colors->accent_primary, colors->background_dark);
     tft->setTextSize(2);
-    tft->drawString("Web 服务已启动!", tft->width() / 2, 25);
+    displayManager.drawUtf8Centered("Web 服务已启动!", tft->width() / 2, 25, colors->accent_primary, colors->background_dark, true);
     
     // IP Address
     String ip = wifiManager.getIP();
@@ -117,7 +118,7 @@ void showWebServerInfoPage() {
     // Instructions
     tft->setTextColor(colors->text_secondary, colors->background_dark);
     tft->setTextSize(1);
-    tft->drawString("可开始连接", tft->width() / 2, 105);
+    displayManager.drawUtf8Centered("可开始连接", tft->width() / 2, 105, colors->text_secondary, colors->background_dark, true);
     
     // 🌌 Плавное появление
     for (int i = 0; i <= 255; i += 15) {
@@ -689,8 +690,7 @@ void handleButtons() {
         displayManager.hideLoader();
         if (!isScreenOn) {
             LOG_DEBUG("Main", "Button press woke up screen");
-            displayManager.turnOn();
-            isScreenOn = true;
+            wakeDisplaySafely("handleButtons");
         }
         previousKeyIndex = -1; 
         previousPasswordIndex = -1;
@@ -698,6 +698,34 @@ void handleButtons() {
 }
 
 // Функция для проверки нажатия кнопок и включения экрана
+
+
+// 🔋 低电量时平滑唤醒屏幕，避免背光瞬时电流导致 brownout 复位
+void wakeDisplaySafely(const char* reason) {
+    uint32_t batteryMv = batteryManager.getVoltageMv();
+
+    // 约 55% 以下电量，限制最大亮度并采用渐进点亮
+    const bool weakBattery = batteryMv < 3600;
+    const uint8_t targetBrightness = weakBattery ? 170 : 255;
+    const uint8_t startBrightness = weakBattery ? 32 : 96;
+
+    LOG_INFO("Power", String("Display wake [") + reason + "] battery=" + String((float)batteryMv / 1000.0f, 2) +
+                     "V, weak=" + String(weakBattery ? "yes" : "no") +
+                     ", targetBrightness=" + String(targetBrightness));
+
+    for (uint8_t b = startBrightness; b <= targetBrightness; b = (uint8_t)(b + 16)) {
+        displayManager.setBrightness(b);
+        esp_task_wdt_reset();
+        delay(6);
+
+        if (b >= targetBrightness - 8) {
+            break;
+        }
+    }
+
+    displayManager.setBrightness(targetBrightness);
+    isScreenOn = true;
+}
 void checkScreenWakeup() {
     static bool button1PreviousState = HIGH;
     static bool button2PreviousState = HIGH;
@@ -712,8 +740,7 @@ void checkScreenWakeup() {
         lastActivityTime = millis();
         if (!isScreenOn) {
             LOG_DEBUG("Main", "Button press woke up screen in BLE mode");
-            displayManager.turnOn();
-            isScreenOn = true;
+            wakeDisplaySafely("checkScreenWakeup");
         }
     }
     
@@ -868,10 +895,18 @@ void loop() {
                                     tft->setTextColor(displayManager.getCurrentThemeColors()->text_secondary, 
                                                     displayManager.getCurrentThemeColors()->background_dark);
                                     tft->setTextSize(1);
-                                    tft->drawString("⚠️ 请连接到网络", tft->width() / 2, 120);
-                                    tft->drawString("以进行时间同步", tft->width() / 2, 135);
-                                    tft->drawString("或切换到密码模式", tft->width() / 2, 150);
-                                    tft->drawString("（长按 BTN1）", tft->width() / 2, 165);
+                                    displayManager.drawUtf8Centered("⚠️ 请连接到网络", tft->width() / 2, 120,
+                                                                   displayManager.getCurrentThemeColors()->text_secondary,
+                                                                   displayManager.getCurrentThemeColors()->background_dark, true);
+                                    displayManager.drawUtf8Centered("以进行时间同步", tft->width() / 2, 135,
+                                                                   displayManager.getCurrentThemeColors()->text_secondary,
+                                                                   displayManager.getCurrentThemeColors()->background_dark, true);
+                                    displayManager.drawUtf8Centered("或切换到密码模式", tft->width() / 2, 150,
+                                                                   displayManager.getCurrentThemeColors()->text_secondary,
+                                                                   displayManager.getCurrentThemeColors()->background_dark, true);
+                                    displayManager.drawUtf8Centered("（长按 BTN1）", tft->width() / 2, 165,
+                                                                   displayManager.getCurrentThemeColors()->text_secondary,
+                                                                   displayManager.getCurrentThemeColors()->background_dark, true);
                                 }
                             }
                         } else {
