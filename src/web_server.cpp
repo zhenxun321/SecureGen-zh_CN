@@ -16,6 +16,8 @@
 #include "web_pages/page_wifi_setup.h"
 #include "web_pages/page_splash.h"
 #include "ble_keyboard_manager.h"
+#include <time.h>
+#include <sys/time.h>
 
 #ifdef SECURE_LAYER_ENABLED
 #include "web_server_secure_integration.h"
@@ -1236,10 +1238,11 @@ void WebServerManager::start() {
                         
                         name = decryptedBody.substring(nameStart + 5, nameEnd);
                         secret = decryptedBody.substring(secretStart + 7, secretEnd);
-                        
-                        name.replace("+", " ");
-                        secret.replace("+", " ");
-                        
+
+                        // Full URL decode to properly restore UTF-8 names like 中文 (%E4%...)
+                        name = urlDecode(name);
+                        secret = urlDecode(secret);
+
                         LOG_DEBUG("WebServer", "🔐 Parsed: name=" + name + ", secret=" + secret.substring(0, 8) + "...");
                     } else {
                         return request->send(400, "text/plain", "解密后的数据格式无效");
@@ -3340,6 +3343,106 @@ void WebServerManager::start() {
                 // Fallback: незашифрованный ответ
                 request->send(statusCode, "application/json", response);
             }
+        });
+
+
+    // Manual Time Settings endpoints (AP mode / offline correction)
+    server.on("/api/time_settings", HTTP_GET, [this](AsyncWebServerRequest *request){
+        if (!isAuthenticated(request)) return request->send(401);
+
+        time_t now;
+        time(&now);
+        JsonDocument doc;
+        doc["epoch"] = static_cast<unsigned long>(now);
+        doc["synced"] = (now >= 1577836800);
+        String output;
+        serializeJson(doc, output);
+
+#ifdef SECURE_LAYER_ENABLED
+        String clientId = WebServerSecureIntegration::getClientId(request);
+        if (clientId.length() > 0 && secureLayer.isSecureSessionValid(clientId)) {
+            WebServerSecureIntegration::sendSecureResponse(request, 200, "application/json", output, secureLayer);
+            return;
+        }
+#endif
+        request->send(200, "application/json", output);
+    });
+
+    server.on("/api/time_settings", HTTP_POST,
+        [this](AsyncWebServerRequest *request){
+            // Body handled below
+        },
+        NULL,
+        [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+            if (index + len != total) return;
+
+            if (!isAuthenticated(request)) {
+                return request->send(401, "text/plain", "未授权");
+            }
+            if (!verifyCsrfToken(request)) {
+                return request->send(403, "text/plain", "CSRF 令牌不匹配");
+            }
+
+            String epochStr;
+#ifdef SECURE_LAYER_ENABLED
+            String clientId = WebServerSecureIntegration::getClientId(request);
+            if (clientId.length() > 0 &&
+                secureLayer.isSecureSessionValid(clientId) &&
+                (request->hasHeader("X-Secure-Request") || request->hasHeader("X-Security-Level"))) {
+
+                String encryptedBody = String((char*)data, len);
+                String decryptedBody;
+                if (!secureLayer.decryptRequest(clientId, encryptedBody, decryptedBody)) {
+                    return request->send(400, "text/plain", "解密失败");
+                }
+
+                int epochStart = decryptedBody.indexOf("epoch=");
+                if (epochStart >= 0) {
+                    int epochEnd = decryptedBody.indexOf("&", epochStart);
+                    if (epochEnd < 0) epochEnd = decryptedBody.length();
+                    epochStr = urlDecode(decryptedBody.substring(epochStart + 6, epochEnd));
+                }
+            } else
+#endif
+            {
+                if (request->hasParam("epoch", true)) {
+                    epochStr = request->getParam("epoch", true)->value();
+                }
+            }
+
+            if (epochStr.length() == 0) {
+                return request->send(400, "text/plain", "缺少 epoch 参数");
+            }
+
+            unsigned long epoch = strtoul(epochStr.c_str(), nullptr, 10);
+            if (epoch < 1577836800UL || epoch > 4102444800UL) {
+                return request->send(400, "text/plain", "时间参数无效");
+            }
+
+            timeval tv = {};
+            tv.tv_sec = static_cast<time_t>(epoch);
+            tv.tv_usec = 0;
+
+            bool ok = (settimeofday(&tv, nullptr) == 0);
+            if (ok) {
+                configManager.saveLastKnownEpoch(epoch);
+            }
+
+            JsonDocument doc;
+            doc["success"] = ok;
+            doc["epoch"] = epoch;
+            doc["message"] = ok ? "设备时间更新成功" : "设备时间更新失败";
+            String output;
+            serializeJson(doc, output);
+
+#ifdef SECURE_LAYER_ENABLED
+            String clientId2 = WebServerSecureIntegration::getClientId(request);
+            if (clientId2.length() > 0 && secureLayer.isSecureSessionValid(clientId2)) {
+                WebServerSecureIntegration::sendSecureResponse(request, ok ? 200 : 500, "application/json", output, secureLayer);
+                return;
+            }
+#endif
+            request->send(ok ? 200 : 500, "application/json", output);
         });
 
     // API: Clear BLE Clients (POST with encryption)

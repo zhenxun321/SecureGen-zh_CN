@@ -52,6 +52,10 @@ public:
     String loadApPassword();  // Загрузить пароль AP режима (default: "12345678", AES-256 encrypted)
     bool saveApPassword(const String& password);  // Сохранить пароль AP режима
 
+    // Persisted system time helpers (epoch seconds)
+    unsigned long getLastKnownEpoch();
+    bool saveLastKnownEpoch(unsigned long epochSeconds);
+
 private:
     // Internal state for configuration values
     Theme _currentTheme = Theme::DARK; // Default theme
