@@ -508,7 +508,7 @@ void DisplayManager::updateMessage(const String& text, int x, int y, int size) {
     if (hasNonAscii(text)) {
         ensureU8g2Ready(tft);
         g_u8g2.setFont(u8g2_font_unifont_t_chinese2);
-        textHeight = g_u8g2.getMaxCharHeight() + 4;
+        textHeight = (g_u8g2.getFontAscent() - g_u8g2.getFontDescent()) + 4;
     }
 #endif
     tft.fillRect(x, y, tft.width() - x, textHeight + 6, _currentThemeColors->background_dark);
