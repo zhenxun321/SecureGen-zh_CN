@@ -100,7 +100,7 @@ void showWebServerInfoPage() {
     // Title
     tft->setTextColor(colors->accent_primary, colors->background_dark);
     tft->setTextSize(2);
-    displayManager.drawUtf8Centered("Web 服务已启动!", tft->width() / 2, 25, colors->accent_primary, colors->background_dark, true);
+    displayManager.drawUtf8Centered("Web 管理已启动", tft->width() / 2, 24, colors->accent_primary, colors->background_dark, true);
     
     // IP Address
     String ip = wifiManager.getIP();
@@ -118,7 +118,7 @@ void showWebServerInfoPage() {
     // Instructions
     tft->setTextColor(colors->text_secondary, colors->background_dark);
     tft->setTextSize(1);
-    displayManager.drawUtf8Centered("可开始连接", tft->width() / 2, 105, colors->text_secondary, colors->background_dark, true);
+    displayManager.drawUtf8Centered("请在浏览器访问上方地址", tft->width() / 2, 105, colors->text_secondary, colors->background_dark, true);
     
     // 🌌 Плавное появление
     for (int i = 0; i <= 255; i += 15) {
@@ -820,7 +820,15 @@ void loop() {
         
         // ... выполнение кода продолжится здесь после пробуждения ...
         LOG_INFO("Main", "Woke up from light sleep.");
-        // Логика включения экрана и сброса таймера уже есть в checkScreenWakeup() и handleButtons()
+
+        // 立即点亮背光并强制重绘，避免唤醒后黑屏/闪烁/残影
+        if (!isScreenOn) {
+            wakeDisplaySafely("light_sleep_resume");
+        }
+        lastActivityTime = millis();
+        previousKeyIndex = -1;
+        previousPasswordIndex = -1;
+        displayManager.hideLoader();
     }
 
     if (isScreenOn) {

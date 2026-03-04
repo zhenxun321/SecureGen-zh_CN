@@ -1,6 +1,7 @@
 #include "display_manager.h"
 #include "config.h"
 #include "log_manager.h"
+#include <algorithm>
 
 #if __has_include(<U8g2_for_TFT_eSPI.h>)
 #include <U8g2_for_TFT_eSPI.h>
@@ -508,7 +509,7 @@ void DisplayManager::updateMessage(const String& text, int x, int y, int size) {
     if (hasNonAscii(text)) {
         ensureU8g2Ready(tft);
         g_u8g2.setFont(u8g2_font_unifont_t_chinese2);
-        textHeight = (g_u8g2.getFontAscent() - g_u8g2.getFontDescent()) + 4;
+        textHeight = max(textHeight, (int)(g_u8g2.getFontAscent() - g_u8g2.getFontDescent()) + 8);
     }
 #endif
     tft.fillRect(x, y, tft.width() - x, textHeight + 6, _currentThemeColors->background_dark);
