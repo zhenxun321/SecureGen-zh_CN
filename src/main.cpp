@@ -713,12 +713,12 @@ void wakeDisplaySafely(const char* reason) {
                      "V, weak=" + String(weakBattery ? "yes" : "no") +
                      ", targetBrightness=" + String(targetBrightness));
 
-    for (uint8_t b = startBrightness; b <= targetBrightness; b = (uint8_t)(b + 16)) {
-        displayManager.setBrightness(b);
+    for (int b = startBrightness; b <= targetBrightness; b += 16) {
+        displayManager.setBrightness(static_cast<uint8_t>(b));
         esp_task_wdt_reset();
         delay(6);
 
-        if (b >= targetBrightness - 8) {
+        if (b >= static_cast<int>(targetBrightness) - 8) {
             break;
         }
     }
