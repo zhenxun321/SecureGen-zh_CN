@@ -11,14 +11,19 @@ public:
     // Получение оставшегося времени до следующего кода
     int getTimeRemaining();
 
-    // Проверка синхронизации времени (время >= 2020 год)
+    // Проверка синхронизации времени (валидный epoch + подтверждение синхронизации)
     bool isTimeSynced();
+
+    // Подтверждение успешной синхронизации времени в текущем runtime
+    void markTimeSynchronized();
 
 private:
     // Вспомогательные функции
     void hmacSha1(const uint8_t* key, size_t keyLen, const uint8_t* data, size_t dataLen, uint8_t* output);
     uint32_t dynamicTruncation(uint8_t* hash);
     size_t base32Decode(const String& base32, uint8_t* output);
+
+    bool runtimeTimeSynchronized = false;
 };
 
 #endif
