@@ -50,13 +50,26 @@ bool TOTPGenerator::isTimeSynced() {
         return false;
     }
 
-    // КРИТИЧНО: только валидного epoch недостаточно.
-    // После перезагрузки устройство может восстановить last_known_epoch,
-    // но без RTC такое время может быть устаревшим и давать неверный TOTP.
-    // Поэтому считаем время "синхронизированным" только после
-    // успешной SNTP синхронизации в текущем запуске.
-    return sntp_get_sync_status() == SNTP_SYNC_STATUS_COMPLETED;
+    // После успешной синхронизации в текущем runtime держим локальный флаг.
+    // Это защищает от кейса, когда SNTP статус сбрасывается после отключения WiFi,
+    // но системные часы уже корректно выставлены.
+    if (runtimeTimeSynchronized) {
+        return true;
+    }
+
+    // На случай раннего вызова (до явной отметки) доверяем SNTP-статусу.
+    if (sntp_get_sync_status() == SNTP_SYNC_STATUS_COMPLETED) {
+        runtimeTimeSynchronized = true;
+        return true;
+    }
+
+    return false;
 }
+
+void TOTPGenerator::markTimeSynchronized() {
+    runtimeTimeSynchronized = true;
+}
+
 
 void TOTPGenerator::hmacSha1(const uint8_t* key, size_t keyLen, const uint8_t* data, size_t dataLen, uint8_t* output) {
     mbedtls_md_context_t ctx;

@@ -3426,6 +3426,7 @@ void WebServerManager::start() {
             bool ok = (settimeofday(&tv, nullptr) == 0);
             if (ok) {
                 configManager.saveLastKnownEpoch(epoch);
+                totpGenerator.markTimeSynchronized();
             }
 
             JsonDocument doc;
