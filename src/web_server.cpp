@@ -1131,14 +1131,9 @@ void WebServerManager::start() {
             
             auto keys = keyManager.getAllKeys();
             
-            // 🔐 Блокировка TOTP в AP/Offline режимах
-            wifi_mode_t wifiMode = WiFi.getMode();
-            bool blockTOTP;
-            if (wifiMode == WIFI_AP || wifiMode == WIFI_AP_STA || wifiMode == WIFI_OFF) {
-                blockTOTP = true;
-            } else {
-                blockTOTP = !totpGenerator.isTimeSynced();
-            }
+            // Полагаемся только на валидность/синхронизацию системного времени.
+            // Это позволяет отображать TOTP и в AP/Offline сценариях, если часы уже корректны.
+            bool blockTOTP = !totpGenerator.isTimeSynced();
             
             for (size_t i = 0; i < keys.size(); i++) {
                 JsonObject keyObj = keysArray.add<JsonObject>();
@@ -3426,6 +3421,7 @@ void WebServerManager::start() {
             bool ok = (settimeofday(&tv, nullptr) == 0);
             if (ok) {
                 configManager.saveLastKnownEpoch(epoch);
+                totpGenerator.markTimeSynchronized();
             }
 
             JsonDocument doc;
@@ -4341,15 +4337,8 @@ void WebServerManager::start() {
                     JsonArray keysArray = doc.to<JsonArray>();
                     auto keys = keyManager.getAllKeys();
                     
-                    // 🔐 Блокировка TOTP в AP/Offline режимах
-                    wifi_mode_t wifiMode = WiFi.getMode();
-                    bool blockTOTP;
-                    if (wifiMode == WIFI_AP || wifiMode == WIFI_AP_STA || wifiMode == WIFI_OFF) {
-                        blockTOTP = true;
-                        Serial.println("[DEBUG TUNNEL2] TOTP BLOCKED - AP/Offline mode");
-                    } else {
-                        blockTOTP = !totpGenerator.isTimeSynced();
-                    }
+                    // Опираемся только на состояние синхронизации времени.
+                    bool blockTOTP = !totpGenerator.isTimeSynced();
                     
                     for (size_t i = 0; i < keys.size(); i++) {
                         JsonObject keyObj = keysArray.add<JsonObject>();
@@ -5519,15 +5508,8 @@ void WebServerManager::start() {
                         JsonArray keysArray = doc.to<JsonArray>();
                         auto keys = keyManager.getAllKeys();
                         
-                        // 🔐 Блокировка TOTP в AP/Offline режимах
-                        wifi_mode_t wifiMode = WiFi.getMode();
-                        bool blockTOTP;
-                        if (wifiMode == WIFI_AP || wifiMode == WIFI_AP_STA || wifiMode == WIFI_OFF) {
-                            blockTOTP = true;
-                            Serial.println("[DEBUG TUNNEL] TOTP BLOCKED - AP/Offline mode");
-                        } else {
-                            blockTOTP = !totpGenerator.isTimeSynced();
-                        }
+                        // Опираемся только на состояние синхронизации времени.
+                        bool blockTOTP = !totpGenerator.isTimeSynced();
                         
                         for (size_t i = 0; i < keys.size(); i++) {
                             JsonObject keyObj = keysArray.add<JsonObject>();

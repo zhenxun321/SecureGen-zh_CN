@@ -402,6 +402,10 @@ void setup() {
     // Переменная для отслеживания синхронизации времени
     struct tm timeinfo;
     bool timeSynced = restoreSystemTimeFromPersistedEpoch();
+    if (timeSynced) {
+        // 允许离线/AP模式使用已恢复的系统时钟继续显示 TOTP。
+        totpGenerator.markTimeSynchronized();
+    }
     LOG_INFO("Main", String("Initial time state: ") + (timeSynced ? "valid/restored" : "not synced"));
     
     if (selectedMode == StartupMode::AP_MODE) {
@@ -447,8 +451,11 @@ void setup() {
         displayManager.clearMessageArea(0, 0, 240, 135);
         
         // ❗ ПРОПУСКАЕМ WiFi подключение и синхронизацию времени
-        // TOTP коды будут показывать "TIME 未同步"
+        // TOTP 状态取决于当前系统时钟是否有效（可使用已恢复时间）
         timeSynced = hasValidSystemTime();
+        if (timeSynced) {
+            totpGenerator.markTimeSynchronized();
+        }
         
     } else if (selectedMode == StartupMode::OFFLINE_MODE) {
         // 🔌 OFFLINE MODE
@@ -463,6 +470,9 @@ void setup() {
         displayManager.showMessage("无 WiFi 连接", 10, 40, false, 1);
         displayManager.showMessage("BLE 与密码功能可用", 10, 55, false, 1);
         timeSynced = hasValidSystemTime();
+        if (timeSynced) {
+            totpGenerator.markTimeSynchronized();
+        }
         displayManager.showMessage(timeSynced ? "TOTP：已使用本地时钟" : "TOTP：未同步", 10, 70, false, 1);
         delay(3000);
         
@@ -472,6 +482,9 @@ void setup() {
         // ❗ ПРОПУСКАЕМ: WiFi, веб-сервер,主动 NTP 同步
         // 继续使用当前系统时钟（若之前已同步则可持续走时）
         timeSynced = hasValidSystemTime();
+        if (timeSynced) {
+            totpGenerator.markTimeSynchronized();
+        }
         
     } else {
         // 🌐 WIFI MODE (по умолчанию)
@@ -518,6 +531,7 @@ void setup() {
             LOG_INFO("Main", "NTP attempt " + String(i+1) + ": " + String(ntpServers[i]));
             if (syncTimeFromNtpServer(ntpServers[i], &timeinfo)) {
                 timeSynced = true;
+                totpGenerator.markTimeSynchronized();
                 LOG_INFO("Main", "Time Synced Successfully on attempt " + String(i+1) + " (" + String(ntpServers[i]) + ")!");
                 // 🔄 Обновляем только текст
                 displayManager.updateMessage("时间同步完成！", 10, 10, 2);
@@ -550,6 +564,9 @@ void setup() {
             
             // 保留已有系统时钟（若此前已同步或已从持久化恢复）
             timeSynced = hasValidSystemTime();
+            if (timeSynced) {
+                totpGenerator.markTimeSynchronized();
+            }
         }
 
         // Отключаем WiFi для экономии батареи (независимо от статуса синхронизации)
