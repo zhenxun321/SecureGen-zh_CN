@@ -3010,6 +3010,7 @@ class SecureClient {
             '/api/ble_settings',      // ✅ GET/POST - настройки BLE
             '/api/mdns_settings',     // ✅ GET/POST - настройки mDNS
             '/api/session_duration',  // ✅ GET/POST - длительность сессии
+            '/api/time_settings',     // ✅ GET/POST - ручная установка времени
             // API Access Management 🔑
             '/api/enable_import_export',  // ✅ POST - включение API доступа
             '/api/import_export_status',  // ✅ GET - статус API доступа
