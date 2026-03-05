@@ -60,6 +60,20 @@ void sendHtmlUtf8(AsyncWebServerRequest* request, int code, const String& html) 
 void sendHtmlUtf8P(AsyncWebServerRequest* request, int code, const char* html) {
     request->send_P(code, kHtmlUtf8ContentType, html);
 }
+
+bool isApModeActive() {
+    wifi_mode_t mode = WiFi.getMode();
+    return mode == WIFI_AP || mode == WIFI_AP_STA;
+}
+
+void turnOffDisplayAfterApLogout(DisplayManager& displayManager) {
+    if (!isApModeActive()) {
+        return;
+    }
+
+    displayManager.fillRect(0, 0, 240, 135, TFT_BLACK);
+    displayManager.turnOff();
+}
 } // namespace
 
 // WebServerManager Implementation
@@ -812,6 +826,7 @@ void WebServerManager::start() {
                     
                     clearSession();
                     clearSecureSession();
+                    turnOffDisplayAfterApLogout(displayManager);
                     
                     LOG_INFO("WebServer", "🔐 LOGOUT: Session cleared");
                     
@@ -831,6 +846,7 @@ void WebServerManager::start() {
                 // Fallback: незашифрованный logout
                 clearSession();
                 clearSecureSession();
+                turnOffDisplayAfterApLogout(displayManager);
                 request->send(200, "application/json", "{\"success\":true,\"message\":\"Logged out\"}");
             }
         });
@@ -3440,6 +3456,10 @@ void WebServerManager::start() {
 
             bool ok = (settimeofday(&tv, nullptr) == 0);
             if (ok) {
+                timespec ts = {};
+                ts.tv_sec = tv.tv_sec;
+                ts.tv_nsec = 0;
+                clock_settime(CLOCK_REALTIME, &ts); // Best-effort RTC sync on supported targets
                 configManager.saveLastKnownEpoch(epoch);
                 totpGenerator.markTimeSynchronized();
             }
@@ -5009,6 +5029,10 @@ void WebServerManager::start() {
 
                     bool ok = (settimeofday(&tv, nullptr) == 0);
                     if (ok) {
+                        timespec ts = {};
+                        ts.tv_sec = tv.tv_sec;
+                        ts.tv_nsec = 0;
+                        clock_settime(CLOCK_REALTIME, &ts); // Best-effort RTC sync on supported targets
                         configManager.saveLastKnownEpoch(epoch);
                         totpGenerator.markTimeSynchronized();
                     }
@@ -5388,6 +5412,7 @@ void WebServerManager::start() {
                     // Полная очистка сессии (включая персистентную)
                     clearSession();
                     clearSecureSession();
+                    turnOffDisplayAfterApLogout(displayManager);
                     
                     LOG_INFO("WebServer", "🚇 Session cleared (memory + persistent storage)");
                     
@@ -5737,6 +5762,10 @@ void WebServerManager::start() {
 
                         bool ok = (settimeofday(&tv, nullptr) == 0);
                         if (ok) {
+                            timespec ts = {};
+                            ts.tv_sec = tv.tv_sec;
+                            ts.tv_nsec = 0;
+                            clock_settime(CLOCK_REALTIME, &ts); // Best-effort RTC sync on supported targets
                             configManager.saveLastKnownEpoch(epoch);
                             totpGenerator.markTimeSynchronized();
                         }
@@ -6409,6 +6438,7 @@ void WebServerManager::start() {
                         // Полная очистка сессии (включая персистентную)
                         clearSession();
                         clearSecureSession();
+                        turnOffDisplayAfterApLogout(displayManager);
                         
                         LOG_INFO("WebServer", "🔗 Obfuscated session cleared (memory + persistent storage)");
                         
