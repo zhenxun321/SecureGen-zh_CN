@@ -436,8 +436,7 @@ void setup() {
         displayManager.init();
         displayManager.showMessage("AP 模式", 10, 20, false, 2);
         displayManager.showMessage("网络: " + apName, 10, 40, false, 1);
-        String maskedApPassword = apPassword.length() > 4 ? (apPassword.substring(0, 2) + "****" + apPassword.substring(apPassword.length() - 2)) : "****";
-        displayManager.showMessage("密码: " + maskedApPassword, 10, 55, false, 1);
+        displayManager.showMessage("密码: " + apPassword, 10, 55, false, 1);
         displayManager.showMessage("IP: " + WiFi.softAPIP().toString(), 10, 70, false, 1);
         displayManager.showMessage("访问: " + hostname + ".local", 10, 85, false, 1);
         displayManager.showMessage("连接 AP 后", 10, 100, false, 1);
@@ -894,7 +893,35 @@ void loop() {
         lastActivityTime = millis();
     }
     
-    if (!webServerManager.isRunning() && screenTimeoutSeconds > 0 && isScreenOn && (millis() - lastActivityTime > (screenTimeoutSeconds * 1000))) {
+    if (displayManager.consumeScreenOffRequest()) {
+        LOG_INFO("Main", "AP logout requested immediate offline-style sleep.");
+
+        // 与常规超时逻辑保持一致：先关闭 BLE，再熄屏并立即进入 light sleep
+        if (currentMode == AppMode::BLE_ADVERTISING || currentMode == AppMode::BLE_PIN_ENTRY || currentMode == AppMode::BLE_CONFIRM_SEND) {
+            LOG_INFO("Main", "Disabling BLE before AP logout sleep for security");
+            bleKeyboardManager.end();
+            currentMode = AppMode::PASSWORD;
+            bleActionTriggered = false;
+        }
+
+        displayManager.turnOff();
+        isScreenOn = false;
+
+        esp_sleep_enable_ext0_wakeup(GPIO_NUM_0, 0); // BUTTON_2 唤醒
+        LOG_INFO("Main", "Entering light sleep immediately after AP logout.");
+        esp_light_sleep_start();
+
+        LOG_INFO("Main", "Woke up from AP logout light sleep.");
+        if (!isScreenOn) {
+            wakeDisplaySafely("ap_logout_sleep_resume");
+        }
+        lastActivityTime = millis();
+        previousKeyIndex = -1;
+        previousPasswordIndex = -1;
+        displayManager.hideLoader();
+    }
+
+    if (!webServerManager.isRunning() && !displayManager.isLoaderActive() && screenTimeoutSeconds > 0 && isScreenOn && (millis() - lastActivityTime > (screenTimeoutSeconds * 1000))) {
         
         // Веб-сервер не активен - можно засыпать
         LOG_INFO("Main", "Screen timeout reached. Web server inactive. Entering light sleep.");

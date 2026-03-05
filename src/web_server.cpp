@@ -66,13 +66,13 @@ bool isApModeActive() {
     return mode == WIFI_AP || mode == WIFI_AP_STA;
 }
 
-void turnOffDisplayAfterApLogout(DisplayManager& displayManager) {
+void requestOfflineSleepAfterApLogout(DisplayManager& displayManager) {
     if (!isApModeActive()) {
         return;
     }
 
     displayManager.fillRect(0, 0, 240, 135, TFT_BLACK);
-    displayManager.turnOff();
+    displayManager.requestScreenOff();
 }
 } // namespace
 
@@ -826,7 +826,7 @@ void WebServerManager::start() {
                     
                     clearSession();
                     clearSecureSession();
-                    turnOffDisplayAfterApLogout(displayManager);
+                    requestOfflineSleepAfterApLogout(displayManager);
                     
                     LOG_INFO("WebServer", "🔐 LOGOUT: Session cleared");
                     
@@ -846,7 +846,7 @@ void WebServerManager::start() {
                 // Fallback: незашифрованный logout
                 clearSession();
                 clearSecureSession();
-                turnOffDisplayAfterApLogout(displayManager);
+                requestOfflineSleepAfterApLogout(displayManager);
                 request->send(200, "application/json", "{\"success\":true,\"message\":\"Logged out\"}");
             }
         });
@@ -5412,7 +5412,7 @@ void WebServerManager::start() {
                     // Полная очистка сессии (включая персистентную)
                     clearSession();
                     clearSecureSession();
-                    turnOffDisplayAfterApLogout(displayManager);
+                    requestOfflineSleepAfterApLogout(displayManager);
                     
                     LOG_INFO("WebServer", "🚇 Session cleared (memory + persistent storage)");
                     
@@ -6438,7 +6438,7 @@ void WebServerManager::start() {
                         // Полная очистка сессии (включая персистентную)
                         clearSession();
                         clearSecureSession();
-                        turnOffDisplayAfterApLogout(displayManager);
+                        requestOfflineSleepAfterApLogout(displayManager);
                         
                         LOG_INFO("WebServer", "🔗 Obfuscated session cleared (memory + persistent storage)");
                         

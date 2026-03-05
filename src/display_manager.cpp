@@ -574,6 +574,12 @@ void DisplayManager::clearMessageArea(int x, int y, int width, int height) {
 
 TFT_eSPI* DisplayManager::getTft() { return &tft; }
 void DisplayManager::fillRect(int32_t x, int32_t t, int32_t w, int32_t h, uint32_t color) { tft.fillRect(x, t, w, h, color); }
+void DisplayManager::requestScreenOff() { _screenOffRequested = true; }
+bool DisplayManager::consumeScreenOffRequest() {
+    bool requested = _screenOffRequested;
+    _screenOffRequested = false;
+    return requested;
+}
 
 void DisplayManager::drawUtf8Centered(const String& text, int x, int y, uint16_t fg, uint16_t bg, bool compact) {
 #if SECUREGEN_HAS_U8G2
