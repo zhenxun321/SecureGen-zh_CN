@@ -114,7 +114,7 @@ bool syncTimeFromNtpServer(const char* ntpServer, struct tm* timeinfo) {
     time(&beforeEpoch);
 
     sntp_stop();
-    configTime(0, 0, ntpServer);
+    configTime(CONFIG_TIMEZONE_OFFSET_SEC, 0, ntpServer);
 
     const int maxPolls = 20; // ~8 seconds
     for (int i = 0; i < maxPolls; ++i) {

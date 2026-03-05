@@ -3379,6 +3379,7 @@ void WebServerManager::start() {
             }
 
             String epochStr;
+            String decodedBody;
 #ifdef SECURE_LAYER_ENABLED
             String clientId = WebServerSecureIntegration::getClientId(request);
             if (clientId.length() > 0 &&
@@ -3386,22 +3387,35 @@ void WebServerManager::start() {
                 (request->hasHeader("X-Secure-Request") || request->hasHeader("X-Security-Level"))) {
 
                 String encryptedBody = String((char*)data, len);
-                String decryptedBody;
-                if (!secureLayer.decryptRequest(clientId, encryptedBody, decryptedBody)) {
+                if (!secureLayer.decryptRequest(clientId, encryptedBody, decodedBody)) {
                     return request->send(400, "text/plain", "解密失败");
                 }
-
-                int epochStart = decryptedBody.indexOf("epoch=");
-                if (epochStart >= 0) {
-                    int epochEnd = decryptedBody.indexOf("&", epochStart);
-                    if (epochEnd < 0) epochEnd = decryptedBody.length();
-                    epochStr = urlDecode(decryptedBody.substring(epochStart + 6, epochEnd));
-                }
-            } else
+            }
 #endif
-            {
-                if (request->hasParam("epoch", true)) {
-                    epochStr = request->getParam("epoch", true)->value();
+
+            if (decodedBody.length() == 0) {
+                decodedBody = String((char*)data, len);
+            }
+
+            int epochStart = decodedBody.indexOf("epoch=");
+            if (epochStart >= 0) {
+                int epochEnd = decodedBody.indexOf("&", epochStart);
+                if (epochEnd < 0) epochEnd = decodedBody.length();
+                epochStr = urlDecode(decodedBody.substring(epochStart + 6, epochEnd));
+            }
+
+            if (epochStr.length() == 0 && request->hasParam("epoch", true)) {
+                epochStr = request->getParam("epoch", true)->value();
+            }
+
+            if (epochStr.length() == 0) {
+                JsonDocument bodyDoc;
+                if (deserializeJson(bodyDoc, decodedBody) == DeserializationError::Ok) {
+                    if (bodyDoc["epoch"].is<String>()) {
+                        epochStr = bodyDoc["epoch"].as<String>();
+                    } else if (bodyDoc["epoch"].is<unsigned long>()) {
+                        epochStr = String(bodyDoc["epoch"].as<unsigned long>());
+                    }
                 }
             }
 
@@ -3409,10 +3423,16 @@ void WebServerManager::start() {
                 return request->send(400, "text/plain", "缺少 epoch 参数");
             }
 
-            unsigned long epoch = strtoul(epochStr.c_str(), nullptr, 10);
-            if (epoch < 1577836800UL || epoch > 4102444800UL) {
+            uint64_t epochValue = strtoull(epochStr.c_str(), nullptr, 10);
+            if (epochValue > 4102444800ULL && epochValue <= 4102444800000ULL) {
+                epochValue /= 1000ULL;
+            }
+
+            if (epochValue < 1577836800ULL || epochValue > 4102444800ULL) {
                 return request->send(400, "text/plain", "时间参数无效");
             }
+
+            unsigned long epoch = static_cast<unsigned long>(epochValue);
 
             timeval tv = {};
             tv.tv_sec = static_cast<time_t>(epoch);
@@ -4932,6 +4952,78 @@ void WebServerManager::start() {
                     return;
                 }
                 
+                // 🎯 МАРШРУТИЗАЦИЯ: /api/time_settings GET
+                if (targetEndpoint == "/api/time_settings" && targetMethod == "GET") {
+                    if (request->hasHeader("X-User-Activity")) {
+                        resetActivityTimer();
+                    }
+
+                    time_t now;
+                    time(&now);
+                    JsonDocument doc;
+                    doc["epoch"] = static_cast<unsigned long>(now);
+                    doc["synced"] = totpGenerator.isTimeSynced();
+                    String output;
+                    serializeJson(doc, output);
+
+                    WebServerSecureIntegration::sendSecureResponse(request, 200, "application/json", output, secureLayer);
+                    return;
+                }
+
+                // 🎯 МАРШРУТИЗАЦИЯ: /api/time_settings POST
+                if (targetEndpoint == "/api/time_settings" && targetMethod == "POST") {
+                    if (request->hasHeader("X-User-Activity")) {
+                        resetActivityTimer();
+                    }
+
+                    uint64_t epochValue = 0;
+                    if (targetData["epoch"].is<uint64_t>()) {
+                        epochValue = targetData["epoch"].as<uint64_t>();
+                    } else if (targetData["epoch"].is<const char*>()) {
+                        const char* epochChars = targetData["epoch"].as<const char*>();
+                        if (epochChars) {
+                            epochValue = strtoull(epochChars, nullptr, 10);
+                        }
+                    } else if (targetData["epoch"].is<unsigned long>()) {
+                        epochValue = targetData["epoch"].as<unsigned long>();
+                    }
+
+                    if (epochValue > 4102444800ULL && epochValue <= 4102444800000ULL) {
+                        epochValue /= 1000ULL;
+                    }
+
+                    if (epochValue < 1577836800ULL || epochValue > 4102444800ULL) {
+                        JsonDocument errorDoc;
+                        errorDoc["success"] = false;
+                        errorDoc["message"] = "时间参数无效";
+                        String errorResponse;
+                        serializeJson(errorDoc, errorResponse);
+                        WebServerSecureIntegration::sendSecureResponse(request, 400, "application/json", errorResponse, secureLayer);
+                        return;
+                    }
+
+                    unsigned long epoch = static_cast<unsigned long>(epochValue);
+                    timeval tv = {};
+                    tv.tv_sec = static_cast<time_t>(epoch);
+                    tv.tv_usec = 0;
+
+                    bool ok = (settimeofday(&tv, nullptr) == 0);
+                    if (ok) {
+                        configManager.saveLastKnownEpoch(epoch);
+                        totpGenerator.markTimeSynchronized();
+                    }
+
+                    JsonDocument doc;
+                    doc["success"] = ok;
+                    doc["epoch"] = epoch;
+                    doc["message"] = ok ? "设备时间更新成功" : "设备时间更新失败";
+                    String output;
+                    serializeJson(doc, output);
+
+                    WebServerSecureIntegration::sendSecureResponse(request, ok ? 200 : 500, "application/json", output, secureLayer);
+                    return;
+                }
+
                 // 🎯 МАРШРУТИЗАЦИЯ: /api/pincode_settings GET
                 if (targetEndpoint == "/api/pincode_settings" && targetMethod == "GET") {
                     if (request->hasHeader("X-User-Activity")) {
@@ -5598,6 +5690,68 @@ void WebServerManager::start() {
                         return;
                     }
                     
+                    // /api/time_settings GET
+                    if (targetEndpoint == "/api/time_settings" && targetMethod == "GET") {
+                        if (request->hasHeader("X-User-Activity")) resetActivityTimer();
+                        time_t now;
+                        time(&now);
+                        JsonDocument doc;
+                        doc["epoch"] = static_cast<unsigned long>(now);
+                        doc["synced"] = totpGenerator.isTimeSynced();
+                        String response;
+                        serializeJson(doc, response);
+                        WebServerSecureIntegration::sendSecureResponse(request, 200, "application/json", response, secureLayer);
+                        if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
+                        return;
+                    }
+
+                    // /api/time_settings POST
+                    if (targetEndpoint == "/api/time_settings" && targetMethod == "POST") {
+                        if (request->hasHeader("X-User-Activity")) resetActivityTimer();
+
+                        uint64_t epochValue = 0;
+                        if (targetData["epoch"].is<uint64_t>()) {
+                            epochValue = targetData["epoch"].as<uint64_t>();
+                        } else if (targetData["epoch"].is<const char*>()) {
+                            const char* epochChars = targetData["epoch"].as<const char*>();
+                            if (epochChars) epochValue = strtoull(epochChars, nullptr, 10);
+                        } else if (targetData["epoch"].is<unsigned long>()) {
+                            epochValue = targetData["epoch"].as<unsigned long>();
+                        }
+
+                        if (epochValue > 4102444800ULL && epochValue <= 4102444800000ULL) {
+                            epochValue /= 1000ULL;
+                        }
+
+                        if (epochValue < 1577836800ULL || epochValue > 4102444800ULL) {
+                            String output = "{\"success\":false,\"message\":\"时间参数无效\"}";
+                            WebServerSecureIntegration::sendSecureResponse(request, 400, "application/json", output, secureLayer);
+                            if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
+                            return;
+                        }
+
+                        unsigned long epoch = static_cast<unsigned long>(epochValue);
+                        timeval tv = {};
+                        tv.tv_sec = static_cast<time_t>(epoch);
+                        tv.tv_usec = 0;
+
+                        bool ok = (settimeofday(&tv, nullptr) == 0);
+                        if (ok) {
+                            configManager.saveLastKnownEpoch(epoch);
+                            totpGenerator.markTimeSynchronized();
+                        }
+
+                        JsonDocument doc;
+                        doc["success"] = ok;
+                        doc["epoch"] = epoch;
+                        doc["message"] = ok ? "设备时间更新成功" : "设备时间更新失败";
+                        String response;
+                        serializeJson(doc, response);
+                        WebServerSecureIntegration::sendSecureResponse(request, ok ? 200 : 500, "application/json", response, secureLayer);
+                        if (bufferPtr) { delete bufferPtr; request->_tempObject = nullptr; }
+                        return;
+                    }
+
                     // /api/pincode_settings GET
                     if (targetEndpoint == "/api/pincode_settings" && targetMethod == "GET") {
                         if (request->hasHeader("X-User-Activity")) resetActivityTimer();

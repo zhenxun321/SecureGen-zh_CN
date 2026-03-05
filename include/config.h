@@ -24,6 +24,9 @@
 #define CONFIG_TOTP_STEP_SIZE 30
 #define CONFIG_TOTP_DIGITS 6
 
+// Timezone for local time presentation (UTC+8 for zh_CN default)
+#define CONFIG_TIMEZONE_OFFSET_SEC (8 * 3600)
+
 // Файловая система
 #define KEYS_FILE "/keys.json.enc"
 #define PASSWORD_FILE "/passwords.json.enc"
