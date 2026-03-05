@@ -434,13 +434,14 @@ void setup() {
         
         // Отображение информации на экране
         displayManager.init();
-        displayManager.showMessage("AP 模式已启用", 10, 20, false, 2);
+        displayManager.showMessage("AP 模式", 10, 20, false, 2);
         displayManager.showMessage("网络: " + apName, 10, 40, false, 1);
-        displayManager.showMessage("密码: " + apPassword, 10, 55, false, 1);
+        String maskedApPassword = apPassword.length() > 4 ? (apPassword.substring(0, 2) + "****" + apPassword.substring(apPassword.length() - 2)) : "****";
+        displayManager.showMessage("密码: " + maskedApPassword, 10, 55, false, 1);
         displayManager.showMessage("IP: " + WiFi.softAPIP().toString(), 10, 70, false, 1);
-        displayManager.showMessage("域名: " + hostname + ".local", 10, 85, false, 1);
-        displayManager.showMessage("请连接到网络", 10, 100, false, 1);
-        displayManager.showMessage("以访问 Web 界面", 10, 115, false, 1);
+        displayManager.showMessage("访问: " + hostname + ".local", 10, 85, false, 1);
+        displayManager.showMessage("连接 AP 后", 10, 100, false, 1);
+        displayManager.showMessage("打开浏览器管理", 10, 115, false, 1);
         
         // Автозапуск веб-сервера в AP режиме
         delay(3000);
@@ -468,12 +469,12 @@ void setup() {
         displayManager.init();
         displayManager.showMessage("离线模式", 10, 20, false, 2);
         displayManager.showMessage("无 WiFi 连接", 10, 40, false, 1);
-        displayManager.showMessage("BLE 与密码功能可用", 10, 55, false, 1);
+        displayManager.showMessage("BLE/密码功能可用", 10, 55, false, 1);
         timeSynced = hasValidSystemTime();
         if (timeSynced) {
             totpGenerator.markTimeSynchronized();
         }
-        displayManager.showMessage(timeSynced ? "TOTP：已使用本地时钟" : "TOTP：未同步", 10, 70, false, 1);
+        displayManager.showMessage(timeSynced ? "TOTP: 本地时钟" : "TOTP: 未同步", 10, 70, false, 1);
         delay(3000);
         
         // Очистка экрана
