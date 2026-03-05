@@ -798,18 +798,26 @@ void handleButtons() {
 // Функция для проверки нажатия кнопок и включения экрана
 
 
+// 根据电量动态计算亮度（最低 50%）
+uint8_t calculateAdaptiveBrightnessByBattery() {
+    int batteryPercent = batteryManager.getPercentage();
+    batteryPercent = constrain(batteryPercent, 0, 100);
+
+    const uint8_t minBrightness = 128; // 50%
+    const uint8_t maxBrightness = 255; // 100%
+    return static_cast<uint8_t>(map(batteryPercent, 0, 100, minBrightness, maxBrightness));
+}
+
 // 🔋 低电量时平滑唤醒屏幕，避免背光瞬时电流导致 brownout 复位
 void wakeDisplaySafely(const char* reason) {
+
     uint32_t batteryMv = batteryManager.getVoltageMv();
 
-    // 约 55% 以下电量，限制最大亮度并采用渐进点亮
-    const bool weakBattery = batteryMv < 3600;
-    const uint8_t targetBrightness = weakBattery ? 170 : 255;
-    const uint8_t startBrightness = weakBattery ? 32 : 96;
+    const uint8_t targetBrightness = calculateAdaptiveBrightnessByBattery();
+    const uint8_t startBrightness = (targetBrightness / 2) < 64 ? 64 : (targetBrightness / 2);
 
     LOG_INFO("Power", String("Display wake [") + reason + "] battery=" + String((float)batteryMv / 1000.0f, 2) +
-                     "V, weak=" + String(weakBattery ? "yes" : "no") +
-                     ", targetBrightness=" + String(targetBrightness));
+                     "V, targetBrightness=" + String(targetBrightness));
 
     for (int b = startBrightness; b <= targetBrightness; b += 16) {
         displayManager.setBrightness(static_cast<uint8_t>(b));
@@ -938,6 +946,7 @@ void loop() {
                 int currentBatteryPercentage = batteryManager.getPercentage();
                 bool isCharging = (batteryManager.getVoltage() > 4.15);
                 displayManager.updateBatteryStatus(currentBatteryPercentage, isCharging);
+                displayManager.setBrightness(calculateAdaptiveBrightnessByBattery());
             }
             
             // Мониторинг критического состояния памяти

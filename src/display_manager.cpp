@@ -37,6 +37,15 @@ bool hasNonAscii(const String& text) {
     return false;
 }
 
+
+size_t utf8CharBytes(uint8_t firstByte) {
+    if ((firstByte & 0x80) == 0x00) return 1;
+    if ((firstByte & 0xE0) == 0xC0) return 2;
+    if ((firstByte & 0xF0) == 0xE0) return 3;
+    if ((firstByte & 0xF8) == 0xF0) return 4;
+    return 1;
+}
+
 void drawUtf8TopLeft(TFT_eSPI& tft, const String& text, int x, int y, uint16_t fg, uint16_t bg) {
 #if SECUREGEN_HAS_U8G2
     if (hasNonAscii(text)) {
@@ -44,9 +53,47 @@ void drawUtf8TopLeft(TFT_eSPI& tft, const String& text, int x, int y, uint16_t f
         g_u8g2.setFont(u8g2_font_unifont_t_chinese2);
         g_u8g2.setForegroundColor(fg);
         g_u8g2.setBackgroundColor(bg);
+
+        const int maxWidth = tft.width() - x;
+        const int lineHeight = max(12, (int)(g_u8g2.getFontAscent() - g_u8g2.getFontDescent()) + 2);
         int baselineY = y + g_u8g2.getFontAscent();
-        g_u8g2.setCursor(x, baselineY);
-        g_u8g2.print(text.c_str());
+        size_t index = 0;
+
+        while (index < text.length() && baselineY <= tft.height()) {
+            String line;
+            int lineWidth = 0;
+
+            while (index < text.length()) {
+                uint8_t firstByte = static_cast<uint8_t>(text[index]);
+                size_t charLen = utf8CharBytes(firstByte);
+                if (index + charLen > text.length()) {
+                    charLen = 1;
+                }
+
+                String ch = text.substring(index, index + charLen);
+                int chWidth = g_u8g2.getUTF8Width(ch.c_str());
+
+                if (line.length() > 0 && (lineWidth + chWidth) > maxWidth) {
+                    break;
+                }
+
+                line += ch;
+                lineWidth += chWidth;
+                index += charLen;
+
+                if (lineWidth >= maxWidth) {
+                    break;
+                }
+            }
+
+            if (line.length() == 0) {
+                break;
+            }
+
+            g_u8g2.setCursor(x, baselineY);
+            g_u8g2.print(line.c_str());
+            baselineY += lineHeight;
+        }
         return;
     }
 #endif
