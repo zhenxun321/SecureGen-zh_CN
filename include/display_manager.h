@@ -57,6 +57,8 @@ public:
     // UTF-8 text helper (uses U8g2 when available, falls back to TFT_eSPI drawString)
     void drawUtf8Centered(const String& text, int x, int y, uint16_t fg = TFT_WHITE, uint16_t bg = TFT_BLACK, bool compact = false);
     TFT_eSPI* getTft();
+    void requestScreenOff();
+    bool consumeScreenOffRequest();
 
 private:
     // New state machine for TOTP display
@@ -105,6 +107,7 @@ private:
 
     // Состояние для страницы "No Items"
     bool _isNoItemsPageActive = false;
+    bool _screenOffRequested = false;
 };
 
 #endif // DISPLAY_MANAGER_H
