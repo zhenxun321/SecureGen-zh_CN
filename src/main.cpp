@@ -893,8 +893,23 @@ void loop() {
         lastActivityTime = millis();
     }
     
+    static bool apLogoutSleepPending = false;
+    static unsigned long apLogoutSleepRequestedAt = 0;
+    constexpr unsigned long kApLogoutSleepGraceMs = 350;
+
     if (displayManager.consumeScreenOffRequest()) {
-        LOG_INFO("Main", "AP logout requested immediate offline-style sleep.");
+        LOG_INFO("Main", "AP logout requested offline-style sleep (grace period started).");
+        apLogoutSleepPending = true;
+        apLogoutSleepRequestedAt = millis();
+    }
+
+    if (apLogoutSleepPending && (millis() - apLogoutSleepRequestedAt >= kApLogoutSleepGraceMs)) {
+        apLogoutSleepPending = false;
+
+        // AP 模式下退出登录后，直接关闭 WiFi/AP 以进入与离线模式一致的浅睡眠
+        // ⚠️ 不在这里调用 webServerManager.stop()：其内部安全层 shutdown 在该时序下可能触发重启
+        LOG_INFO("Main", "Disconnecting WiFi/AP before AP logout sleep.");
+        wifiManager.disconnect();
 
         // 与常规超时逻辑保持一致：先关闭 BLE，再熄屏并立即进入 light sleep
         if (currentMode == AppMode::BLE_ADVERTISING || currentMode == AppMode::BLE_PIN_ENTRY || currentMode == AppMode::BLE_CONFIRM_SEND) {
@@ -909,7 +924,11 @@ void loop() {
 
         esp_sleep_enable_ext0_wakeup(GPIO_NUM_0, 0); // BUTTON_2 唤醒
         LOG_INFO("Main", "Entering light sleep immediately after AP logout.");
-        esp_light_sleep_start();
+        esp_err_t sleepResult = esp_light_sleep_start();
+
+        if (sleepResult != ESP_OK) {
+            LOG_ERROR("Main", "AP logout light sleep failed: " + String((int)sleepResult));
+        }
 
         LOG_INFO("Main", "Woke up from AP logout light sleep.");
         if (!isScreenOn) {
