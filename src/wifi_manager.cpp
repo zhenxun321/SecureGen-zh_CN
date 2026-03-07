@@ -216,6 +216,22 @@ bool WifiManager::connectSilent() {
     return false;
 }
 
+
+void WifiManager::stopApForSleep() {
+    LOG_INFO("WifiManager", "Stopping SoftAP for sleep");
+
+    // AP-only graceful shutdown to reduce wakeup freeze risk.
+    // Avoid forcing WIFI_OFF here (more aggressive transition can race with async web teardown).
+    bool apStopped = WiFi.softAPdisconnect(true);
+    if (!apStopped) {
+        LOG_WARNING("WifiManager", "softAPdisconnect returned false");
+    }
+
+    // Keep station side clean too (without forcing full radio-off mode).
+    WiFi.disconnect(true);
+    LOG_INFO("WifiManager", "SoftAP stopped for sleep");
+}
+
 void WifiManager::disconnect() {
     LOG_INFO("WifiManager", "Disconnecting WiFi");
     
