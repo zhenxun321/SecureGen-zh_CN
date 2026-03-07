@@ -17,6 +17,7 @@ public:
     void startConfigPortal();
     String getIP();
     void disconnect();
+    void stopApForSleep();
     // Обновление mDNS имени хоста
     void updateMdnsHostname();
     void startMdnsService();

@@ -906,10 +906,11 @@ void loop() {
     if (apLogoutSleepPending && (millis() - apLogoutSleepRequestedAt >= kApLogoutSleepGraceMs)) {
         apLogoutSleepPending = false;
 
-        // AP 模式下退出登录后，直接关闭 WiFi/AP 以进入与离线模式一致的浅睡眠
-        // ⚠️ 不在这里调用 webServerManager.stop()：其内部安全层 shutdown 在该时序下可能触发重启
-        LOG_INFO("Main", "Disconnecting WiFi/AP before AP logout sleep.");
-        wifiManager.disconnect();
+        // AP 模式下退出登录后进入浅睡眠。
+        // 修复点：使用“仅关闭 SoftAP”的温和路径，避免直接 WIFI_OFF 带来的回调竞态，
+        // 同时避免 AP 在睡眠唤醒后残留导致的卡死风险。
+        LOG_INFO("Main", "AP logout sleep path: gracefully stopping SoftAP before sleep.");
+        wifiManager.stopApForSleep();
 
         // 与常规超时逻辑保持一致：先关闭 BLE，再熄屏并立即进入 light sleep
         if (currentMode == AppMode::BLE_ADVERTISING || currentMode == AppMode::BLE_PIN_ENTRY || currentMode == AppMode::BLE_CONFIRM_SEND) {
