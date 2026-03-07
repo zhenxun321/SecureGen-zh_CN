@@ -906,13 +906,9 @@ void loop() {
     if (apLogoutSleepPending && (millis() - apLogoutSleepRequestedAt >= kApLogoutSleepGraceMs)) {
         apLogoutSleepPending = false;
 
-        // AP 模式下退出登录后，先关闭 Web 服务与 WiFi，确保可稳定进入浅睡眠
-        if (webServerManager.isRunning()) {
-            LOG_INFO("Main", "Stopping web server before AP logout sleep.");
-            webServerManager.stop();
-        }
-
-        LOG_INFO("Main", "Disconnecting WiFi before AP logout sleep.");
+        // AP 模式下退出登录后，直接关闭 WiFi/AP 以进入与离线模式一致的浅睡眠
+        // ⚠️ 不在这里调用 webServerManager.stop()：其内部安全层 shutdown 在该时序下可能触发重启
+        LOG_INFO("Main", "Disconnecting WiFi/AP before AP logout sleep.");
         wifiManager.disconnect();
 
         // 与常规超时逻辑保持一致：先关闭 BLE，再熄屏并立即进入 light sleep
